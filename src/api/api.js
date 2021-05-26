@@ -22,7 +22,7 @@ export function getToken(username, password) {
 
 export function login(token) {
   return api
-    .get('/login/', {
+    .get(BASE_URL+'/login/', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
