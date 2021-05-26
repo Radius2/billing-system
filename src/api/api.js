@@ -1,7 +1,7 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
-const BASE_URL = 'http://b644ad81271d.ngrok.io/';
+const BASE_URL = 'https://b644ad81271d.ngrok.io/';
 const api = axios.create({
  baseURL: BASE_URL,
 });
