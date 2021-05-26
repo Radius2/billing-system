@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 const BASE_URL = 'http://b644ad81271d.ngrok.io/login/';
 const api = axios.create({
- // baseURL: BASE_URL,
+ baseURL: BASE_URL,
 });
 
 function setToken(token) {
