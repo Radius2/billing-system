@@ -4,10 +4,10 @@ import React from 'react';
 import {NavLink} from 'react-router-dom';
 
 const ListItemNav = props => {
-    const {to, name, activeClass} = props
+    const {to, name, activeClass, itemClass} = props
     return (
         <li>
-            <ListItem button component={NavLink} to={to} activeClassName={activeClass}>
+            <ListItem button component={NavLink} to={to} className={itemClass} activeClassName={activeClass}>
                 <ListItemText  primary={name}/>
             </ListItem>
         </li>

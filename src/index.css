@@ -1,0 +1,20 @@
+* {
+    scrollbar-width: thin;
+    scrollbar-color: none;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    position: absolute;
+    width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: none;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(18, 42, 50, 0.7);
+    border-radius: 10px;
+    border: none;
+}

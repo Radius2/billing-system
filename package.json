@@ -2,7 +2,7 @@
   "name": "billing-system",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://b644ad81271d.ngrok.io",
+"proxy": "https://http://posterc.kz:44475/",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
@@ -10,6 +10,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.21.1",
+    "http-proxy-middleware": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

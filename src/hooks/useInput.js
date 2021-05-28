@@ -1,6 +1,10 @@
 import {useState} from 'react';
 
-export const useInput = ()=>{
-    const [value, setValue] = useState('');
-return {value, onChange:(e)=>{setValue(e.target.value)}}
+export const useInput = (init) => {
+    const [value, setValue] = useState(init || '');
+    return {
+        value, onChange: (e) => {
+            setValue(e.target.value)
+        }
+    }
 }

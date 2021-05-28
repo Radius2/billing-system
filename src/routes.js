@@ -5,4 +5,4 @@ const LOGIN = {
     component: Login
 }
 
-export const PUBLIC_ROUTES=[];
+export const PRIVATE_ROUTES=[];
