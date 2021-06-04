@@ -4,6 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import {INTERFACE_DIALOG} from '../../util/language';
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -22,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function ModalMessage({ open, message }) {
+export default function ModalMessage({ open, message,lang }) {
   const classes = useStyles();
 
   return (
@@ -40,7 +41,7 @@ export default function ModalMessage({ open, message }) {
         {
           <div className={classes.paper}>
             <CircularProgress />
-            <h2>Авторизация пользователя</h2>
+            <h2>{INTERFACE_DIALOG.loginModal[lang]}</h2>
           </div>
         }
       </Fade>

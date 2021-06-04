@@ -1,8 +1,8 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
-//"proxy": "https://23fa9e2a0093.ngrok.io",
-const BASE_URL = 'https://23fa9e2a0093.ngrok.io'
+//"http://posterc.kz:44475/",
+const BASE_URL = 'http://posterc.kz:44475/'
 
 const api = axios.create({
     baseURL: BASE_URL,

@@ -1,8 +1,14 @@
 import Button from '@material-ui/core/Button';
-import React from 'react'
+import React, {useContext} from 'react'
+import {LanguageContext} from './App';
 import Content from './components/Content/Content';
 import Interface from './components/Interface/Interface';
 import Sidemenu from './components/Interface/Sidemenu/Sidemenu';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import {AVAILABLE_LANGUAGE, INTERFACE_LANGUAGE} from './util/language';
 
 
 const navArr = [
@@ -33,13 +39,22 @@ const navArr = [
 
 
 export default function User(props) {
+    const {lang, setLang} = useContext(LanguageContext)
     return (
         <Interface>
             <Sidemenu navArr={navArr}/>
-            <div style={{backgroundColor: 'blue', height: '100%'}}>
-                <Button onClick={props.logout}>Выход</Button>
-                <br/>
-                Это будет шапка
+            <div style={{display: 'flex',justifyContent: 'flex-end', alignItems: 'center', height: '100%'}}>
+                <Button onClick={props.logout}>{INTERFACE_LANGUAGE.exit[lang]}</Button>
+                <FormControl variant="outlined">
+                    <Select
+                        native
+                        value={lang}
+                        onChange={e => setLang(e.target.value)}
+                        label="Language"
+                    >
+                        {AVAILABLE_LANGUAGE.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
+                    </Select>
+                </FormControl>
             </div>
             <Content/>
         </Interface>

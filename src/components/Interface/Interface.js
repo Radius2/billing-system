@@ -6,6 +6,7 @@ const useStyles = makeStyles((theme) => ({
     gridContainer: {
         width: '100vw',
         height: '100vh',
+        overflow: 'hidden',
         display: 'grid',
         gridTemplateColumns: '270px 1fr',
         gridTemplateRows: '70px 1fr',
@@ -30,6 +31,11 @@ const useStyles = makeStyles((theme) => ({
     },
     header: {gridArea: 'Header'},
     content: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        overflow: 'scroll',
         gridArea: 'Content',
         padding: '8px'
     }

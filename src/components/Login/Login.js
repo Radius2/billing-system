@@ -1,11 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import {LanguageContext} from '../../App';
 import {useInput} from '../../hooks/useInput';
 import {getToken, login} from '../../api/api';
+import {INTERFACE_LANGUAGE} from '../../util/language';
 import ErrorMes from './ErrorMes';
 import ModalMessage from './Modal';
 
@@ -27,6 +29,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Login(props) {
+    const {lang} = useContext(LanguageContext)
     const {setAccessForms, isAuth, setAuth, from, history} = props;
     const classes = useStyles();
     const passwordInput = useInput();
@@ -72,11 +75,11 @@ export default function Login(props) {
 
     return (
         <>
-            <ModalMessage open={openModal}/>
+            <ModalMessage open={openModal} lang={lang}/>
             <Container component='main' maxWidth='xs'>
                 <div className={classes.paper}>
                     <Typography component='h1' variant='h5'>
-                        Вход
+                        {INTERFACE_LANGUAGE.enter[lang]}
                     </Typography>
                     <form className={classes.form} noValidate>
                         <TextField
@@ -85,10 +88,10 @@ export default function Login(props) {
                             margin='normal'
                             required
                             fullWidth
-                            id='email'
-                            label='Логин'
-                            name='email'
-                            autoComplete='email'
+                            id='login'
+                            label={INTERFACE_LANGUAGE.login[lang]}
+                            name='login'
+                            autoComplete='login'
                             autoFocus
                         />
                         <TextField
@@ -98,14 +101,14 @@ export default function Login(props) {
                             required
                             fullWidth
                             name='password'
-                            label='Пароль'
+                            label={INTERFACE_LANGUAGE.password[lang]}
                             type='password'
                             id='password'
                             autoComplete='current-password'
                         />
                         <Button onClick={buttonHandler} fullWidth variant='contained' color='primary'
                                 className={classes.submit}>
-                            Вход
+                            {INTERFACE_LANGUAGE.enter[lang]}
                         </Button>
                         {
                             errorMes

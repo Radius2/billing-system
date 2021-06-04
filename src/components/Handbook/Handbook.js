@@ -1,131 +1,194 @@
-import Button from '@material-ui/core/Button';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
-    getHandbook,
-    delElementHandbook,
-    addElementHandbook,
-    getElementHandbook,
-    updElementHandbook
-} from '../../api/api';
-import {handbooks} from '../../handbooks/handbook';
-import {Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TextField} from '@material-ui/core';
-import {useInput} from '../../hooks/useInput';
-import {makeStyles} from '@material-ui/core';
+    IconButton,
+    Paper,
+    TableContainer,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody
+} from '@material-ui/core';
+import CreateIcon from '@material-ui/icons/Create';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ModalMessage from '../Modal';
+import NewRow from './NewRow';
+import Row from './Row';
+import Feedback from './Feedback'
+import {LanguageContext} from '../../App';
+import {handbooks} from '../../util/handbook';
+import {INTERFACE_DIALOG, INTERFACE_LANGUAGE} from '../../util/language';
+import * as api from '../../api/api';
 
-// const useStyle = makeStyles((theme)=>{
-//
-// })
-
-function CellInput(props) {
-    const [textField, setTextField] = useState(props.value);
-    useEffect(() => {
-        setTextField(props.value || '')
-    }, [props.value])
-    return (
-        <TableCell>
-            <TextField fullWidth
-                       autoFocus={props.autoFocus}
-                       value={textField}
-                       onChange={e => setTextField(prev => e.target.value)}
-                       onBlur={(e) => props.save(e.target.value)}/>
-        </TableCell>
-    )
-}
+const iconButton = [
+    {name: 'delete', icon: <DeleteForeverIcon fontSize='small'/>},
+    {name: 'update', icon: <CreateIcon fontSize='small'/>},
+    {name: 'add', icon: <AddIcon fontSize='small'/>}
+]
 
 export default function Handbook(props) {
+    const {lang} = useContext(LanguageContext)
     const [handbook] = useState(props.match.params.name); // название формы
     const [columns] = useState(handbooks[handbook].columns); //шапка формы
     const [data, setData] = useState([]); //данные формы
     const [errMessage, setErrMessage] = useState(''); //сообщение об ошибке
-    const [newRow, setNewRow] = useState([newRowMask(columns)]) // подготовленная новая строка
+    const [openSnackbar, setSnackbar] = useState(false); //выплывающее окно о успешной опперации
+    const [snackbarMess, setSnackbarMess] = useState('');//сообщение успешной операции
+    const [currentRow, setCurrentRow] = useState(null);//текущая строка при изменении / удалении
+    const [currentMod, setCurrentMod] = useState(null); // текущий режим изменение/удаление/добавление
 
-    //генерация пустых данных
-    function newRowMask(columns) {
-        const newArr = {}
-        columns.forEach(({accessor}) => accessor.toUpperCase() === 'ID' ? null : newArr[accessor] = '')
-        return newArr
-    }
 
-    //получение данных при загрузке компонента
+    //получение данных справочника при загрузке компонента
     useEffect(() => {
-        getHandbook(handbook)
+        api.getHandbook(handbook)
             .then(resp => setData(resp.data))
             .catch((err) => setErrMessage(err.message))
     }, [handbook])
 
-    //генератор строки
-    const row = useCallback((item, index, setFunction, showID = true) => {
-        return columns.map(({accessor}) => (accessor.toUpperCase() === 'ID') ?
-            <TableCell key={accessor}>{showID ? item[accessor] : 'новая'}</TableCell> :
-            <CellInput key={accessor} value={item[accessor]}
-                       save={(value) => saveNewValue(index, accessor, value, setFunction)}/>)
-    }, [columns])
-
     //удалить строку локально и из БД
-    const deleteRow = useCallback((id, index) => {
-        delElementHandbook(handbook, id)
-            .then(() => setData(prev => {
-                const newArr = [...prev];
-                newArr.splice(index, 1)
-                return newArr
-            }))
-            .catch(err => setErrMessage(err.message))
-    }, [handbook])
+    const deleteRow = useCallback(({id}, index) => {
+            api.delElementHandbook(handbook, id)
+                .then(() => {
+                    setCurrentRow(null);
+                    setData(prev => {
+                        setSnackbar(true);
+                        setSnackbarMess(INTERFACE_DIALOG.successDeleteModal[lang])
+                        const newArr = [...prev];
+                        newArr.splice(index, 1)
+                        return newArr
+                    })
+                })
+                .catch(err => setErrMessage(err.message))
+        }
+        , [handbook]
+    )
 
-    //создать строку и запросить новую строку
+//сохранить новую строку в БД  и запросить новую строку в локальный справочник
     const addRow = useCallback((payload) => {
-        addElementHandbook(handbook, payload)
+        api.addElementHandbook(handbook, payload)
             .then((resp) => {
-                setNewRow([newRowMask(columns)])
-                return getElementHandbook(handbook, resp.data.id)
+                return api.getElementHandbook(handbook, resp.data.id)
             })
-            .then(resp => (setData(prev => ([...prev, resp.data]))))
+            .then(resp => {
+                setSnackbar(true);
+                setSnackbarMess(INTERFACE_DIALOG.successSaveModal[lang]);
+                (setData(prev => ([...prev, resp.data])));
+            })
             .catch(err => setErrMessage(err.message))
     }, [handbook])
 
-    //обновить строку и получить перезаписанный элемент
+//обновить строку и получить перезаписанную сткоку из БД
     const updateRow = useCallback((payload, index) => {
-        updElementHandbook(handbook, payload)
+        api.updElementHandbook(handbook, payload)
             .then((resp) => {
-                return getElementHandbook(handbook, resp.data.id)
+                return api.getElementHandbook(handbook, resp.data.id)
             })
             .then(resp => {
                 setData(prev => {
                     prev[index] = resp.data;
                     return [...prev]
                 })
+                setSnackbar(true);
+                setCurrentRow(null);
+                setSnackbarMess(INTERFACE_DIALOG.successSaveModal[lang]);
             })
             .catch(err => setErrMessage(err.message))
     }, [handbook])
 
-    //обновление переменной строки локально
-    function saveNewValue(index, accessor, newValue, setFunction) {
-        setFunction((prev) => {
-            const newData = [...prev];
-            newData[index] = {...newData[index], [accessor]: newValue};
-            return newData;
-        })
+    const snackbarCloseHandler = useCallback((event, reason) => {
+        if (reason !== 'clickaway') {
+            setSnackbar(false)
+        }
+    }, [])
+
+    const closeErrMessageHandler = useCallback(() => {
+        setErrMessage('')
+    }, [])
+
+    const updateMod = {
+        actionInterfaceHandler: updateRow,
+        interfaceActionName: INTERFACE_LANGUAGE.update[lang]
     }
+
+    const deleteMod = {
+        actionInterfaceHandler: deleteRow,
+        interfaceActionName: INTERFACE_LANGUAGE.delete[lang]
+    }
+
+    const propsMod = (mode) => {
+        switch (mode) {
+            case 'delete':
+                return deleteMod;
+            case 'update':
+                return updateMod;
+            default:
+                return null
+        }
+    }
+
 
     return (
         <>
-            <ModalMessage open={errMessage?true:false} message={errMessage} close={()=>setErrMessage('')}/>
-            <TableContainer component={Paper}>
-                <Table>
+            <ModalMessage open={!!errMessage} message={errMessage} close={closeErrMessageHandler}/>
+            <Feedback
+                openSnackbar={openSnackbar}
+                snackbarCloseHandler={snackbarCloseHandler}
+                snackbarMess={snackbarMess}/>
+            <TableContainer style={{maxWidth: handbooks[handbook].maxWidth}} component={Paper} elevation={3}>
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            {columns.map((head) => <TableCell key={head.accessor}>{head.Header}</TableCell>)}
+                            <TableCell
+                                variant='head'
+                                colSpan={columns.length}
+                                style={{paddingTop: '2px', paddingBottom: '2px'}}>
+                                {iconButton.map(button => (
+                                    <IconButton key={button.name}
+                                                color={currentMod === button.name ? 'primary' : 'default'}
+                                                aria-label="delete"
+                                                onClick={() => setCurrentMod((prev) => {
+                                                    if (button.name !== prev) {
+                                                        return button.name
+                                                    }
+                                                    setCurrentRow(null);
+                                                    return null
+                                                })}>
+                                        {button.icon}
+                                    </IconButton>))}
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            {columns.map((column) => (
+                                <TableCell
+                                    width={column.width}
+                                    variant='head'
+                                    key={column.accessor}>
+                                    {column.Header[lang]}
+                                </TableCell>))}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((item, index) => <TableRow key={item.id}>{row(item, index, setData)}
-                            <Button onClick={() => deleteRow(item.id, index)}>удалить</Button>
-                            <Button onClick={() => updateRow(item, index)}>изменить</Button>
-                        </TableRow>)}
-                        <TableRow>{row(newRow[0], 0, setNewRow, false)}
-                            <Button onClick={() => addRow(newRow[0])}>сохранить</Button>
-                        </TableRow>
+                        {(currentMod === 'add') ?
+                            <NewRow
+                                columns={columns}
+                                saveHandler={addRow}
+                                saveLanguage={INTERFACE_LANGUAGE.save[lang]}
+                                cancelInterfaceHandler={() => setCurrentMod(null)}/>
+                            : null
+                        }
+                        {data.map((dataRow, index) => (
+                            <Row
+                                key={dataRow.id}
+                                index={index}
+                                columns={columns}
+                                data={dataRow}
+                                clickHandler={() => currentMod && setCurrentRow(index)}
+                                openInterface={index === currentRow}
+                                interfaceMod={currentMod}
+                                {...propsMod(currentMod)}
+                                cancelInterfaceHandler={() => setCurrentRow(null)}
+                            />))}
                     </TableBody>
                 </Table>
             </TableContainer>

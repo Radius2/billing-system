@@ -1,10 +1,14 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {Switch, Route, Redirect, useHistory, useLocation} from 'react-router';
+import React, {useState, useRef} from 'react';
+import {Switch, Route, Redirect, useLocation} from 'react-router';
 import Login from './components/Login/Login';
 import User from './User';
 import {deleteToken} from './api/api';
+import {AVAILABLE_LANGUAGE} from './util/language';
+
+export const LanguageContext = React.createContext();
 
 export default function App() {
+    const [lang, setLang] = useState(localStorage.getItem('language') || 'RU')
     const [isAuth, setAuth] = useState(false); // флаг логина
     const [accessForms, setAccessForms] = useState([]); // список достумных форм
     const location = useLocation();
@@ -16,18 +20,29 @@ export default function App() {
     }
 
     return (
-        <Switch>
-            <Route
-                path='/login'
-                render={routeProps => <Login from={from.current}
-                                             {...routeProps}
-                                             isAuth={isAuth}
-                                             setAuth={e => setAuth(e)}
-                                             setAccessForms={e => setAccessForms(e)}/>
+        <LanguageContext.Provider value={
+            {
+                lang,
+                setLang: (lang) => {
+                    if (AVAILABLE_LANGUAGE.includes(lang)) {
+                        setLang(lang);
+                        localStorage.setItem('language', lang)
+                    }
                 }
-                exact
-            />
-            {isAuth ? <User logout={logout} accessForms={accessForms}/> : <Redirect to='/login'/>}
-        </Switch>
+            }}>
+            <Switch>
+                <Route
+                    path='/login'
+                    render={routeProps => <Login from={from.current}
+                                                 {...routeProps}
+                                                 isAuth={isAuth}
+                                                 setAuth={e => setAuth(e)}
+                                                 setAccessForms={e => setAccessForms(e)}/>
+                    }
+                    exact
+                />
+                {isAuth ? <User logout={logout} accessForms={accessForms}/> : <Redirect to='/login'/>}
+            </Switch>
+        </LanguageContext.Provider>
     );
 }
