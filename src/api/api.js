@@ -1,7 +1,6 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
-//"http://posterc.kz:44475/",
 const BASE_URL = 'http://posterc.kz:44475/'
 
 const api = axios.create({
@@ -39,17 +38,18 @@ export function login(token) {
         });
 }
 
-export function getHandbook(nameHandbook) {
-    return api.get('/' + nameHandbook);
+export function getHandbook(nameHandbook, queryParams = {}) {
+    return api.get('/' + nameHandbook,
+        {params: queryParams});
 }
 
 export function getElementHandbook(nameHandbook, id) {
     return api.get('/' + nameHandbook + '/' + id)
 }
 
-export function delElementHandbook(nameHandbook, id) {
+export function delElementsHandbook(nameHandbook, ids) {
     return api.post('/' + nameHandbook + '_del',
-        {id});
+        {ids});
 }
 
 export function addElementHandbook(nameHandbook, payload) {

@@ -1,5 +1,7 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import clsx from 'clsx';
+import React, {useCallback, useContext, useEffect, useState, useRef} from 'react';
 import {
+    Box,
     IconButton,
     Paper,
     TableContainer,
@@ -7,62 +9,126 @@ import {
     TableHead,
     TableRow,
     TableCell,
-    TableBody
+    TableBody,
+    Toolbar,
+    Typography,
+    Checkbox,
+    Tooltip
 } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
 import AddIcon from '@material-ui/icons/Add';
+import FilterListIcon from '@material-ui/icons/FilterList'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ModalMessage from '../Modal';
-import NewRow from './NewRow';
+import FilterTextField from './FilterTextField';
 import Row from './Row';
 import Feedback from './Feedback'
 import {LanguageContext} from '../../App';
 import {handbooks} from '../../util/handbook';
 import {INTERFACE_DIALOG, INTERFACE_LANGUAGE} from '../../util/language';
 import * as api from '../../api/api';
+import useStyle from './style';
 
 const iconButton = [
-    {name: 'delete', icon: <DeleteForeverIcon fontSize='small'/>},
-    {name: 'update', icon: <CreateIcon fontSize='small'/>},
-    {name: 'add', icon: <AddIcon fontSize='small'/>}
+    {name: 'delete', icon: <DeleteForeverIcon fontSize='default'/>},
+    {name: 'add', icon: <AddIcon fontSize='default'/>}
 ]
 
-export default function Handbook(props) {
+//генерация пустых  данных для строки input
+function newRowMask(columns) {
+    const newArr = {}
+    columns.forEach(({accessor}) => accessor.toUpperCase() === 'ID' ? null : newArr[accessor] = '')
+    return newArr
+}
+
+export default function Handbook({match, pageSize = 20}) {
+    const classes = useStyle();
     const {lang} = useContext(LanguageContext)
-    const [handbook] = useState(props.match.params.name); // название формы
+    const [handbook] = useState(match.params.name); // название формы
     const [columns] = useState(handbooks[handbook].columns); //шапка формы
     const [data, setData] = useState([]); //данные формы
     const [errMessage, setErrMessage] = useState(''); //сообщение об ошибке
     const [openSnackbar, setSnackbar] = useState(false); //выплывающее окно о успешной опперации
     const [snackbarMess, setSnackbarMess] = useState('');//сообщение успешной операции
-    const [currentRow, setCurrentRow] = useState(null);//текущая строка при изменении / удалении
-    const [currentMod, setCurrentMod] = useState(null); // текущий режим изменение/удаление/добавление
+    const [selectedRows, setSelectedRows] = useState([]); // выбранная строка для редактирования
+    const [currentMod, setCurrentMod] = useState('update'); // текущий режим изменения, удаление, добавление
+    const [showFilter, setShowFilter] = useState(false);
+    const [newRow] = useState(newRowMask(columns));//пустая строка для создания нового элемента
+    const [page, setPage] = useState(1);//страниза пагинации
+    const [filterParams, setFilterParams] = useState({}) //фильтр квери параметры запроса элементов справочника
+    const [sortParams, setSortParams] = useState({desc: 0, ordering: 'id'})//квери параметр сортировки
+    const [loading, setLoading] = useState(false) // режим загрузки
+    const [hasMore, setHasMore] = useState(false) // внутренняя безопасность
+    const [showInfinityScrollRow, setShowInfinityScrollRow] = useState(false);
+    const [isValid, setIsValid] = useState(true)
 
+    function getElements(page) {
+        setLoading(true);
+        api.getHandbook(handbook, {page, page_size: pageSize, ...filterParams, ...sortParams})
+            .then((resp) => {
+                const currentDataLength = (page === 1) ? 0 : data.length
+                setHasMore(resp.data.count > (resp.data.values.length + currentDataLength) && resp.data.values.length === pageSize)
+                setData(prev => {
+                    return (page === 1) ? resp.data.values : [...prev, ...resp.data.values]
+                });
+            })
+            .catch((err) => {
+                setHasMore(false);
+                setErrMessage(err.message)
+            })
+            .finally(() => {
+                setLoading(false);
+                setShowInfinityScrollRow(true);
+            })
+    }
+
+
+    useEffect(()=>setIsValid(true),[currentMod])
 
     //получение данных справочника при загрузке компонента
     useEffect(() => {
-        api.getHandbook(handbook)
-            .then(resp => setData(resp.data))
-            .catch((err) => setErrMessage(err.message))
-    }, [handbook])
+        setPage(1);
+        const timer = setTimeout(() => {
+            getElements(1);
+        }, 500);
+        return () => {
+            clearTimeout(timer);
+        }
+    }, [handbook, filterParams, sortParams])
+
+    useEffect(() => {
+            if (page > 1) getElements(page)
+        }
+        , [page])
+
+
+    useEffect(() => {
+        if (!showFilter) {
+            setFilterParams(prev => Object.keys(prev).length === 0 ? prev : {})
+        }
+    }, [showFilter])
+
 
     //удалить строку локально и из БД
-    const deleteRow = useCallback(({id}, index) => {
-            api.delElementHandbook(handbook, id)
+    const deleteRows = useCallback(() => {
+            const ids = selectedRows.map((index) => data[index].id);
+            api.delElementsHandbook(handbook, ids)
                 .then(() => {
-                    setCurrentRow(null);
+                    setSelectedRows([]);
+                    setCurrentMod('upload')
                     setData(prev => {
                         setSnackbar(true);
                         setSnackbarMess(INTERFACE_DIALOG.successDeleteModal[lang])
                         const newArr = [...prev];
-                        newArr.splice(index, 1)
+                        selectedRows.sort((a, b) => b - a).forEach(index => newArr.splice(index, 1))
                         return newArr
                     })
                 })
                 .catch(err => setErrMessage(err.message))
         }
-        , [handbook]
+        , [handbook, selectedRows]
     )
+
 
 //сохранить новую строку в БД  и запросить новую строку в локальный справочник
     const addRow = useCallback((payload) => {
@@ -72,6 +138,7 @@ export default function Handbook(props) {
             })
             .then(resp => {
                 setSnackbar(true);
+                setCurrentMod('update')
                 setSnackbarMess(INTERFACE_DIALOG.successSaveModal[lang]);
                 (setData(prev => ([...prev, resp.data])));
             })
@@ -79,119 +146,194 @@ export default function Handbook(props) {
     }, [handbook])
 
 //обновить строку и получить перезаписанную сткоку из БД
-    const updateRow = useCallback((payload, index) => {
-        api.updElementHandbook(handbook, payload)
+    const updateRow = (payload, index) => {
+        if (isValid) api.updElementHandbook(handbook, payload)
             .then((resp) => {
                 return api.getElementHandbook(handbook, resp.data.id)
             })
             .then(resp => {
+                if (index === selectedRows[0]) {
+                    setSelectedRows([])
+                }
                 setData(prev => {
                     prev[index] = resp.data;
                     return [...prev]
                 })
                 setSnackbar(true);
-                setCurrentRow(null);
                 setSnackbarMess(INTERFACE_DIALOG.successSaveModal[lang]);
             })
             .catch(err => setErrMessage(err.message))
-    }, [handbook])
+    }
 
-    const snackbarCloseHandler = useCallback((event, reason) => {
+
+    const snackbarCloseHandler = (event, reason) => {
         if (reason !== 'clickaway') {
             setSnackbar(false)
         }
-    }, [])
+    }
 
     const closeErrMessageHandler = useCallback(() => {
         setErrMessage('')
     }, [])
 
-    const updateMod = {
-        actionInterfaceHandler: updateRow,
-        interfaceActionName: INTERFACE_LANGUAGE.update[lang]
-    }
+    const menu = useCallback(() => iconButton.map(button => (
+        <Tooltip key={button.name} title={INTERFACE_LANGUAGE[button.name][lang]}>
+            <IconButton
+                color={currentMod === button.name ? 'primary' : 'default'}
+                aria-label="delete"
+                onClick={() => setCurrentMod((prev) => {
+                    setSelectedRows([])
+                    if (button.name !== prev) {
+                        return button.name
+                    }
+                    return 'update'
+                })}>
+                {button.icon}
+            </IconButton>
+        </Tooltip>
+    )), [currentMod, lang])
 
-    const deleteMod = {
-        actionInterfaceHandler: deleteRow,
-        interfaceActionName: INTERFACE_LANGUAGE.delete[lang]
-    }
-
-    const propsMod = (mode) => {
-        switch (mode) {
-            case 'delete':
-                return deleteMod;
+    const actionComponent = (index, active) => {
+        switch (currentMod) {
             case 'update':
-                return updateMod;
+                return <Tooltip title={INTERFACE_LANGUAGE.update[lang]}>
+                    <IconButton
+                        onClick={() => isValid ? setSelectedRows([index]) : console.log('no valid')}
+                        color={active ? 'primary' : 'default'}
+                        size='small'>
+                        <CreateIcon/>
+                    </IconButton>
+                </Tooltip>;
+            case 'delete':
+                return <Checkbox
+                    color='default'
+                    checked={active}
+                    style={{padding: '3px'}}
+                    onChange={() => setSelectedRows(prevState => {
+                        if (prevState.includes(index)) {
+                            prevState.splice(prevState.indexOf(index), 1)
+                            return [...prevState]
+                        }
+                        return [...prevState, index]
+                    })}/>
             default:
                 return null
         }
     }
 
+    const observer = useRef()
+    const lastRow = useCallback(node => {
+        if (loading) return null
+        if (observer.current) observer.current.disconnect()
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore) {
+                setPage(prev => prev + 1)
+            }
+        })
+        if (node) observer.current.observe(node)
+    }, [loading, hasMore])
 
     return (
         <>
+            <Box style={{
+                display: 'flex',
+                flexFlow: 'column'
+            }}>
+
+                {menu()}
+            </Box>
             <ModalMessage open={!!errMessage} message={errMessage} close={closeErrMessageHandler}/>
             <Feedback
                 openSnackbar={openSnackbar}
                 snackbarCloseHandler={snackbarCloseHandler}
                 snackbarMess={snackbarMess}/>
-            <TableContainer style={{maxWidth: handbooks[handbook].maxWidth}} component={Paper} elevation={3}>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell
-                                variant='head'
-                                colSpan={columns.length}
-                                style={{paddingTop: '2px', paddingBottom: '2px'}}>
-                                {iconButton.map(button => (
-                                    <IconButton key={button.name}
-                                                color={currentMod === button.name ? 'primary' : 'default'}
-                                                aria-label="delete"
-                                                onClick={() => setCurrentMod((prev) => {
-                                                    if (button.name !== prev) {
-                                                        return button.name
-                                                    }
-                                                    setCurrentRow(null);
-                                                    return null
-                                                })}>
-                                        {button.icon}
-                                    </IconButton>))}
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            {columns.map((column) => (
-                                <TableCell
-                                    width={column.width}
-                                    variant='head'
-                                    key={column.accessor}>
-                                    {column.Header[lang]}
-                                </TableCell>))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {(currentMod === 'add') ?
-                            <NewRow
-                                columns={columns}
-                                saveHandler={addRow}
-                                saveLanguage={INTERFACE_LANGUAGE.save[lang]}
-                                cancelInterfaceHandler={() => setCurrentMod(null)}/>
-                            : null
-                        }
-                        {data.map((dataRow, index) => (
-                            <Row
-                                key={dataRow.id}
-                                index={index}
-                                columns={columns}
-                                data={dataRow}
-                                clickHandler={() => currentMod && setCurrentRow(index)}
-                                openInterface={index === currentRow}
-                                interfaceMod={currentMod}
-                                {...propsMod(currentMod)}
-                                cancelInterfaceHandler={() => setCurrentRow(null)}
-                            />))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+
+            <Box component={Paper} elevation={3} style={{display: 'flex', flexFlow: 'column', height: '100%'}}>
+
+                <Toolbar
+                    className={clsx(classes.toolbar, selectedRows.length > 0 && currentMod === 'delete' && classes.rowDelete)}>
+                    {selectedRows.length > 0 && currentMod === 'delete' ?
+                        <>
+                            <Typography variant='h6'>
+                                {selectedRows.length} выделено
+                            </Typography>
+                            <Tooltip title={INTERFACE_LANGUAGE.delete[lang]}>
+                                <IconButton aria-label="delete " onClick={deleteRows}>
+                                    <DeleteForeverIcon/>
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                        : <>
+                            <Typography
+                                variant='h6'>
+                                {handbooks[handbook].name[lang]}
+                            </Typography>
+                            <Tooltip title={INTERFACE_LANGUAGE.filter[lang]}>
+                                <IconButton onClick={() => setShowFilter(!showFilter)} aria-label="filter list">
+                                    <FilterListIcon
+                                        color={showFilter ? 'primary' : 'inherit'}/>
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    }
+                </Toolbar>
+
+                <TableContainer style={{maxWidth: handbooks[handbook].maxWidth}}>
+                    <Table style={{tableLayout: 'fixed'}} stickyHeader>
+                        <TableHead>
+                            <TableRow className={classes.rowHeader}>
+                                <TableCell style={{width: '46px'}}/>
+                                {columns.map((column) => (
+                                    <TableCell
+                                        top='20px'
+                                        style={{verticalAlign: 'top', width: column.width ?? 'auto'}}
+                                        key={column.accessor}>
+                                        {column.Header[lang]}
+                                        {showFilter && column.filter ?
+                                            <FilterTextField filterHandler={(value) => {
+                                                setSelectedRows([]);
+                                                setCurrentMod('update');
+                                                setFilterParams(prev => ({
+                                                    ...prev,
+                                                    [column.accessor]: value
+                                                }))
+                                            }}/>
+                                            : null}
+                                    </TableCell>))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {(currentMod === 'add') ?
+                                <Row showInput={true} actionComponent={null} columns={columns} data={newRow}
+                                     actionInterfaceHandler={addRow}
+                                     cancelInterfaceHandler={() => setCurrentMod('update')}/>
+                                : null
+                            }
+                            {data.map((dataRow, index) => {
+                                const selected = selectedRows.includes(index);
+                                const valid = selected && currentMod === 'update' ? {validHandler: setIsValid} : {}
+                                return (<Row
+                                    key={dataRow.id}
+                                    columns={columns}
+                                    data={dataRow}
+                                    deleteClass={selected && currentMod === 'delete'}
+                                    showInput={selected && currentMod === 'update'}
+                                    actionInterfaceHandler={(payload) => updateRow(payload, index)}
+                                    cancelInterfaceHandler={() => setSelectedRows([])}
+                                    actionComponent={actionComponent(index, selectedRows.includes(index))}
+                                    {...valid}
+                                />)
+                            })}
+                            {hasMore && showInfinityScrollRow ?
+                                <TableRow ref={lastRow}>
+                                    <TableCell colSpan={columns.length + 1}/>
+                                </TableRow>
+                                : null}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
+
         </>
 
     )

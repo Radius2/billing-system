@@ -4,25 +4,19 @@ import {LanguageContext} from '../../App';
 import {INTERFACE_LANGUAGE} from '../../util/language';
 import useStyle from './style';
 
-export default function CollapseRowInterface({open, colSpan, actionHandler, cancelHandler, actionName, onCloseHandler}) {
+export default function CollapseRowInterface({open, colSpan, actionHandler, cancelHandler, actionName, className}) {
     const classes = useStyle();
     const {lang} = useContext(LanguageContext);
-    useEffect(() => {
-        if (!open) {
-            onCloseHandler()
-        }
-    }, [open])
-
     return (
-        <TableRow>
+        <TableRow className={className}>
             <TableCell
                 className={classes.rowInterface}
                 colSpan={colSpan}>
-                <Collapse in={open}>
+                <Collapse in={open} mountOnEnter={true} unmountOnExit={true}>
                     <Box className={classes.rowInterface__container}>
                         <Button
                             onClick={actionHandler}>
-                            {actionName}
+                            {INTERFACE_LANGUAGE.save[lang]}
                         </Button>
                         <Button onClick={cancelHandler}>
                             {INTERFACE_LANGUAGE.cancel[lang]}

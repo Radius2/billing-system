@@ -12,8 +12,10 @@ export const INTERFACE_LANGUAGE={
     enter:setLanguages('Вход','Кіру','Login'),
     exit:setLanguages('Выход', 'Шығу','Logout'),
     save:setLanguages('Сохранить', 'Сақтау','Save'),
+    add:setLanguages('Добавить','Косу','Add'),
     delete:setLanguages('Удалить', 'Жою','Delete'),
     update:setLanguages('Изменить', 'Өңдеу','Update'),
+    filter:setLanguages('Фильтр', 'Фильтр','Filter'),
     cancel:setLanguages('Отмена', 'Күшін жою','Cancel'),
 }
 

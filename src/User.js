@@ -4,15 +4,13 @@ import {LanguageContext} from './App';
 import Content from './components/Content/Content';
 import Interface from './components/Interface/Interface';
 import Sidemenu from './components/Interface/Sidemenu/Sidemenu';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import {AVAILABLE_LANGUAGE, INTERFACE_LANGUAGE} from './util/language';
 
 
 const navArr = [
-    {to: '/handbook/form_types', name: 'Тестовый справочник'},
+    {to: '/handbook/form_types', name: 'Справочник типы форм'},
     {to: '/1', name: 'Работа с договорами'},
     {to: '/2', name: 'Обслуживание сетей'},
     {to: '/3', name: 'МЖФ и ОДКУ'},

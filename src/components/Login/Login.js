@@ -60,8 +60,8 @@ export default function Login(props) {
         setOpenModal(true);
         login(token)
             .then(resp => {
-                setAuth(true);
                 setAccessForms(resp.data);
+                setAuth(true);
             })
             .catch(err => {
                 setErrMes(err.message)

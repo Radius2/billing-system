@@ -1,6 +1,6 @@
 import {TableCell, TextField} from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 
 const useStyle = makeStyles(theme => ({
     input: {
@@ -8,22 +8,22 @@ const useStyle = makeStyles(theme => ({
     },
 }))
 
-export default function CellInput({children, blurHandler, focus}) {
-    const [textField, setTextField] = useState(children);
+export default function CellInput({children, inputHandler, isValid, focus=false}) {
     const classes = useStyle();
-    useEffect(() => {
-        setTextField(children || '')
-    }, [children])
+    const error = !isValid;
+
     return (
         <TableCell>
             <TextField
                 fullWidth
                 size='small'
+                error={error}
+                multiline
                 autoFocus={focus}
-                value={textField}
+                rowsMax={4}
+                value={children}
                 inputProps={{className: classes.input}}
-                onChange={e => setTextField(prev => e.target.value)}
-                onBlur={(e) => blurHandler(e.target.value)}/>
+                onChange={(e) => inputHandler(e.target.value)}/>
         </TableCell>
     )
 }
