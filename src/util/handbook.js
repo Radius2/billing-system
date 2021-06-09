@@ -14,6 +14,7 @@ export const handbooks = {
             {
                 Header: setLanguages('Название формы', 'Форманың атауы', 'Form name'),
                 accessor: 'formtypename',
+                maxLength:30,
                 filter:true,
                 required: true,
                 width: '200px',
@@ -21,6 +22,7 @@ export const handbooks = {
             {
                 Header: setLanguages('Описание', 'Сипаттама', 'Description'),
                 accessor: 'formtypedescr',
+                maxLength:200,
                 filter:true,
                 required: false,
 

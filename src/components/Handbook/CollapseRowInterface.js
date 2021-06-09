@@ -1,10 +1,10 @@
-import {Box, Button, Collapse, TableCell, TableRow} from '@material-ui/core';
-import React, {useContext, useEffect} from 'react';
+import {Box, Button, Collapse, TableCell, TableRow, Typography} from '@material-ui/core';
+import React, {useContext} from 'react';
 import {LanguageContext} from '../../App';
 import {INTERFACE_LANGUAGE} from '../../util/language';
 import useStyle from './style';
 
-export default function CollapseRowInterface({open, colSpan, actionHandler, cancelHandler, actionName, className}) {
+export default function CollapseRowInterface({open, colSpan, actionHandler, cancelHandler, valid, className}) {
     const classes = useStyle();
     const {lang} = useContext(LanguageContext);
     return (
@@ -14,7 +14,12 @@ export default function CollapseRowInterface({open, colSpan, actionHandler, canc
                 colSpan={colSpan}>
                 <Collapse in={open} mountOnEnter={true} unmountOnExit={true}>
                     <Box className={classes.rowInterface__container}>
+                        {valid ? <Box/>
+                            : <Typography variant='body2'>
+                                Введите обязательные поля
+                            </Typography>}
                         <Button
+                            disabled={!valid}
                             onClick={actionHandler}>
                             {INTERFACE_LANGUAGE.save[lang]}
                         </Button>

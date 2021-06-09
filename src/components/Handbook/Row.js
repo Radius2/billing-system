@@ -13,7 +13,10 @@ const validation = (data, columns) => {
     return validator
 }
 
-export default function Row({columns, data, showInput, deleteClass, actionComponent, actionInterfaceHandler, cancelInterfaceHandler, validHandler=()=>{}}) {
+export default function Row({
+                                columns, data, showInput, deleteClass, actionComponent, actionInterfaceHandler, cancelInterfaceHandler, validHandler = () => {
+    }, colSpan
+                            }) {
     const classes = useStyle();
     const [rowData, setRowData] = useState(data);
     const [isChanged, setIsChanged] = useState(false);
@@ -50,24 +53,25 @@ export default function Row({columns, data, showInput, deleteClass, actionCompon
         }
     }, [isChanged, showInput, rowData])
 
-    function updateValues(value, accessor) {
-        return setRowData(prev => ({...prev, [accessor]: value}))
+    function updateValues(value, column) {
+        const newValue = value.length <= column.maxLength ? value : value.slice(0, column.maxLength)
+        setRowData(prev => ({...prev, [column.accessor]: newValue}))
     }
 
-    const cellProps = (accessor) => (showInput && (accessor.toUpperCase() !== 'ID')) ?
+    const cellProps = (column) => (showInput && (column.accessor.toUpperCase() !== 'ID')) ?
         {
             component: CellInput,
-            inputHandler: (value) => updateValues(value, accessor),
-            isValid: validMask[accessor],
-            focus: accessor === columns[1].accessor
+            inputHandler: (value) => updateValues(value, column),
+            isValid: validMask[column.accessor],
+            focus: column.accessor === columns[1].accessor
         }
         : {}
 
-    const row = columns.map(({accessor}) => (
+    const row = columns.map((column) => (
         <TableCell
-            key={accessor}
-            {...cellProps(accessor)}>
-            {rowData[accessor]}
+            key={column.accessor}
+            {...cellProps(column)}>
+            {rowData[column.accessor]}
         </TableCell>)
     )
     return <>
@@ -82,7 +86,8 @@ export default function Row({columns, data, showInput, deleteClass, actionCompon
             {row}
         </TableRow>
         <CollapseRowInterface
-            colSpan={columns.length + 1}
+            colSpan={colSpan}
+            valid={isValidRow}
             cancelHandler={() => {
                 cancelInterfaceHandler();
                 setIsChanged(false);

@@ -2,6 +2,8 @@ import clsx from 'clsx';
 import React, {useCallback, useContext, useEffect, useState, useRef} from 'react';
 import {
     Box,
+    ButtonBase,
+    LinearProgress,
     IconButton,
     Paper,
     TableContainer,
@@ -15,6 +17,7 @@ import {
     Checkbox,
     Tooltip
 } from '@material-ui/core';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import CreateIcon from '@material-ui/icons/Create';
 import AddIcon from '@material-ui/icons/Add';
 import FilterListIcon from '@material-ui/icons/FilterList'
@@ -83,7 +86,7 @@ export default function Handbook({match, pageSize = 20}) {
     }
 
 
-    useEffect(()=>setIsValid(true),[currentMod])
+    useEffect(() => setIsValid(true), [currentMod])
 
     //получение данных справочника при загрузке компонента
     useEffect(() => {
@@ -115,7 +118,6 @@ export default function Handbook({match, pageSize = 20}) {
             api.delElementsHandbook(handbook, ids)
                 .then(() => {
                     setSelectedRows([]);
-                    setCurrentMod('upload')
                     setData(prev => {
                         setSnackbar(true);
                         setSnackbarMess(INTERFACE_DIALOG.successDeleteModal[lang])
@@ -125,6 +127,7 @@ export default function Handbook({match, pageSize = 20}) {
                     })
                 })
                 .catch(err => setErrMessage(err.message))
+                .finally(() => setCurrentMod('update'))
         }
         , [handbook, selectedRows]
     )
@@ -232,7 +235,7 @@ export default function Handbook({match, pageSize = 20}) {
         })
         if (node) observer.current.observe(node)
     }, [loading, hasMore])
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     return (
         <>
             <Box style={{
@@ -285,10 +288,26 @@ export default function Handbook({match, pageSize = 20}) {
                                 <TableCell style={{width: '46px'}}/>
                                 {columns.map((column) => (
                                     <TableCell
-                                        top='20px'
                                         style={{verticalAlign: 'top', width: column.width ?? 'auto'}}
                                         key={column.accessor}>
-                                        {column.Header[lang]}
+                                        <ButtonBase className={classes.sortButton} disableTouchRipple onClick={() => {
+                                            if (selectedRows.length > 0) return
+                                            if (sortParams.ordering !== column.accessor) return setSortParams({
+                                                ordering: column.accessor,
+                                                desc: 0
+                                            })
+                                            setSortParams({
+                                                ordering: column.accessor,
+                                                desc: sortParams.desc === 0 ? 1 : 0
+                                            })
+                                        }}>
+                                            <Typography variant='subtitle2'>
+                                                {column.Header[lang]}
+                                            </Typography>
+                                            <ArrowUpwardIcon
+                                                className={clsx(classes.sortButton__arrow, sortParams.ordering === column.accessor && [classes.sortButton__arrow_active, sortParams.desc && classes.sortButton__arrow_turn])}
+                                                fontSize='small'/>
+                                        </ButtonBase>
                                         {showFilter && column.filter ?
                                             <FilterTextField filterHandler={(value) => {
                                                 setSelectedRows([]);
@@ -304,11 +323,16 @@ export default function Handbook({match, pageSize = 20}) {
                         </TableHead>
                         <TableBody>
                             {(currentMod === 'add') ?
-                                <Row showInput={true} actionComponent={null} columns={columns} data={newRow}
+                                <Row showInput={true}
+                                     actionComponent={null}
+                                     columns={columns} data={newRow}
+                                     colSpan={columns.length + 1}
                                      actionInterfaceHandler={addRow}
                                      cancelInterfaceHandler={() => setCurrentMod('update')}/>
                                 : null
                             }
+                            {loading ?
+                                <TableRow><TableCell style={{padding: 0}} colSpan={columns.length + 1}><LinearProgress/></TableCell></TableRow> : null}
                             {data.map((dataRow, index) => {
                                 const selected = selectedRows.includes(index);
                                 const valid = selected && currentMod === 'update' ? {validHandler: setIsValid} : {}
@@ -316,6 +340,7 @@ export default function Handbook({match, pageSize = 20}) {
                                     key={dataRow.id}
                                     columns={columns}
                                     data={dataRow}
+                                    colSpan={columns.length + 1}
                                     deleteClass={selected && currentMod === 'delete'}
                                     showInput={selected && currentMod === 'update'}
                                     actionInterfaceHandler={(payload) => updateRow(payload, index)}

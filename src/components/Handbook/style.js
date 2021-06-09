@@ -2,11 +2,12 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const useStyle = makeStyles(theme => ({
     toolbar: {
-        display: 'flex',
-        justifyContent: 'space-between',
         alignItems: 'center',
         padding: '0 24px',
-        height: '50px'
+        height: '50px',
+        '& :last-child': {
+            marginLeft: 'auto'
+        }
     },
     input: {
         fontSize: 14
@@ -17,7 +18,7 @@ const useStyle = makeStyles(theme => ({
             borderBottom: 'unset',
         },
     },
-    rowHeader:{
+    rowHeader: {
         '& > *': {
             padding: '8px 16px',
         }
@@ -36,9 +37,34 @@ const useStyle = makeStyles(theme => ({
         paddingBottom: 0,
     },
     rowInterface__container: {
+        paddingLeft: 46 + 70 + 'px',
         width: '100%',
         display: 'flex',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        '& > :first-child': {
+            color: theme.palette.error.main,
+            marginRight: 'auto'
+        }
+    },
+    sortButton__arrow: {
+        opacity: 0,
+        marginLeft: '4px',
+        fontSize: '1rem',
+        transition: '0.3s'
+    },
+    sortButton__arrow_active: {
+        opacity: 1
+    },
+    sortButton__arrow_turn: {
+        transform: 'rotate(180deg)'
+    },
+    sortButton: {
+        '&:hover': {
+            '& > *': {
+                opacity: 0.5
+            }
+        }
     }
 }))
 
