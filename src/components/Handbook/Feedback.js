@@ -2,7 +2,7 @@ import {Snackbar} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 
-export default function Feedback({openSnackbar, snackbarCloseHandler, snackbarMess}) {
+export default function Feedback({openSnackbar, snackbarCloseHandler, snackbarMess, success=true}) {
     return (
         <>
             <Snackbar
@@ -14,7 +14,7 @@ export default function Feedback({openSnackbar, snackbarCloseHandler, snackbarMe
                     elevation={6}
                     variant="filled"
                     onClose={snackbarCloseHandler}
-                    severity="success">
+                    severity={success?'success':'warning'}>
                     {snackbarMess}
                 </Alert>
             </Snackbar>

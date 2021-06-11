@@ -33,7 +33,7 @@ export const handbooks = {
         ],
     },
     sub_types: {
-        name: setLanguages('Подтипы', 'Пішін түрлері', 'Form types'),
+        name: setLanguages('Подтипы', 'Кіші типтер', 'Subtypes'),
         path: 'handbooks/sub_types',
         maxWidth: '600px',
         columns: [
@@ -44,7 +44,7 @@ export const handbooks = {
                 required: false,
             },
             {
-                Header: setLanguages('Название подтипов', 'Форманың атауы', 'Form name'),
+                Header: setLanguages('Название подтипов', 'Ішкі түр атауы', 'Subtype name'),
                 accessor: 'subtypename',
                 maxLength: 30,
                 filter: true,

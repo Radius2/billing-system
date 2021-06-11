@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
         backgroundColor: theme.palette.grey[400],
         color: theme.palette.getContrastText(theme.palette.grey[400]),
-        padding: '0 8px',
+        paddingLeft: '8px',
         overflowY: 'scroll',
         '&::-webkit-scrollbar-thumb': {
             backgroundColor: 'rgba(18, 42, 50, 0.0)',

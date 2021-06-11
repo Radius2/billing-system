@@ -1,7 +1,7 @@
 import TextField from '@material-ui/core/TextField';
 import React, {useState} from 'react';
 
-const MAX_LENGTH = 5
+const MAX_LENGTH = 20
 
 export default function FilterTextField({filterHandler}) {
     const [input, setInput] = useState('')

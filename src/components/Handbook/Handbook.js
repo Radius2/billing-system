@@ -15,7 +15,7 @@ import {
     Toolbar,
     Typography,
     Checkbox,
-    Tooltip
+    Tooltip, Button
 } from '@material-ui/core';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import CreateIcon from '@material-ui/icons/Create';
@@ -67,9 +67,10 @@ export default function Handbook({match, pageSize = 20}) {
     const [isValid, setIsValid] = useState(true)
     const [showInvalid, setShowInvalid] = useState(false);
     const [colSpan, setColSpan] = useState(columns.length + 1)
+    const [invalidSnackbar, setInvalidSnackbar] = useState(false)
 
     function focusInvalid() {
-        console.log('focusInvalid')
+        setInvalidSnackbar(true)
         setShowInvalid(true)
     };
 
@@ -278,17 +279,29 @@ export default function Handbook({match, pageSize = 20}) {
             </Box>
             <ModalMessage open={!!errMessage} message={errMessage} close={closeErrMessageHandler}/>
             <Feedback
+                openSnackbar={invalidSnackbar}
+                snackbarCloseHandler={() => setInvalidSnackbar(false)}
+                snackbarMess={INTERFACE_DIALOG.invalidRequiredField[lang]}
+                success={false}/>
+            <Feedback
                 openSnackbar={openSnackbar}
                 snackbarCloseHandler={snackbarCloseHandler}
                 snackbarMess={snackbarMess}/>
-            <Box component={Paper} elevation={3} style={{display: 'flex', flexFlow: 'column', maxHeight: '100%', overflow:'hidden'}}>
+            <Box component={Paper} elevation={3}
+                 style={{display: 'flex', flexFlow: 'column', maxHeight: '100%', overflow: 'hidden'}}>
                 <Toolbar
                     className={clsx(classes.toolbar, selectedRows.length > 0 && currentMod === 'delete' && classes.rowDelete)}>
                     {selectedRows.length > 0 && currentMod === 'delete' ?
                         <>
                             <Typography variant='h6'>
-                                {selectedRows.length} выделено
+                                {selectedRows.length} {INTERFACE_LANGUAGE.selected[lang]}
                             </Typography>
+                            <Button onClick={() => {
+                                setSelectedRows([]);
+                                setCurrentMod('update')
+                            }}>
+                                {INTERFACE_LANGUAGE.cancel[lang]}
+                            </Button>
                             <Tooltip title={INTERFACE_LANGUAGE.delete[lang]}>
                                 <IconButton aria-label="delete " onClick={deleteRows}>
                                     <DeleteForeverIcon/>

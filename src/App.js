@@ -10,28 +10,6 @@ export const LanguageContext = React.createContext();
 const navArr = [
     {to: '/handbook/form_types', name: 'Справочник типы форм'},
     {to: '/handbook/sub_types', name: 'Справочник 2'},
-    {to: '/1', name: 'Работа с договорами'},
-    {to: '/2', name: 'Обслуживание сетей'},
-    {to: '/3', name: 'МЖФ и ОДКУ'},
-    {to: '/4', name: 'Балансы электроэнергии'},
-    {to: '/5', name: 'Обращение потребителей'},
-    {to: '/6', name: 'Акты нарушений'},
-    {to: '/7', name: 'Отключения'},
-    {to: '/8', name: 'Снятие показаний'},
-    {to: '/9', name: 'КПК'},
-    {to: '/10', name: 'Оплата'},
-    {to: '/11', name: 'Тарифы'},
-    {to: '/12', name: 'Справочники системы'},
-    {to: '/13', name: 'Все отчеты потребления'},
-    {to: '/13', name: 'Все отчеты потребления'},
-    {to: '/13', name: 'Все отчеты потребления'},
-    {to: '/13', name: 'Все отчеты потребления'},
-    {to: '/13', name: 'Все отчеты потребления'},
-    {to: '/13', name: 'Все отчеты потребления'},
-    {to: '/13', name: 'Все отчеты потребления'},
-    {to: '/13', name: 'Все отчеты потребления'},
-    {to: '/13', name: 'Все отчеты потребления'},
-    {to: '/13', name: 'Все отчеты потребления'},
 ];
 
 export default function App() {
@@ -68,7 +46,8 @@ export default function App() {
                     }
                     exact
                 />
-                {isAuth ? <Interface logout={logout} accessForms={accessForms} navArr={navArr}/> : <Redirect to='/login'/>}
+                {isAuth ? <Interface logout={logout} accessForms={accessForms} navArr={navArr}/> :
+                    <Redirect to='/login'/>}
             </Switch>
         </LanguageContext.Provider>
     );

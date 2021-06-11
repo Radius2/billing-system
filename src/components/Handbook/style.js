@@ -11,8 +11,8 @@ const useStyle = makeStyles(theme => ({
         alignItems: 'center',
         padding: '0 24px',
         height: '50px',
-        '& :last-child': {
-            marginLeft: 'auto'
+        '& :first-child': {
+            marginRight: 'auto'
         }
     },
     input: {
