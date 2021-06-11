@@ -47,8 +47,9 @@ function newRowMask(columns) {
 export default function Handbook({match, pageSize = 20}) {
     const classes = useStyle();
     const {lang} = useContext(LanguageContext)
-    const [handbook] = useState(match.params.name); // название формы
-    const [columns] = useState(handbooks[handbook].columns); //шапка формы
+    const [handbook, setHandbook] = useState(match.params.name); // название формы
+    const [columns, setColumns] = useState(handbooks[handbook].columns); //шапка формы
+    const [editing, setEditing] = useState(true);
     const [data, setData] = useState([]); //данные формы
     const [errMessage, setErrMessage] = useState(''); //сообщение об ошибке
     const [openSnackbar, setSnackbar] = useState(false); //выплывающее окно о успешной опперации
@@ -64,6 +65,13 @@ export default function Handbook({match, pageSize = 20}) {
     const [hasMore, setHasMore] = useState(false) // внутренняя безопасность
     const [showInfinityScrollRow, setShowInfinityScrollRow] = useState(false);
     const [isValid, setIsValid] = useState(true)
+    const [showInvalid, setShowInvalid] = useState(false);
+    const [colSpan, setColSpan] = useState(columns.length + 1)
+
+    function focusInvalid() {
+        console.log('focusInvalid')
+        setShowInvalid(true)
+    };
 
     function getElements(page) {
         setLoading(true);
@@ -85,8 +93,28 @@ export default function Handbook({match, pageSize = 20}) {
             })
     }
 
+    useEffect(() => {
+        setHandbook(match.params.name);
+        setColumns(handbooks[handbook].columns);
+        setData([]);
+        setCurrentMod('update');
+        //setEditing(false);
+        setSelectedRows([]);
+        setShowFilter(false);
+        setFilterParams({});
+    }, [match, handbook])
 
-    useEffect(() => setIsValid(true), [currentMod])
+    useEffect(() => {
+        if (selectedRows.length === 0) setIsValid(true);
+    }, [selectedRows])
+
+    useEffect(() => {
+        editing ? setColSpan(columns.length + 1) : setColSpan(columns.length)
+    }, [editing])
+
+
+    useEffect(() => setIsValid(true),
+        [currentMod])
 
     //получение данных справочника при загрузке компонента
     useEffect(() => {
@@ -150,7 +178,8 @@ export default function Handbook({match, pageSize = 20}) {
 
 //обновить строку и получить перезаписанную сткоку из БД
     const updateRow = (payload, index) => {
-        if (isValid) api.updElementHandbook(handbook, payload)
+        if (!isValid) return focusInvalid();
+        return api.updElementHandbook(handbook, payload)
             .then((resp) => {
                 return api.getElementHandbook(handbook, resp.data.id)
             })
@@ -184,24 +213,27 @@ export default function Handbook({match, pageSize = 20}) {
             <IconButton
                 color={currentMod === button.name ? 'primary' : 'default'}
                 aria-label="delete"
-                onClick={() => setCurrentMod((prev) => {
-                    setSelectedRows([])
-                    if (button.name !== prev) {
-                        return button.name
-                    }
-                    return 'update'
-                })}>
+                onClick={() => {
+                    if (!isValid) return focusInvalid();
+                    setCurrentMod((prev) => {
+                        setSelectedRows([])
+                        if (button.name !== prev) {
+                            return button.name
+                        }
+                        return 'update'
+                    })
+                }}>
                 {button.icon}
             </IconButton>
         </Tooltip>
-    )), [currentMod, lang])
+    )), [currentMod, lang, isValid])
 
     const actionComponent = (index, active) => {
         switch (currentMod) {
             case 'update':
                 return <Tooltip title={INTERFACE_LANGUAGE.update[lang]}>
                     <IconButton
-                        onClick={() => isValid ? setSelectedRows([index]) : console.log('no valid')}
+                        onClick={() => isValid ? setSelectedRows([index]) : focusInvalid()}
                         color={active ? 'primary' : 'default'}
                         size='small'>
                         <CreateIcon/>
@@ -237,22 +269,19 @@ export default function Handbook({match, pageSize = 20}) {
     }, [loading, hasMore])
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     return (
-        <>
+        <Box className={classes.root}>
             <Box style={{
                 display: 'flex',
                 flexFlow: 'column'
             }}>
-
-                {menu()}
+                {editing ? menu() : null}
             </Box>
             <ModalMessage open={!!errMessage} message={errMessage} close={closeErrMessageHandler}/>
             <Feedback
                 openSnackbar={openSnackbar}
                 snackbarCloseHandler={snackbarCloseHandler}
                 snackbarMess={snackbarMess}/>
-
-            <Box component={Paper} elevation={3} style={{display: 'flex', flexFlow: 'column', height: '100%'}}>
-
+            <Box component={Paper} elevation={3} style={{display: 'flex', flexFlow: 'column', maxHeight: '100%', overflow:'hidden'}}>
                 <Toolbar
                     className={clsx(classes.toolbar, selectedRows.length > 0 && currentMod === 'delete' && classes.rowDelete)}>
                     {selectedRows.length > 0 && currentMod === 'delete' ?
@@ -285,7 +314,7 @@ export default function Handbook({match, pageSize = 20}) {
                     <Table style={{tableLayout: 'fixed'}} stickyHeader>
                         <TableHead>
                             <TableRow className={classes.rowHeader}>
-                                <TableCell style={{width: '46px'}}/>
+                                {editing ? <TableCell style={{width: '46px'}}/> : null}
                                 {columns.map((column) => (
                                     <TableCell
                                         style={{verticalAlign: 'top', width: column.width ?? 'auto'}}
@@ -326,21 +355,25 @@ export default function Handbook({match, pageSize = 20}) {
                                 <Row showInput={true}
                                      actionComponent={null}
                                      columns={columns} data={newRow}
-                                     colSpan={columns.length + 1}
+                                     colSpan={colSpan}
                                      actionInterfaceHandler={addRow}
                                      cancelInterfaceHandler={() => setCurrentMod('update')}/>
                                 : null
                             }
                             {loading ?
-                                <TableRow><TableCell style={{padding: 0}} colSpan={columns.length + 1}><LinearProgress/></TableCell></TableRow> : null}
+                                <TableRow><TableCell style={{padding: 0}}
+                                                     colSpan={colSpan}><LinearProgress/></TableCell></TableRow> : null}
                             {data.map((dataRow, index) => {
                                 const selected = selectedRows.includes(index);
                                 const valid = selected && currentMod === 'update' ? {validHandler: setIsValid} : {}
                                 return (<Row
                                     key={dataRow.id}
+                                    editing={editing}
                                     columns={columns}
+                                    setShowInvalid={setShowInvalid}
+                                    showInvalid={showInvalid}
                                     data={dataRow}
-                                    colSpan={columns.length + 1}
+                                    colSpan={colSpan}
                                     deleteClass={selected && currentMod === 'delete'}
                                     showInput={selected && currentMod === 'update'}
                                     actionInterfaceHandler={(payload) => updateRow(payload, index)}
@@ -351,7 +384,7 @@ export default function Handbook({match, pageSize = 20}) {
                             })}
                             {hasMore && showInfinityScrollRow ?
                                 <TableRow ref={lastRow}>
-                                    <TableCell colSpan={columns.length + 1}/>
+                                    <TableCell colSpan={colSpan}/>
                                 </TableRow>
                                 : null}
                         </TableBody>
@@ -359,7 +392,7 @@ export default function Handbook({match, pageSize = 20}) {
                 </TableContainer>
             </Box>
 
-        </>
+        </Box>
 
     )
 }

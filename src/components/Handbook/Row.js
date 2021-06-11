@@ -14,14 +14,21 @@ const validation = (data, columns) => {
 }
 
 export default function Row({
-                                columns, data, showInput, deleteClass, actionComponent, actionInterfaceHandler, cancelInterfaceHandler, validHandler = () => {
-    }, colSpan
+                                columns, data, showInput, showInvalid = false, setShowInvalid, deleteClass, actionComponent, actionInterfaceHandler, cancelInterfaceHandler, validHandler = () => {
+    }, colSpan, editing = true
                             }) {
     const classes = useStyle();
     const [rowData, setRowData] = useState(data);
     const [isChanged, setIsChanged] = useState(false);
     const [validMask, setValidMask] = useState({})
     const [isValidRow, setIsValidRow] = useState(true)
+
+    useEffect(() => {
+        if (showInvalid && showInput) {
+            console.log('row rest', showInvalid);
+            setShowInvalid(false)
+        }
+    }, [setShowInvalid, showInvalid, showInput])
 
     useEffect(() => {
             if (showInput) validHandler(isValidRow)
@@ -58,16 +65,17 @@ export default function Row({
         setRowData(prev => ({...prev, [column.accessor]: newValue}))
     }
 
-    const cellProps = (column) => (showInput && (column.accessor.toUpperCase() !== 'ID')) ?
+    const cellProps = (column, index) => (showInput && (column.accessor.toUpperCase() !== 'ID')) ?
         {
             component: CellInput,
             inputHandler: (value) => updateValues(value, column),
             isValid: validMask[column.accessor],
-            focus: column.accessor === columns[1].accessor
+            focus: column.accessor === columns[1].accessor,
+            showInvalid: showInvalid
         }
         : {}
 
-    const row = columns.map((column) => (
+    const row = columns.map((column, index) => (
         <TableCell
             key={column.accessor}
             {...cellProps(column)}>
@@ -78,11 +86,11 @@ export default function Row({
         <TableRow
             hover={!showInput && !isChanged && !deleteClass}
             className={clsx(classes.row, isChanged && classes.rowChanged, deleteClass && classes.rowDelete)}>
-            <TableCell
+            {editing ? <TableCell
                 style={{paddingLeft: '8px', paddingRight: '8px'}}
                 padding="checkbox">
                 {actionComponent}
-            </TableCell>
+            </TableCell> : null}
             {row}
         </TableRow>
         <CollapseRowInterface

@@ -1,24 +1,29 @@
-import React from 'react';
+import Typography from '@material-ui/core/Typography';
+import clsx from 'clsx';
+import React, {useState, useMemo} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import {Box} from '@material-ui/core'
+import {Box, Drawer, IconButton, Divider} from '@material-ui/core';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import Content from '../Content/Content';
+import Header from './Header/Header';
+import Sidemenu from './Sidemenu/Sidemenu';
+
+const WIDE_SIDEMENU = 270;
 
 const useStyles = makeStyles((theme) => ({
     gridContainer: {
         width: '100vw',
         height: '100vh',
         overflow: 'hidden',
-        display: 'grid',
-        gridTemplateColumns: '270px 1fr',
-        gridTemplateRows: '70px 1fr',
-        gap: '0% 0%',
-        gridTemplateAreas:
-            `"Sidemenu Header"
-            "Sidemenu Content"`
+        display: 'flex',
+        position: 'relative',
     },
-    sidemenu: {
-        backgroundColor: theme.palette.secondary.main,
+    drawer: {
+        width: WIDE_SIDEMENU + 'px',
+        flexShrink: 0,
+        backgroundColor: theme.palette.grey[400],
+        color: theme.palette.getContrastText(theme.palette.grey[400]),
         padding: '0 8px',
-        gridArea: 'Sidemenu',
         overflowY: 'scroll',
         '&::-webkit-scrollbar-thumb': {
             backgroundColor: 'rgba(18, 42, 50, 0.0)',
@@ -29,25 +34,71 @@ const useStyles = makeStyles((theme) => ({
             }
         }
     },
-    header: {gridArea: 'Header'},
+    drawerPaper: {
+        width: WIDE_SIDEMENU + 'px',
+    },
+    workSpace: {
+        paddingBottom: '8px',
+        flexGrow: 1,
+        height: '100vh',
+        overflow: 'hidden',
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: -WIDE_SIDEMENU + 'px',
+    },
+    workSpaceShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+    },
+    transition: {
+        marginRight: 'auto',
+        '& *': {
+            transition: '0.5s',
+        }
+    },
+    rotate180: {
+        transform: 'rotate(-180deg)',
+    },
     content: {
-        width: '100%',
-        height: '100%',
         display: 'flex',
+        height: 'calc(100vh - 64px)',
+        paddingBottom: '8px',
         justifyContent: 'center',
-        overflow: 'scroll',
-        gridArea: 'Content',
-        padding: '8px'
-    }
+    },
 }))
 
 
-export default function Interface(props) {
+export default function Interface({navArr, logout}) {
+    const [showSidemenu, setShowSidemenu] = useState(true)
     const classes = useStyles();
+    const content = useMemo(() => <Content/>
+        , [])
     return (
         <Box className={classes.gridContainer}>
-            <Box className={classes.sidemenu}>{props.children[0]}</Box>
-            <Box className={classes.header}>{props.children[1]}</Box>
-            <Box className={classes.content}>{props.children[2]}</Box>
-        </Box>)
+            <Drawer open={showSidemenu}
+                    variant="persistent"
+                    anchor="left"
+                    className={classes.drawerPaper}
+                    classes={{paper: classes.drawer}}>
+                <Typography variant='h6' align='center'>Billing</Typography>
+                <Divider/>
+                <Sidemenu navArr={navArr}/>
+            </Drawer>
+            <Box className={clsx(classes.workSpace, showSidemenu && classes.workSpaceShift)}>
+                <Header logout={logout}>
+                    <IconButton className={classes.transition} onClick={() => setShowSidemenu(!showSidemenu)}>
+                        <ArrowForwardIosIcon className={clsx(showSidemenu && classes.rotate180)}/>
+                    </IconButton>
+                </Header>
+                <Box className={classes.content}>
+                    {content}
+                </Box>
+            </Box>
+        </Box>
+    )
 }
