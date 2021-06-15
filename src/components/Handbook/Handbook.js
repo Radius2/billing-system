@@ -12,16 +12,14 @@ import {
     TableRow,
     TableCell,
     TableBody,
-    Toolbar,
     Typography,
     Checkbox,
-    Tooltip, Button
+    Tooltip
 } from '@material-ui/core';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import CreateIcon from '@material-ui/icons/Create';
-import AddIcon from '@material-ui/icons/Add';
-import FilterListIcon from '@material-ui/icons/FilterList'
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import SideMenu from './SideMenu';
+import ToolbarHeader from './ToolbarHeader';
 import ModalMessage from '../Modal';
 import FilterTextField from './FilterTextField';
 import Row from './Row';
@@ -32,10 +30,6 @@ import {INTERFACE_DIALOG, INTERFACE_LANGUAGE} from '../../util/language';
 import * as api from '../../api/api';
 import useStyle from './style';
 
-const iconButton = [
-    {name: 'delete', icon: <DeleteForeverIcon fontSize='default'/>},
-    {name: 'add', icon: <AddIcon fontSize='default'/>}
-]
 
 //генерация пустых  данных для строки input
 function newRowMask(columns) {
@@ -43,6 +37,12 @@ function newRowMask(columns) {
     columns.forEach(({accessor}) => accessor.toUpperCase() === 'ID' ? null : newArr[accessor] = '')
     return newArr
 }
+
+function Rows (){
+    return
+}
+
+
 
 export default function Handbook({match, pageSize = 20}) {
     const classes = useStyle();
@@ -56,7 +56,7 @@ export default function Handbook({match, pageSize = 20}) {
     const [snackbarMess, setSnackbarMess] = useState('');//сообщение успешной операции
     const [selectedRows, setSelectedRows] = useState([]); // выбранная строка для редактирования
     const [currentMod, setCurrentMod] = useState('update'); // текущий режим изменения, удаление, добавление
-    const [showFilter, setShowFilter] = useState(false);
+    const [activeFilter, setActiveFilter] = useState(false); //активный фильтр
     const [newRow] = useState(newRowMask(columns));//пустая строка для создания нового элемента
     const [page, setPage] = useState(1);//страниза пагинации
     const [filterParams, setFilterParams] = useState({}) //фильтр квери параметры запроса элементов справочника
@@ -73,6 +73,11 @@ export default function Handbook({match, pageSize = 20}) {
         setInvalidSnackbar(true)
         setShowInvalid(true)
     };
+
+    function setDefaultCurrentMod() {
+        setCurrentMod('update');
+        setSelectedRows([])
+    }
 
     function getElements(page) {
         setLoading(true);
@@ -101,7 +106,7 @@ export default function Handbook({match, pageSize = 20}) {
         setCurrentMod('update');
         //setEditing(false);
         setSelectedRows([]);
-        setShowFilter(false);
+        setActiveFilter(false);
         setFilterParams({});
     }, [match, handbook])
 
@@ -135,10 +140,10 @@ export default function Handbook({match, pageSize = 20}) {
 
 
     useEffect(() => {
-        if (!showFilter) {
+        if (!activeFilter) {
             setFilterParams(prev => Object.keys(prev).length === 0 ? prev : {})
         }
-    }, [showFilter])
+    }, [activeFilter])
 
 
     //удалить строку локально и из БД
@@ -198,36 +203,9 @@ export default function Handbook({match, pageSize = 20}) {
             .catch(err => setErrMessage(err.message))
     }
 
-
-    const snackbarCloseHandler = (event, reason) => {
-        if (reason !== 'clickaway') {
-            setSnackbar(false)
-        }
-    }
-
     const closeErrMessageHandler = useCallback(() => {
         setErrMessage('')
     }, [])
-
-    const menu = useCallback(() => iconButton.map(button => (
-        <Tooltip key={button.name} title={INTERFACE_LANGUAGE[button.name][lang]}>
-            <IconButton
-                color={currentMod === button.name ? 'primary' : 'default'}
-                aria-label="delete"
-                onClick={() => {
-                    if (!isValid) return focusInvalid();
-                    setCurrentMod((prev) => {
-                        setSelectedRows([])
-                        if (button.name !== prev) {
-                            return button.name
-                        }
-                        return 'update'
-                    })
-                }}>
-                {button.icon}
-            </IconButton>
-        </Tooltip>
-    )), [currentMod, lang, isValid])
 
     const actionComponent = (index, active) => {
         switch (currentMod) {
@@ -268,60 +246,46 @@ export default function Handbook({match, pageSize = 20}) {
         })
         if (node) observer.current.observe(node)
     }, [loading, hasMore])
+
+
+    function changeModHandler(newMod) {
+        if (!isValid) return focusInvalid();
+        setSelectedRows([])
+        newMod === currentMod ?
+            setCurrentMod('update') :
+            setCurrentMod(newMod)
+    }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     return (
         <Box className={classes.root}>
-            <Box style={{
-                display: 'flex',
-                flexFlow: 'column'
-            }}>
-                {editing ? menu() : null}
-            </Box>
+
+                <SideMenu
+                    lang={lang}
+                    currentMod={currentMod}
+                    changeModHandler={changeModHandler}/>
+
             <ModalMessage open={!!errMessage} message={errMessage} close={closeErrMessageHandler}/>
             <Feedback
-                openSnackbar={invalidSnackbar}
-                snackbarCloseHandler={() => setInvalidSnackbar(false)}
-                snackbarMess={INTERFACE_DIALOG.invalidRequiredField[lang]}
-                success={false}/>
-            <Feedback
-                openSnackbar={openSnackbar}
-                snackbarCloseHandler={snackbarCloseHandler}
-                snackbarMess={snackbarMess}/>
+                openSnackbar={invalidSnackbar || openSnackbar}
+                snackbarCloseHandler={() => {
+                    setSnackbar(false);
+                    setInvalidSnackbar(false)
+                }}
+                snackbarMess={openSnackbar ? snackbarMess : INTERFACE_DIALOG.invalidRequiredField[lang]}
+                success={openSnackbar}/>
             <Box component={Paper} elevation={3}
                  style={{display: 'flex', flexFlow: 'column', maxHeight: '100%', overflow: 'hidden'}}>
-                <Toolbar
-                    className={clsx(classes.toolbar, selectedRows.length > 0 && currentMod === 'delete' && classes.rowDelete)}>
-                    {selectedRows.length > 0 && currentMod === 'delete' ?
-                        <>
-                            <Typography variant='h6'>
-                                {selectedRows.length} {INTERFACE_LANGUAGE.selected[lang]}
-                            </Typography>
-                            <Button onClick={() => {
-                                setSelectedRows([]);
-                                setCurrentMod('update')
-                            }}>
-                                {INTERFACE_LANGUAGE.cancel[lang]}
-                            </Button>
-                            <Tooltip title={INTERFACE_LANGUAGE.delete[lang]}>
-                                <IconButton aria-label="delete " onClick={deleteRows}>
-                                    <DeleteForeverIcon/>
-                                </IconButton>
-                            </Tooltip>
-                        </>
-                        : <>
-                            <Typography
-                                variant='h6'>
-                                {handbooks[handbook].name[lang]}
-                            </Typography>
-                            <Tooltip title={INTERFACE_LANGUAGE.filter[lang]}>
-                                <IconButton onClick={() => setShowFilter(!showFilter)} aria-label="filter list">
-                                    <FilterListIcon
-                                        color={showFilter ? 'primary' : 'inherit'}/>
-                                </IconButton>
-                            </Tooltip>
-                        </>
-                    }
-                </Toolbar>
+                {/*Шапка над таблицей*/}
+                <ToolbarHeader
+                    handbookName={handbooks[handbook].name[lang]}
+                    deleteMod={selectedRows.length > 0 && currentMod === 'delete'}
+                    selected={selectedRows.length}
+                    filterToggleHandler={() => setActiveFilter(!activeFilter)}
+                    activeFilterMod={activeFilter}
+                    cancelButtonHandler={setDefaultCurrentMod}
+                    deleteButtonHandler={deleteRows}
+                />
 
                 <TableContainer style={{maxWidth: handbooks[handbook].maxWidth}}>
                     <Table style={{tableLayout: 'fixed'}} stickyHeader>
@@ -350,7 +314,7 @@ export default function Handbook({match, pageSize = 20}) {
                                                 className={clsx(classes.sortButton__arrow, sortParams.ordering === column.accessor && [classes.sortButton__arrow_active, sortParams.desc && classes.sortButton__arrow_turn])}
                                                 fontSize='small'/>
                                         </ButtonBase>
-                                        {showFilter && column.filter ?
+                                        {activeFilter && column.filter ?
                                             <FilterTextField filterHandler={(value) => {
                                                 setSelectedRows([]);
                                                 setCurrentMod('update');
