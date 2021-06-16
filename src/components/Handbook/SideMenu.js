@@ -1,7 +1,8 @@
 import {Box, IconButton, Tooltip} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import React from 'react';
+import React, {useContext} from 'react';
+import {LanguageContext} from '../../App';
 import {INTERFACE_LANGUAGE} from '../../util/language';
 
 const iconButton = [
@@ -9,7 +10,8 @@ const iconButton = [
     {name: 'add', icon: <AddIcon fontSize='default'/>}
 ]
 
-export default function SideMenu({currentMod, changeModHandler, lang}) {
+export default function SideMenu({currentMod, changeModHandler}) {
+    const {lang} = useContext(LanguageContext)
     return <Box style={{
         display: 'flex',
         flexFlow: 'column'

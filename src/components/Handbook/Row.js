@@ -1,6 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {TableCell, TableRow} from '@material-ui/core';
+import CreateIcon from '@material-ui/icons/Create';
+import React, { useContext, useEffect, useMemo, useState} from 'react';
+import {Checkbox, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
+import {LanguageContext} from '../../App';
+import {INTERFACE_LANGUAGE} from '../../util/language';
 import CollapseRowInterface from './CollapseRowInterface';
+import {ModContext} from './Handbook';
 import useStyle from './style';
 import CellInput from './CellInput';
 import clsx from 'clsx';
@@ -13,25 +17,35 @@ const validation = (data, columns) => {
     return validator
 }
 
-export default function Row({
-                                columns, data, showInput, showInvalid = false, setShowInvalid, deleteClass, actionComponent, actionInterfaceHandler, cancelInterfaceHandler, validHandler = () => {
-    }, colSpan, editing = true
-                            }) {
+export default function Row({columns, index, data, showInput, selected, deleteClass, actionInterfaceHandler, cancelInterfaceHandler}) {
     const classes = useStyle();
+    const {lang} = useContext(LanguageContext)
     const [rowData, setRowData] = useState(data);
     const [isChanged, setIsChanged] = useState(false);
     const [validMask, setValidMask] = useState({})
     const [isValidRow, setIsValidRow] = useState(true)
 
+
+
+    const {
+        currentMod,
+        checkValid,
+        setIsValid,
+        showInvalid,
+        setShowInvalid,
+        colSpan,
+        editing,
+        setSelectedRows
+    } = useContext(ModContext)
+
     useEffect(() => {
         if (showInvalid && showInput) {
-            console.log('row rest', showInvalid);
             setShowInvalid(false)
         }
     }, [setShowInvalid, showInvalid, showInput])
 
     useEffect(() => {
-            if (showInput) validHandler(isValidRow)
+            if (showInput) setIsValid(isValidRow)
         },
         [isValidRow, showInput]
     )
@@ -59,6 +73,34 @@ export default function Row({
             actionInterfaceHandler(rowData)
         }
     }, [isChanged, showInput, rowData])
+
+    const actionComponent = useMemo(() => {
+        switch (currentMod) {
+            case 'update':
+                return <Tooltip title={INTERFACE_LANGUAGE.update[lang]}>
+                    <IconButton
+                        onClick={() => checkValid(() => setSelectedRows([index]))}
+                        color={selected ? 'primary' : 'default'}
+                        size='small'>
+                        <CreateIcon/>
+                    </IconButton>
+                </Tooltip>;
+            case 'delete':
+                return <Checkbox
+                    color='default'
+                    checked={selected}
+                    style={{padding: '3px'}}
+                    onChange={() => setSelectedRows(prevState => {
+                        if (prevState.includes(index)) {
+                            prevState.splice(prevState.indexOf(index), 1)
+                            return [...prevState]
+                        }
+                        return [...prevState, index]
+                    })}/>
+            default:
+                return null
+        }
+    }, [currentMod, checkValid, lang, selected, index])
 
     function updateValues(value, column) {
         const newValue = value.length <= column.maxLength ? value : value.slice(0, column.maxLength)
@@ -105,6 +147,4 @@ export default function Row({
             actionHandler={() => actionInterfaceHandler(rowData)}
             open={showInput}/>
     </>
-
 }
-

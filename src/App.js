@@ -10,9 +10,13 @@ export const LanguageContext = React.createContext();
 const navArr = [
     {to: '/handbook/form_types', name: 'Справочник типы форм'},
     {to: '/handbook/sub_types', name: 'Справочник 2'},
+    {to: '/handbook/banks', name: 'Banks'},
+    {to: '/handbook/positions', name: 'Positions'},
+    {to: '/handbook/org_info', name: 'Org_info'},
 ];
 
 export default function App() {
+
     const [lang, setLang] = useState(localStorage.getItem('language') || 'RU')
     const [isAuth, setAuth] = useState(false); // флаг логина
     const [accessForms, setAccessForms] = useState([]); // список достумных форм
