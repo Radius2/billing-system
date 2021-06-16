@@ -14,7 +14,6 @@ export default function CellInput({children, showInvalid, inputHandler, isValid,
     const inputRef = useRef();
     useEffect(() => {
         if (!isValid && showInvalid) {
-            console.log('showInvalid input')
             inputRef.current.focus()
         }
     }, [showInvalid, isValid])

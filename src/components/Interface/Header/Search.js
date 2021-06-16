@@ -95,13 +95,18 @@ function DirectoryResult({lang, haveResult, searchResult, selectHandler, searchI
 
 export default function Search() {
     const {lang} = useContext(LanguageContext);
-    const inputRef = useRef()
+    const inputRef = useRef();
+    const menuRef = useRef();
     const classes = useStyle();
     const history = useHistory();
     const [options] = useState(getHandbooks());
     const [searchInput, setSearchInput] = useState('');
     const [searchResult, setSearchResult] = useState([])
     const [fullWidth, setFullWidth] = useState(false)
+
+    function handleListKeyDown(e) {
+        if (e.key === 'ArrowDown' && searchResult.length > 0) menuRef.current.focus()
+    }
 
     function searchFunction() {
         const filteredOptions = options.filter(option => option.name.toLowerCase().includes(searchInput.toLowerCase()))
@@ -118,6 +123,7 @@ export default function Search() {
             inputRef={inputRef}
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
+            onKeyDown={handleListKeyDown}
             size='small'
             onFocus={() => setFullWidth(true)}
             onBlur={() => setFullWidth(false)}
@@ -131,7 +137,7 @@ export default function Search() {
 
             }}>
                 <Paper className={classes.menu} elevation={10}>
-                    <MenuList>
+                    <MenuList ref={menuRef}>
                         <DirectoryResult
                             lang={lang}
                             haveResult={searchResult.length > 0}

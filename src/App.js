@@ -9,10 +9,10 @@ export const LanguageContext = React.createContext();
 
 const navArr = [
     {to: '/handbook/form_types', name: 'Справочник типы форм'},
-    {to: '/handbook/sub_types', name: 'Справочник 2'},
-    {to: '/handbook/banks', name: 'Banks'},
-    {to: '/handbook/positions', name: 'Positions'},
-    {to: '/handbook/org_info', name: 'Org_info'},
+    {to: '/handbook/sub_types', name: 'Справочник подтипы'},
+    {to: '/handbook/banks', name: 'Справочник банки'},
+    {to: '/handbook/positions', name: 'Справочник позиции'},
+    {to: '/handbook/org_info', name: 'Справочник организации'},
 ];
 
 export default function App() {

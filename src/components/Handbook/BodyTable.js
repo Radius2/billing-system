@@ -43,7 +43,7 @@ export default function BodyTable({handbookName, loading, getElements, addRow, u
         setPage(1);
         const timer = setTimeout(() => {
             getElements(1);
-        }, 500);
+        }, 300);
         return () => {
             clearTimeout(timer);
         }

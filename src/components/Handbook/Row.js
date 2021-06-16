@@ -1,8 +1,10 @@
 import CreateIcon from '@material-ui/icons/Create';
-import React, { useContext, useEffect, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {Checkbox, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import {LanguageContext} from '../../App';
+import {TYPE} from '../../util/handbook';
 import {INTERFACE_LANGUAGE} from '../../util/language';
+import AsyncInputSelect from './AsyncInputSelect';
 import CollapseRowInterface from './CollapseRowInterface';
 import {ModContext} from './Handbook';
 import useStyle from './style';
@@ -24,7 +26,6 @@ export default function Row({columns, index, data, showInput, selected, deleteCl
     const [isChanged, setIsChanged] = useState(false);
     const [validMask, setValidMask] = useState({})
     const [isValidRow, setIsValidRow] = useState(true)
-
 
 
     const {
@@ -57,16 +58,21 @@ export default function Row({columns, index, data, showInput, selected, deleteCl
     }, [rowData, columns])
 
     useEffect(() => {
+        if (!selected) return undefined
         setIsChanged(false);
         for (let i = 0; i < columns.length; i++) {
-            const accessor = columns[i].accessor;
-            if (rowData[accessor] !== data[accessor]) {
+            const {accessor, type} = columns[i];
+            const prevValue = type === TYPE.SUB_VALUE ? rowData[accessor].id : rowData[accessor]
+            const newValue = type === TYPE.SUB_VALUE ? data[accessor].id : data[accessor]
+            console.log(prevValue, newValue)
+            if (prevValue !== newValue) {
+                console.log('true')
                 setIsChanged(true);
                 break
             }
         }
 
-    }, [rowData, data])
+    }, [rowData, data, selected])
 
     useEffect(() => {
         if (isChanged && !showInput) {
@@ -107,23 +113,37 @@ export default function Row({columns, index, data, showInput, selected, deleteCl
         setRowData(prev => ({...prev, [column.accessor]: newValue}))
     }
 
-    const cellProps = (column, index) => (showInput && (column.accessor.toUpperCase() !== 'ID')) ?
-        {
-            component: CellInput,
-            inputHandler: (value) => updateValues(value, column),
-            isValid: validMask[column.accessor],
-            focus: column.accessor === columns[1].accessor,
-            showInvalid: showInvalid
-        }
-        : {}
+    const cell = (column) => {
+        const subValue = column.type === TYPE.SUB_VALUE
+        const value = !subValue ? rowData[column.accessor] : rowData[column.accessor][column.subPath.accessor];
+        return (!showInput || column.accessor.toUpperCase() === 'ID') ?
+            (<TableCell
+                key={column.accessor}>
+                {value}
+            </TableCell>)
+            : !subValue ?
+                (<CellInput
+                    key={column.accessor}
+                    inputHandler={(value) => updateValues(value, column)}
+                    isValid={validMask[column.accessor]}
+                    focus={column.accessor === columns[1].accessor}
+                    showInvalid={showInvalid}>
+                    {value}
+                </CellInput>)
+                : <TableCell key={column.accessor}>
+                    <AsyncInputSelect
+                        value={value}
+                        subPath={column.subPath}
+                        isValid={validMask[column.accessor]}
+                        selectHandler={value => setRowData(prev => (
+                            {
+                                ...prev,
+                                [column.accessor]: value
+                            }))}
+                        showInvalid={showInvalid}/>
+                </TableCell>
+    }
 
-    const row = columns.map((column, index) => (
-        <TableCell
-            key={column.accessor}
-            {...cellProps(column)}>
-            {rowData[column.accessor]}
-        </TableCell>)
-    )
     return <>
         <TableRow
             hover={!showInput && !isChanged && !deleteClass}
@@ -133,7 +153,7 @@ export default function Row({columns, index, data, showInput, selected, deleteCl
                 padding="checkbox">
                 {actionComponent}
             </TableCell> : null}
-            {row}
+            {columns.map(column => cell(column))}
         </TableRow>
         <CollapseRowInterface
             colSpan={colSpan}

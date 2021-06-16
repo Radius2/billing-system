@@ -2,20 +2,30 @@ import {AVAILABLE_LANGUAGE, setLanguages} from './language';
 
 export const HANDBOOK_PATH = '/handbook/'
 
-const TYPE = {
+export const TYPE = {
     ID: 'id',
     STRING: 'string',
     NUMBER: 'number',
     SUB_VALUE: 'subValue'
 }
 
+const BANKS = 'banks';
+const FORM_TYPES = 'form_types';
+const ORG_INFO = 'org_info';
+const POSITIONS = 'positions';
+const SUB_BANK = 'sub_bank';
+const SUB_TYPES = 'sub_types';
+const SUBJECTS = 'subjects';
+
 function setAccessor(accessor, maxLength, widthColumn, type, required = false, filter = false, sort = false) {
     return {accessor, maxLength, width: widthColumn + 'px', type, required, filter, sort}
 }
 
+
+
 //...setAccessor('id',0,70,TYPE.ID,false,false,true),
 export const handbooks = {
-    banks: {
+    [BANKS]: {
         name: setLanguages('Банки', '', ''),
         maxWidth: '800px',
         columns: [
@@ -37,7 +47,29 @@ export const handbooks = {
             },
         ],
     },
-    form_types: {
+    [SUB_BANK]: {
+        name: setLanguages('Банки', '', ''),
+        maxWidth: '800px',
+        columns: [
+            {
+                header: setLanguages('ID'),
+                ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+            },
+            {
+                header: setLanguages('Название банка', '', ''),
+                ...setAccessor('bankname', 50, 200, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('МФО', '', ''),
+                ...setAccessor('mfo', 50, 200, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('Описание', 'Сипаттама', 'Description'),
+                ...setAccessor('bankdescr', null, null, TYPE.STRING, false, true, true),
+            },
+        ],
+    },
+    [FORM_TYPES]: {
         name: setLanguages('Типы форм', 'Пішін түрлері', 'Form types'),
         maxWidth: '600px',
         columns: [
@@ -55,37 +87,42 @@ export const handbooks = {
             },
         ],
     },
-    org_info: {
+    [ORG_INFO]: {
         name: setLanguages('Организации', '', ''),
         maxWidth: '1000px',
         columns: [
             {
                 header: setLanguages('ID'),
-                accessor: 'id',
-                width: '70px',
-                type: TYPE.ID,
-                required: false,
+                ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
             },
             {
                 header: setLanguages('Название', '', ''),
-                accessor: 'oiname',
-                maxLength: 30,
-                filter: true,
-                type: TYPE.STRING,
-                required: true,
-                width: '150px',
+                ...setAccessor('oiname', 100, 150, TYPE.STRING, true, true, true),
             },
             {
                 header: setLanguages('Полное название', '', ''),
-                accessor: 'oifname',
-                maxLength: 30,
-                filter: true,
-                type: TYPE.STRING,
-                required: true,
+                ...setAccessor('oifname', 200, null, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('Адрес', '', ''),
+                ...setAccessor('oiaddr', 200, 200, TYPE.STRING, true, false, true),
+            },
+            {
+                header: setLanguages('Номер аккаунта', '', ''),
+                ...setAccessor('oiaccnumber', 100, 100, TYPE.STRING, true, false, true),
+            },
+            {
+                header: setLanguages('Банк', '', ''),
+                ...setAccessor('oibank', 100, 150, TYPE.SUB_VALUE, true, false, true),
+                subPath: {path:[BANKS],accessor:'bankname'}
+            },
+            {
+                header: setLanguages('БИН', '', ''),
+                ...setAccessor('oibin', 12, 150, TYPE.STRING, true, false, true),
             },
         ],
     },
-    positions: {
+    [POSITIONS]: {
         name: setLanguages('Позиции', '', ''),
         maxWidth: '400px',
         columns: [
@@ -99,7 +136,7 @@ export const handbooks = {
             },
         ],
     },
-    sub_types: {
+    [SUB_TYPES]: {
         name: setLanguages('Подтипы', 'Кіші типтер', 'Subtypes'),
         maxWidth: '600px',
         columns: [
@@ -117,7 +154,7 @@ export const handbooks = {
             },
         ],
     },
-    subjects: {
+    [SUBJECTS]: {
         name: setLanguages('Субъекты', '', ''),
         maxWidth: '600px',
         columns: [

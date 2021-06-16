@@ -19,7 +19,6 @@ export default function Handbook({match}) {
     const {lang} = useContext(LanguageContext)
     const [handbookName, setHandbook] = useState(match.params.name); // название формы
     const [columns, setColumns] = useState(handbooks[handbookName].columns); //шапка формы
-
     const [errMessage, setErrMessage] = useState(''); //сообщение об ошибке
     const [openSnackbar, setSnackbar] = useState(false); //выплывающее окно о успешной опперации
     const [invalidSnackbar, setInvalidSnackbar] = useState(false)
@@ -136,7 +135,7 @@ export default function Handbook({match}) {
             editing,
         }
         }>
-            <Box className={classes.root}>
+            <Box className={classes.root} style={{minWidth: 'content'}}>
                 <ModalMessage open={!!errMessage} message={errMessage} close={closeErrMessageHandler}/>
                 <Feedback
                     openSnackbar={invalidSnackbar || openSnackbar}
@@ -151,7 +150,7 @@ export default function Handbook({match}) {
                     currentMod={currentMod}
                     changeModHandler={changeModHandler}/>
                 <Box component={Paper} elevation={3}
-                     style={{display: 'flex', flexFlow: 'column', maxHeight: '100%', overflow: 'hidden'}}>
+                     style={{display: 'flex', flexFlow: 'column', height: '100%', overflow: 'hidden'}}>
                     {/*Шапка над таблицей*/}
                     <ToolbarHeader
                         handbookName={handbooks[handbookName].name[lang]}
@@ -162,7 +161,8 @@ export default function Handbook({match}) {
                         cancelButtonHandler={setDefaultCurrentMod}
                         deleteButtonHandler={deleteRows}
                     />
-                    <TableContainer style={{maxWidth: handbooks[handbookName].maxWidth}}>
+                    <TableContainer
+                        style={{maxWidth: handbooks[handbookName].maxWidth, height: '100%', overflow: 'scroll'}}>
                         <Table style={{tableLayout: 'fixed'}} stickyHeader>
                             <HeadTable
                                 activeFilter={activeFilter}

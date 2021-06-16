@@ -24,10 +24,10 @@ export default function HeadTable({columns, sortParams, sortParamsHandler, filte
     return <TableHead>
         <TableRow className={classes.rowHeader}>
             {editing ? <TableCell style={{width: '46px'}}/> : null}
-            {columns.map((column) => (
+            {columns.map((column,index) => (
                 <TableCell
                     style={{verticalAlign: 'top', width: column.width ?? 'auto'}}
-                    key={column.accessor}>
+                    key={column.accessor+index}>
                     <ButtonBase
                         disableTouchRipple
                         className={classes.sortButton}
