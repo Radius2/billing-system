@@ -58,15 +58,13 @@ export default function Row({columns, index, data, showInput, selected, deleteCl
     }, [rowData, columns])
 
     useEffect(() => {
-        if (!selected) return undefined
+        if (!selected) return setIsChanged(false);
         setIsChanged(false);
         for (let i = 0; i < columns.length; i++) {
             const {accessor, type} = columns[i];
-            const prevValue = type === TYPE.SUB_VALUE ? rowData[accessor].id : rowData[accessor]
-            const newValue = type === TYPE.SUB_VALUE ? data[accessor].id : data[accessor]
-            console.log(prevValue, newValue)
+            const prevValue = type === TYPE.SUB_VALUE ? rowData[accessor]?.id : rowData[accessor]
+            const newValue = type === TYPE.SUB_VALUE ? data[accessor]?.id : data[accessor]
             if (prevValue !== newValue) {
-                console.log('true')
                 setIsChanged(true);
                 break
             }
@@ -109,39 +107,87 @@ export default function Row({columns, index, data, showInput, selected, deleteCl
     }, [currentMod, checkValid, lang, selected, index])
 
     function updateValues(value, column) {
-        const newValue = value.length <= column.maxLength ? value : value.slice(0, column.maxLength)
+        const newValue = (value.length <= column.maxLength) || column.type === TYPE.BOOLEAN ? value : value.slice(0, column.maxLength)
         setRowData(prev => ({...prev, [column.accessor]: newValue}))
     }
 
+    function dateFormat(date = '') {
+        const dataArray = date.split('-')
+        const year = dataArray.splice(0,1)
+        return [...dataArray, year].join('/')
+    }
+
+    function valueSwitch(column, value) {
+        switch (column.type) {
+            case TYPE.BOOLEAN:
+                return column.options[Number(value)]
+            case TYPE.DATE:
+                return dateFormat(value)
+            default:
+                return value
+        }
+    }
+
     const cell = (column) => {
-        const subValue = column.type === TYPE.SUB_VALUE
-        const value = !subValue ? rowData[column.accessor] : rowData[column.accessor][column.subPath.accessor];
-        return (!showInput || column.accessor.toUpperCase() === 'ID') ?
-            (<TableCell
+        const {type, accessor} = column;
+        const subValue = type === TYPE.SUB_VALUE
+        const value = !subValue ? rowData[accessor] : rowData[accessor]?.[column.subPath.accessor];
+        if (!showInput || accessor.toUpperCase() === 'ID') return (
+            <TableCell
                 key={column.accessor}>
-                {value}
+                {valueSwitch(column, value)}
             </TableCell>)
-            : !subValue ?
-                (<CellInput
-                    key={column.accessor}
-                    inputHandler={(value) => updateValues(value, column)}
-                    isValid={validMask[column.accessor]}
-                    focus={column.accessor === columns[1].accessor}
-                    showInvalid={showInvalid}>
-                    {value}
-                </CellInput>)
-                : <TableCell key={column.accessor}>
-                    <AsyncInputSelect
-                        value={value}
-                        subPath={column.subPath}
+
+        switch (type) {
+            default:
+            case TYPE.STRING:
+                return (
+                    <CellInput
+                        key={column.accessor}
+                        inputHandler={(value) => updateValues(value, column)}
                         isValid={validMask[column.accessor]}
-                        selectHandler={value => setRowData(prev => (
-                            {
-                                ...prev,
-                                [column.accessor]: value
-                            }))}
-                        showInvalid={showInvalid}/>
-                </TableCell>
+                        focus={column.accessor === columns[1].accessor}
+                        showInvalid={showInvalid}>
+                        {value}
+                    </CellInput>);
+            case TYPE.BOOLEAN:
+                return (
+                    <CellInput
+                        key={column.accessor}
+                        type={type}
+                        options={column.options}
+                        inputHandler={(value) => updateValues(value, column)}
+                        isValid={validMask[column.accessor]}
+                        focus={column.accessor === columns[1].accessor}
+                        showInvalid={showInvalid}>
+                        {value}
+                    </CellInput>);
+            case  TYPE.DATE:
+                return (
+                    <CellInput
+                        key={column.accessor}
+                        type='date'
+                        inputHandler={(value) => updateValues(value, column)}
+                        isValid={validMask[column.accessor]}
+                        focus={column.accessor === columns[1].accessor}
+                        showInvalid={showInvalid}>
+                        {value}
+                    </CellInput>)
+            case TYPE.SUB_VALUE:
+                return (
+                    <TableCell key={column.accessor}>
+                        <AsyncInputSelect
+                            value={value}
+                            subPath={column.subPath}
+                            isValid={validMask[column.accessor]}
+                            selectHandler={value => setRowData(prev => (
+                                {
+                                    ...prev,
+                                    [column.accessor]: value
+                                }))}
+                            showInvalid={showInvalid}/>
+                    </TableCell>)
+        }
     }
 
     return <>

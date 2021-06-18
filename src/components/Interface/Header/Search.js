@@ -118,7 +118,7 @@ export default function Search() {
         }, [searchInput]
     )
 
-    return <Box className={clsx(classes.search, fullWidth && classes.search_active)}>
+    return <Box className={clsx(classes.search, (fullWidth || searchInput.length > 0) && classes.search_active)}>
         <TextField
             inputRef={inputRef}
             value={searchInput}

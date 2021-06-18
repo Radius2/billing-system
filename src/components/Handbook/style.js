@@ -22,11 +22,13 @@ const useStyle = makeStyles(theme => ({
         overflowWrap: 'break-word',
         '& > *': {
             borderBottom: 'unset',
+            padding: '12px 12px',
+            verticalAlign: 'bottom',
         },
     },
     rowHeader: {
         '& > *': {
-            padding: '8px 16px',
+            padding: '8px 12px',
         }
     },
     rowChanged: {

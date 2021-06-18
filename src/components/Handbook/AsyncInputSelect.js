@@ -2,6 +2,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import * as api from '../../api/api'
 import {TextField, Box, MenuItem, MenuList, Paper} from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import ArrowDown from '@material-ui/icons/ArrowDropDown';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 
 const useStyle = makeStyles(theme => ({
@@ -14,13 +15,13 @@ export default function AsyncInputSelect({value = '', showInvalid, subPath, sele
     const [inputFocus, setInputFocus] = useState(false);
     const [options, setOptions] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [selected, setSelected] = useState(true);
     const [input, setInput] = useState(value)
     const classes = useStyle();
     const error = !isValid;
     const inputRef = useRef();
 
     const getOptions = useCallback(() => {
+        if (input !== value) selectHandler(null)
         api.getHandbook(subPath.path,
             {
                 [subPath.accessor]: '%' + input,
@@ -67,13 +68,15 @@ export default function AsyncInputSelect({value = '', showInvalid, subPath, sele
                 autoFocus={focus}
                 rowsMax={4}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => {
+                    setInput(e.target.value)
+                }}
                 inputProps={{className: classes.input}}
                 onFocus={() => setInputFocus(true)}
                 InputProps={{
                     endAdornment: (
                         <>
-                            {loading ? <CircularProgress color="inherit" size={14}/> : null}
+                            {loading ? <CircularProgress color="inherit" size={14}/> : <ArrowDown style={{fontSize:'18px'}} />}
                         </>)
                 }}
             />
@@ -84,7 +87,7 @@ export default function AsyncInputSelect({value = '', showInvalid, subPath, sele
                     style={{
                         marginTop: '3px',
                         position: 'absolute',
-                        width: '120%',
+                        width: '150%',
                         right: 0,
                         zIndex: 1000
                     }}>

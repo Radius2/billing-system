@@ -4,6 +4,8 @@ export const HANDBOOK_PATH = '/handbook/'
 
 export const TYPE = {
     ID: 'id',
+    BOOLEAN: 'boolean',
+    DATE:'date',
     STRING: 'string',
     NUMBER: 'number',
     SUB_VALUE: 'subValue'
@@ -18,9 +20,8 @@ const SUB_TYPES = 'sub_types';
 const SUBJECTS = 'subjects';
 
 function setAccessor(accessor, maxLength, widthColumn, type, required = false, filter = false, sort = false) {
-    return {accessor, maxLength, width: widthColumn + 'px', type, required, filter, sort}
+    return {accessor: accessor.toLowerCase(), maxLength, width: widthColumn + 'px', type, required, filter, sort}
 }
-
 
 
 //...setAccessor('id',0,70,TYPE.ID,false,false,true),
@@ -68,7 +69,7 @@ export const handbooks = {
                 ...setAccessor('bankdescr', null, null, TYPE.STRING, false, true, true),
             },
         ],
-    },
+    },//Subject accounts
     [FORM_TYPES]: {
         name: setLanguages('Типы форм', 'Пішін түрлері', 'Form types'),
         maxWidth: '600px',
@@ -114,7 +115,7 @@ export const handbooks = {
             {
                 header: setLanguages('Банк', '', ''),
                 ...setAccessor('oibank', 100, 150, TYPE.SUB_VALUE, true, false, true),
-                subPath: {path:[BANKS],accessor:'bankname'}
+                subPath: {path: BANKS, accessor: 'bankname'}
             },
             {
                 header: setLanguages('БИН', '', ''),
@@ -123,7 +124,7 @@ export const handbooks = {
         ],
     },
     [POSITIONS]: {
-        name: setLanguages('Позиции', '', ''),
+        name: setLanguages('Должности', '', ''),
         maxWidth: '400px',
         columns: [
             {
@@ -131,13 +132,13 @@ export const handbooks = {
                 ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
             },
             {
-                header: setLanguages('Название позиции', '', ''),
+                header: setLanguages('Должности', '', ''),
                 ...setAccessor('positionname', null, null, TYPE.STRING, true, true, true),
             },
         ],
     },
     [SUB_TYPES]: {
-        name: setLanguages('Подтипы', 'Кіші типтер', 'Subtypes'),
+        name: setLanguages('Виды субъектов'),
         maxWidth: '600px',
         columns: [
             {
@@ -145,7 +146,7 @@ export const handbooks = {
                 ...setAccessor('id', 0, 70, TYPE.ID, false, false, true)
             },
             {
-                header: setLanguages('Название подтипов', 'Ішкі түр атауы', 'Subtype name'),
+                header: setLanguages('Название подтипов'),
                 ...setAccessor('subtypename', 30, 200, TYPE.STRING, true, true, true),
             },
             {
@@ -156,32 +157,67 @@ export const handbooks = {
     },
     [SUBJECTS]: {
         name: setLanguages('Субъекты', '', ''),
-        maxWidth: '600px',
+        maxWidth: '1500px',
         columns: [
             {
                 header: setLanguages('ID'),
-                accessor: 'id',
-                width: '70px',
-                type: TYPE.ID,
-                required: false,
+                ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
             },
             {
-                header: setLanguages('Название подтипов', 'Ішкі түр атауы', 'Subtype name'),
-                accessor: 'subtypename',
-                maxLength: 30,
-                filter: true,
-                type: TYPE.STRING,
-                required: true,
-                width: '200px',
+                header: setLanguages('Subaccname',),
+                ...setAccessor('subaccname', 100, 100, TYPE.STRING, true, true, true),
             },
             {
-                header: setLanguages('Описание', 'Сипаттама', 'Description'),
-                accessor: 'subtypedescr',
-                maxLength: 200,
-                filter: true,
-                type: TYPE.STRING,
-                required: false,
-
+                header: setLanguages('Subaccnumber',),
+                ...setAccessor('subaccnumber', 100, 100, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('Subaccpos',),
+                ...setAccessor('subaccpos', 100, 100, TYPE.SUB_VALUE, true, true, true),
+                subPath: {path: POSITIONS, accessor: 'positionname'}
+            },
+            {
+                header: setLanguages('Subaddr',),
+                ...setAccessor('subaddr', 100, 100, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('Subbin',),
+                ...setAccessor('subbin', 100, 100, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('Subdescr',),
+                ...setAccessor('subdescr', 100, 100, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('Subheadname',),
+                ...setAccessor('subheadname', 100, 100, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('Subheadpos',),
+                ...setAccessor('subheadpos', 100, 100, TYPE.SUB_VALUE, true, true, true),
+                subPath: {path: POSITIONS, accessor: 'positionname'}
+            },
+            {
+                header: setLanguages('Subname',),
+                ...setAccessor('subname', 100, 100, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('Subphone',),
+                ...setAccessor('subphone', 100, 100, TYPE.STRING, true, true, true),
+            },
+            {
+                header: setLanguages('Subphys',),
+                ...setAccessor('subphys', 100, 100, TYPE.BOOLEAN, true, true, true),
+                options: ['Физлицо', 'Юрлицо']
+            },
+            {
+                header: setLanguages('Substart',),
+                ...setAccessor('substart', 200, 160, TYPE.DATE, true, true, true),
+            },
+            {
+                header: setLanguages('Subtype',),
+                ...setAccessor('subtype', 100, 100, TYPE.SUB_VALUE, true, true, true),
+                subPath: {path: SUB_TYPES, accessor: 'subtypename'}
             },
         ],
     },
