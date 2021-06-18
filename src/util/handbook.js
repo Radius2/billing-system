@@ -173,7 +173,7 @@ export const handbooks = {
             },
             {
                 header: setLanguages('Subaccpos',),
-                ...setAccessor('subaccpos', 100, 100, TYPE.SUB_VALUE, true, true, true),
+                ...setAccessor('subaccpos', 300, 300, TYPE.SUB_VALUE, true, true, true),
                 subPath: {path: POSITIONS, accessor: 'positionname'}
             },
             {

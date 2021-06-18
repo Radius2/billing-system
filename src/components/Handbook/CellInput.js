@@ -19,7 +19,7 @@ export default function CellInput({children, showInvalid, inputHandler, isValid,
         }
     }, [showInvalid, isValid])
 
-    const dateProps = type === TYPE.DATE ? {type: 'date', format: 'dd/MM/YYYY'} : {multiline: true, rowsMax: 4}
+    const dateProps = type === TYPE.DATE ? {type: 'date'} : {multiline: true, rowsMax: 4}
 
     return (
         <TableCell>

@@ -112,9 +112,7 @@ export default function Row({columns, index, data, showInput, selected, deleteCl
     }
 
     function dateFormat(date = '') {
-        const dataArray = date.split('-')
-        const year = dataArray.splice(0,1)
-        return [...dataArray, year].join('/')
+        return date.split('-').reverse().join('.')
     }
 
     function valueSwitch(column, value) {
@@ -177,7 +175,7 @@ export default function Row({columns, index, data, showInput, selected, deleteCl
                 return (
                     <TableCell key={column.accessor}>
                         <AsyncInputSelect
-                            value={value}
+                            startValue={rowData[accessor]}
                             subPath={column.subPath}
                             isValid={validMask[column.accessor]}
                             selectHandler={value => setRowData(prev => (

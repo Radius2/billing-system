@@ -3,6 +3,7 @@ import {Switch, Route, Redirect, useLocation} from 'react-router';
 import Interface from './components/Interface/Interface';
 import Login from './components/Login/Login';
 import {deleteToken} from './api/api';
+import TEST from './components/TEST';
 import {AVAILABLE_LANGUAGE} from './util/language';
 
 export const LanguageContext = React.createContext();
@@ -40,6 +41,9 @@ export default function App() {
                 }
             }}>
             <Switch>
+                <Route
+                    path='/test'
+                    component={TEST}/>
                 <Route
                     path='/login'
                     render={routeProps => <Login from={from.current}
