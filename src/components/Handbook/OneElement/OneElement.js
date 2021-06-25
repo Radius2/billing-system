@@ -36,7 +36,7 @@ function changeReduce(obj = {}) {
 
 export default function OneElement({open, submitHandler, cancelHandler, subValue, preparedValue = {}}) {
     const [handbookName] = useState(subValue?.handbookName); // название формы
-    const [idElement] = useState(subValue?.id.toString()); // id element
+    const [idElement] = useState(subValue?.id?.toString()||0); // id element
     const [columns] = useState(handbooks[handbookName].columns); //шапка формы
 
     const {lang} = useContext(LanguageContext);
@@ -59,7 +59,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
     }, [isChangedArray])
 
     useEffect(() => {
-        if (idElement.toUpperCase() === 'ADD') {
+        if (idElement.toUpperCase() === 'ADD' || idElement===0) {
             setLoading(false);
             return setElementData(newElement(columns, preparedValue))
         }
@@ -73,6 +73,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
         api.addElementHandbook(handbookName, elementData)
             .then(({data}) => {
                 submitHandler(data, elementData)
+                cancelHandler()
             })
             .catch(() => console.log('err'))
     }

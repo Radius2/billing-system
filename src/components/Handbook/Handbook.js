@@ -89,7 +89,7 @@ export default function Handbook({match, history}) {
                 tooltipTitle: INTERFACE_LANGUAGE.add[lang],
                 action: () => {
                     setOpenModalProps({
-                        subValue: {handbookName: handbookName, id: "add"},
+                        subValue: {handbookName: handbookName, id: 'add'},
                         submitHandler: (value) => console.log(value, 'add')
                     })
                     setOpenOneElement(true)
@@ -165,7 +165,7 @@ export default function Handbook({match, history}) {
                             {data.map((dataRow, index) => {
                                 const selected = selectedRows.includes(index);
                                 return (<Row
-                                    key={dataRow.id}
+                                    key={dataRow?.id || index}
                                     clickRowHandler={() => {
                                         setOpenModalProps({
                                             subValue: {handbookName: handbookName, id: dataRow.id},

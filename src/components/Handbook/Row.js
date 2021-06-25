@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {TableCell, TableRow} from '@material-ui/core';
 import {TYPE} from '../../util/handbook';
 import useStyle from './style';
@@ -23,17 +23,17 @@ export default function Row({clickRowHandler, columns, data, deleteClass, childr
         }
     }
 
-    const cell = (column) => {
+    const cell = useCallback((dataCell,column,index) => {
         if (!column.mainValue) return null
-        const {type, accessor} = column;
+        const {type} = column;
         const subValue = type === TYPE.SUB_VALUE
-        const value = !subValue ? data[accessor] : data[accessor]?.[column.subPath.accessor];
+        const value = !subValue ? dataCell : dataCell?.[column.subPath.accessor];
         return (
             <TableCell
-                key={column.accessor}>
+                key={column.accessor+index}>
                 {valueSwitch(column, value)}
             </TableCell>)
-        }
+        },[])
 
     return(
         <TableRow
@@ -45,6 +45,6 @@ export default function Row({clickRowHandler, columns, data, deleteClass, childr
                 padding="checkbox">
                 {children}
             </TableCell> : null}
-            {columns.map(column => cell(column))}
+            {columns.map((column,index) => cell(data[column.accessor],column,index))}
         </TableRow>)
 }

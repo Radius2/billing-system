@@ -10,9 +10,9 @@ const useStyle = makeStyles(theme => ({
         padding: theme.spacing(2),
     },
     input: {
+        margin: theme.spacing(1),
         display: 'inline-flex',
         width: props => props.width,
-        margin: theme.spacing(1),
         '& .MuiFormLabel-root': {
             color: theme.palette.text.primary,
             fontSize: '1.1rem',

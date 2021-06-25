@@ -16,7 +16,7 @@ const BANKS = 'banks';
 const FORM_TYPES = 'form_types';
 const ORG_INFO = 'org_info';
 const POSITIONS = 'positions';
-const SUB_BANK = 'sub_bank';
+const SUB_BANKS = 'sub_banks';
 const SUB_TYPES = 'sub_types';
 const SUBJECTS = 'subjects';
 
@@ -28,7 +28,7 @@ function setAccessor(accessor, widthColumn) {
 }
 
 //Установка маски ввода согласно  react-imask и валидации регул выражением
-function setValidation(maskInput = /\S{0,20}/, maskValidation = /\S{0,20}/, additionMaskInput) {
+function setValidation(maskInput = /\.{0,200}/, maskValidation = /\.{0,200}/, additionMaskInput) {
     return {
         maskInput: {
             mask:maskInput,
@@ -61,49 +61,59 @@ export const handbooks = {
         columns: [
             {
                 header: setLanguages('ID'),
-                ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+                ...setAccessor('id', 70),
                 ...setType(TYPE.ID, true),
+                ...setOrdering(),
+                ...setValidation(),
             },
             {
                 header: setLanguages('Название банка', '', ''),
-                ...setAccessor('bankname', 50, 200, TYPE.STRING, true, true, true),
+                ...setAccessor('bankname',  200),
                 ...setType(TYPE.STRING, true),
+                ...setOrdering(true,true),
+                ...setValidation(/^.{0,100}/,/^.+/),
             },
             {
                 header: setLanguages('МФО', '', ''),
-                ...setAccessor('mfo', 50, 200, TYPE.STRING, true, true, true),
+                ...setAccessor('mfo',  150),
                 ...setType(TYPE.STRING, true),
+                ...setOrdering(),
+                ...setValidation(/^.{0,100}/,/^.+/),
             },
             {
                 header: setLanguages('Описание', 'Сипаттама', 'Description'),
-                ...setAccessor('bankdescr', 200, null, TYPE.STRING, false, true, true),
+                ...setAccessor('bankdescr', 300),
                 ...setType(TYPE.STRING, true),
+                ...setOrdering(true,true),
+                ...setValidation(/^.{0,200}/,/^.+/),
             },
         ],
     },
-    [SUB_BANK]: {
-        name: setLanguages('Банки', '', ''),
+    [SUB_BANKS]: {
+        name: setLanguages('Счета субъектов', '', ''),
         maxWidth: '800px',
         columns: [
             {
-                header: setLanguages('ID'),
-                ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
-                ...setType(TYPE.ID, true),
+                header: setLanguages('Номер счера', '', ''),
+                ...setAccessor('accnumber',  200),
+                ...setType(TYPE.STRING, true),
+                ...setOrdering(true,true),
+                ...setValidation(/^.{0,100}/,/^.+/),
             },
             {
                 header: setLanguages('Название банка', '', ''),
-                ...setAccessor('bankname', 50, 200, TYPE.STRING, true, true, true),
-                ...setType(TYPE.STRING, true),
+                ...setAccessor('bank',  200),
+                ...setType(TYPE.SUB_VALUE, true),
+                subPath: {path: BANKS, accessor: 'bankname'},
+                ...setOrdering(),
             },
             {
-                header: setLanguages('МФО', '', ''),
-                ...setAccessor('mfo', 50, 200, TYPE.STRING, true, true, true),
+                header: setLanguages("Субъект"),
+                ...setAccessor('subj', 200),
                 ...setType(TYPE.STRING, true),
-            },
-            {
-                header: setLanguages('Описание', 'Сипаттама', 'Description'),
-                ...setAccessor('bankdescr', null, null, TYPE.STRING, false, true, true),
-                ...setType(TYPE.STRING, true),
+                ...setType(TYPE.SUB_VALUE, true),
+                subPath: {path: SUBJECTS, accessor: 'subname'},
+                ...setOrdering(),
             },
         ],
     },//Subject accounts
@@ -176,12 +186,12 @@ export const handbooks = {
         columns: [
             {
                 header: setLanguages('ID', '', ''),
-                ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+                ...setAccessor('id', 70),
                 ...setType(TYPE.ID, true),
             },
             {
                 header: setLanguages('Должность', '', ''),
-                ...setAccessor('positionname', 150, null, TYPE.STRING, true, true, true),
+                ...setAccessor('positionname', 150),
                 ...setType(TYPE.STRING, true),
             },
         ],
