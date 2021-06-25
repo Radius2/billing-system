@@ -1,190 +1,225 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Box, Paper, TableContainer, Table} from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import CreateIcon from '@material-ui/icons/Create';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import {Box, Grid, Paper, TableContainer, Table, TableBody, Checkbox, IconButton, Tooltip} from '@material-ui/core';
+import InfiniteScrollBorder from './InfiniteScrollBorder';
+import LoadingRow from './LoadingRow';
+import OneElement from './OneElement/OneElement';
+import Row from './Row'
 import HeadTable from './HeadTable';
-import SideMenu from './SideMenu';
+import TooltipButton from './TooltipButton';
 import ToolbarHeader from './ToolbarHeader';
 import ModalMessage from '../Modal';
-import BodyTable from './BodyTable';
 import Feedback from './Feedback'
 import {LanguageContext} from '../../App';
 import {handbooks} from '../../util/handbook';
-import {INTERFACE_DIALOG} from '../../util/language';
+import {INTERFACE_DIALOG, INTERFACE_LANGUAGE} from '../../util/language';
 import useStyle from './style';
 import useData from './useData';
 
-export const ModContext = React.createContext()
+function getColSpan(columns) {
+    return columns.reduce((acc, curr) => acc + Number(curr.mainValue), 0)
+}
 
-export default function Handbook({match}) {
+export default function Handbook({match, history}) {
     const classes = useStyle();
     const {lang} = useContext(LanguageContext)
     const [handbookName, setHandbook] = useState(match.params.name); // название формы
     const [columns, setColumns] = useState(handbooks[handbookName].columns); //шапка формы
     const [errMessage, setErrMessage] = useState(''); //сообщение об ошибке
     const [openSnackbar, setSnackbar] = useState(false); //выплывающее окно о успешной опперации
-    const [invalidSnackbar, setInvalidSnackbar] = useState(false)
     const [snackbarMess, setSnackbarMess] = useState('');//сообщение
     const [selectedRows, setSelectedRows] = useState([]); // выбранная строка для редактирования
     const [currentMod, setCurrentMod] = useState('update'); // текущий режим изменения, удаление, добавление
-    const [activeFilter, setActiveFilter] = useState(false); //активный фильтр
-    const [filterParams, setFilterParams] = useState({}) //фильтр квери параметры запроса элементов справочника
-    const [sortParams, setSortParams] = useState({desc: 0, ordering: 'id'})//квери параметр сортировки
-    const [isValid, setIsValid] = useState(true) // чек на валидность выбранной строки
-    const [colSpan, setColSpan] = useState(columns.length + 1) // наличие дополнительной ячейки под экшен
-    const [showInvalid, setShowInvalid] = useState(false); // когда тру фокус переходит на последнюю невалидную строку и сбразывается в фолс
-
-    const {deleteRows, editing, ...otherData} = useData({
-        handbookName,
-        filterParams,
-        sortParams,
-        selectedRows,
-        snackbarHandler,
-        setDefaultCurrentMod,
-        setErrMessage
+    const [colSpan, setColSpan] = useState(getColSpan(columns) + 1) // наличие дополнительной ячейки под экшен
+    const [openOneElement, setOpenOneElement] = useState(false) // наличие дополнительной ячейки под экшен
+    const [openModalProps, setOpenModalProps] = useState({
+        subValue: {handbookName: handbookName, id: 'add'},
+        submitHandler: () => console.log('done')
     })
+    const {
+        loading,
+        deleteRows,
+        data,
+        showInfinityScrollRow,
+        editing,
+        getMore,
+        sortParams,
+        sortParamsHandler,
+        filterParamsHandler,
+        activeFilter,
+        setActiveFilter
+    } = useData({handbookName, selectedRows, snackbarHandler, setDefaultCurrentMod, setErrMessage})
 
     // сброс на дефолтные значения
     useEffect(() => {
         setHandbook(match.params.name);
         setColumns(handbooks[handbookName].columns);
         setDefaultCurrentMod();
-        setActiveFilter(false);
-        setFilterParams({});
     }, [match, handbookName])
 
     useEffect(() => {
-        if (selectedRows.length === 0) setIsValid(true);
-    }, [selectedRows.length])
-
-    useEffect(() => setIsValid(true),
-        [currentMod])
-
-    useEffect(() => {
-        editing ? setColSpan(columns.length + 1) : setColSpan(columns.length)
+        editing ? setColSpan(getColSpan(columns) + 1) : getColSpan(columns)
     }, [editing, handbookName, columns])
 
-    useEffect(() => {
-        if (!activeFilter) {
-            setFilterParams(prev => Object.keys(prev).length === 0 ? prev : {})
-        }
-    }, [activeFilter])
-
     function changeModHandler(newMod) {
-        checkValid(() => {
-            setSelectedRows([])
-            newMod === currentMod ?
-                setCurrentMod('update') :
-                setCurrentMod(newMod)
-        })
+        setSelectedRows([])
+        newMod === currentMod ?
+            setCurrentMod('update') :
+            setCurrentMod(newMod)
     }
 
     const closeErrMessageHandler = useCallback(() => {
         setErrMessage('')
     }, [])
 
-    const focusInvalid = useCallback(() => {
-        setInvalidSnackbar(true)
-        setShowInvalid(true)
-    }, []);
+    const iconButton = useMemo(() => [
+            {
+                name: 'delete',
+                icon: <DeleteForeverIcon fontSize='default'/>,
+                tooltipTitle: INTERFACE_LANGUAGE.delete[lang],
+                action: () => {
+                    setCurrentMod(currentMod === 'delete' ? 'update' : 'delete')
+                }
+            },
+            {
+                name: 'add',
+                icon: <AddIcon fontSize='default'/>,
+                tooltipTitle: INTERFACE_LANGUAGE.add[lang],
+                action: () => {
+                    setOpenModalProps({
+                        subValue: {handbookName: handbookName, id: "add"},
+                        submitHandler: (value) => console.log(value, 'add')
+                    })
+                    setOpenOneElement(true)
+                },
+            }
+        ], [currentMod, history, lang]
+    )
 
     function setDefaultCurrentMod(rest = true) {
         setCurrentMod('update');
         if (rest) setSelectedRows([])
     }
 
-    function checkValid(callback) {
-        return isValid ? callback() : focusInvalid()
-    }
 
     function snackbarHandler({error = false, mess = ''}) {
         setSnackbar(true);
         setSnackbarMess(mess);
     }
 
-    function sortParamsHandler(accessor) {
-        if (selectedRows.length > 0) return
-        if (sortParams.ordering !== accessor) return setSortParams({
-            ordering: accessor,
-            desc: 0
-        })
-        setSortParams({
-            ordering: accessor,
-            desc: sortParams.desc === 0 ? 1 : 0
-        })
-    }
-
-    function filterParamsHandler(accessor, value) {
-        setFilterParams(prev => ({
-            ...prev,
-            [accessor]: value
-        }))
-    }
-
     return (
-        <ModContext.Provider value={{
-            currentMod,
-            checkValid,
-            setCurrentMod,
-            selectedRows,
-            setSelectedRows,
-            isValid,
-            setIsValid,
-            setDefaultCurrentMod,
-            showInvalid,
-            setShowInvalid,
-            colSpan,
-            editing,
-        }
-        }>
-            <Box className={classes.root} style={{minWidth: 'content'}}>
-                <ModalMessage open={!!errMessage} message={errMessage} close={closeErrMessageHandler}/>
-                <Feedback
-                    openSnackbar={invalidSnackbar || openSnackbar}
-                    snackbarCloseHandler={() => {
-                        setSnackbar(false);
-                        setInvalidSnackbar(false)
-                    }}
-                    snackbarMess={openSnackbar ? snackbarMess : INTERFACE_DIALOG.invalidRequiredField[lang]}
-                    success={openSnackbar}/>
+        <Box className={classes.root} style={{minWidth: 'content'}}>
+            {openOneElement ? <OneElement
+                open={openOneElement}
+                {...openModalProps}
+                cancelHandler={() => setOpenOneElement(false)}
+            /> : null}
+            <ModalMessage open={!!errMessage} message={errMessage} close={closeErrMessageHandler}/>
+            <Feedback
+                openSnackbar={openSnackbar}
+                snackbarCloseHandler={() => {
+                    setSnackbar(false);
+                }}
+                snackbarMess={openSnackbar ? snackbarMess : INTERFACE_DIALOG.invalidRequiredField[lang]}
+                success={openSnackbar}/>
 
-                <SideMenu
-                    currentMod={currentMod}
-                    changeModHandler={changeModHandler}/>
-                <Box component={Paper} elevation={3}
-                     style={{display: 'flex', flexFlow: 'column', height: '100%', overflow: 'hidden'}}>
-                    {/*Шапка над таблицей*/}
-                    <ToolbarHeader
-                        handbookName={handbooks[handbookName].name[lang]}
-                        deleteMod={selectedRows.length > 0 && currentMod === 'delete'}
-                        selected={selectedRows.length}
-                        filterToggleHandler={() => setActiveFilter(!activeFilter)}
-                        activeFilterMod={activeFilter}
-                        cancelButtonHandler={setDefaultCurrentMod}
-                        deleteButtonHandler={deleteRows}
-                    />
-                    <TableContainer
-                        style={{maxWidth: handbooks[handbookName].maxWidth, height: '100%', overflow: 'scroll'}}>
-                        <Table style={{tableLayout: 'fixed'}} stickyHeader>
-                            <HeadTable
-                                activeFilter={activeFilter}
-                                columns={columns}
-                                sortParams={sortParams}
-                                sortParamsHandler={sortParamsHandler}
-                                filterParamsHandler={filterParamsHandler}/>
-                            <BodyTable
-                                handbookName={handbookName}
-                                {...otherData}
-                                columns={columns}
-                                filterParams={filterParams}
-                                sortParams={sortParams}
-                                setErrMessage={setErrMessage}
-                                snackbarHandler={snackbarHandler}
-                            />
-                        </Table>
-                    </TableContainer>
+            {editing ?
+                <Box className={classes.sidemenu}>
+                    {iconButton.map(button => (
+                        <TooltipButton
+                            key={button.name}
+                            tooltipTitle={button.tooltipTitle}
+                            actionHandler={button.action}
+                            active={currentMod === button.name}
+                            icon={button.icon}
+                        />))}
                 </Box>
+                : null}
+            <Box component={Paper} elevation={3}
+                 style={{display: 'flex', flexFlow: 'column', height: '100%', overflow: 'hidden'}}>
+                {/*Шапка над таблицей*/}
+                <ToolbarHeader
+                    handbookName={handbooks[handbookName].name[lang]}
+                    deleteMod={selectedRows.length > 0 && currentMod === 'delete'}
+                    selected={selectedRows.length}
+                    filterToggleHandler={() => setActiveFilter(!activeFilter)}
+                    activeFilterMod={activeFilter}
+                    cancelButtonHandler={setDefaultCurrentMod}
+                    deleteButtonHandler={deleteRows}
+                />
+                <TableContainer
+                    style={{maxWidth: handbooks[handbookName].maxWidth, height: '100%', overflow: 'scroll'}}>
+                    <Table style={{tableLayout: 'fixed'}} stickyHeader>
+                        <HeadTable
+                            activeFilter={activeFilter}
+                            columns={columns}
+                            sortParams={sortParams}
+                            sortParamsHandler={sortParamsHandler}
+                            filterParamsHandler={filterParamsHandler}
+                            editing={editing}
+                        />
 
+                        <TableBody>
+                            {data.map((dataRow, index) => {
+                                const selected = selectedRows.includes(index);
+                                return (<Row
+                                    key={dataRow.id}
+                                    clickRowHandler={() => {
+                                        setOpenModalProps({
+                                            subValue: {handbookName: handbookName, id: dataRow.id},
+                                            submitHandler: (value) => console.log(value)
+                                        })
+                                        setOpenOneElement(true)
+                                    }}
+                                    columns={columns}
+                                    data={dataRow}
+                                    deleteClass={selected && currentMod === 'delete'}
+                                >
+                                    {currentMod === 'delete' ? (
+                                        <Checkbox
+                                            color='default'
+                                            checked={selected}
+                                            style={{padding: '3px'}}
+                                            onClick={(e) => {
+                                                setSelectedRows(prevState => {
+                                                        e.stopPropagation()
+                                                        if (prevState.includes(index)) {
+                                                            prevState.splice(prevState.indexOf(index), 1)
+                                                            return [...prevState]
+                                                        }
+                                                        return [...prevState, index]
+                                                    }
+                                                )
+                                            }}/>) : (
+                                        <TooltipButton
+                                            icon={<CreateIcon/>}
+                                            tooltipTitle={INTERFACE_LANGUAGE.update[lang]}
+                                            actionHandler={(e) => {
+                                                e.stopPropagation()
+                                                setOpenModalProps({
+                                                    subValue: {handbookName: handbookName, id: dataRow.id},
+                                                    submitHandler: (value) => console.log(value, 'add')
+                                                })
+                                                setOpenOneElement(true)
+                                            }}/>)
+                                    }
+                                </Row>)
+                            })}
+                            {loading ?
+                                <LoadingRow colSpan={colSpan}/>
+                                : null}
+                            {showInfinityScrollRow ?
+                                <InfiniteScrollBorder
+                                    loading={loading} colSpan={colSpan}
+                                    uploadMoreFunction={getMore}/>
+                                : null}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Box>
-        </ModContext.Provider>
+        </Box>
 
     )
 }

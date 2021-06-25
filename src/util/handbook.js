@@ -5,10 +5,11 @@ export const HANDBOOK_PATH = '/handbook/'
 export const TYPE = {
     ID: 'id',
     BOOLEAN: 'boolean',
-    DATE:'date',
+    DATE: 'date',
     STRING: 'string',
     NUMBER: 'number',
-    SUB_VALUE: 'subValue'
+    SUB_VALUE: 'subValue',
+    BR: 'newRow'
 }
 
 const BANKS = 'banks';
@@ -19,12 +20,40 @@ const SUB_BANK = 'sub_bank';
 const SUB_TYPES = 'sub_types';
 const SUBJECTS = 'subjects';
 
-function setAccessor(accessor, maxLength, widthColumn, type, required = false, filter = false, sort = false) {
-    return {accessor: accessor.toLowerCase(), maxLength, width: widthColumn + 'px', type, required, filter, sort}
+const onlyWord = '[A-zА-яЁё]'
+
+//Установка имени параметра и ширины колонки
+function setAccessor(accessor, widthColumn) {
+    return {accessor: accessor.toLowerCase(), width: widthColumn + 'px'}
+}
+
+//Установка маски ввода согласно  react-imask и валидации регул выражением
+function setValidation(maskInput = /\S{0,20}/, maskValidation = /\S{0,20}/, additionMaskInput) {
+    return {
+        maskInput: {
+            mask:maskInput,
+            ...additionMaskInput
+        },
+        maskValidation
+    }
 }
 
 
-//...setAccessor('id',0,70,TYPE.ID,false,false,true),
+//Установка признаков фильтрации и сортировки по параметру
+function setOrdering(filter = false, sort = false) {
+    return {filter, sort}
+}
+
+//Установка типа и признака отображения параметра в главной таблице
+function setType(type, mainValue = true) {
+    return {type, mainValue}
+}
+
+//Установка переноса строки при валидации
+function setBreak() {
+    return {break: true}
+}
+
 export const handbooks = {
     [BANKS]: {
         name: setLanguages('Банки', '', ''),
@@ -33,18 +62,22 @@ export const handbooks = {
             {
                 header: setLanguages('ID'),
                 ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+                ...setType(TYPE.ID, true),
             },
             {
                 header: setLanguages('Название банка', '', ''),
                 ...setAccessor('bankname', 50, 200, TYPE.STRING, true, true, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('МФО', '', ''),
                 ...setAccessor('mfo', 50, 200, TYPE.STRING, true, true, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('Описание', 'Сипаттама', 'Description'),
-                ...setAccessor('bankdescr', null, null, TYPE.STRING, false, true, true),
+                ...setAccessor('bankdescr', 200, null, TYPE.STRING, false, true, true),
+                ...setType(TYPE.STRING, true),
             },
         ],
     },
@@ -55,18 +88,22 @@ export const handbooks = {
             {
                 header: setLanguages('ID'),
                 ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+                ...setType(TYPE.ID, true),
             },
             {
                 header: setLanguages('Название банка', '', ''),
                 ...setAccessor('bankname', 50, 200, TYPE.STRING, true, true, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('МФО', '', ''),
                 ...setAccessor('mfo', 50, 200, TYPE.STRING, true, true, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('Описание', 'Сипаттама', 'Description'),
                 ...setAccessor('bankdescr', null, null, TYPE.STRING, false, true, true),
+                ...setType(TYPE.STRING, true),
             },
         ],
     },//Subject accounts
@@ -77,14 +114,17 @@ export const handbooks = {
             {
                 header: setLanguages('ID'),
                 ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+                ...setType(TYPE.ID, true),
             },
             {
                 header: setLanguages('Название формы', 'Форманың атауы', 'Form name'),
                 ...setAccessor('formtypename', 30, 200, TYPE.STRING, true, true, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('Описание', 'Сипаттама', 'Description'),
                 ...setAccessor('formtypedescr', 200, null, TYPE.STRING, false, true, true),
+                ...setType(TYPE.STRING, true),
             },
         ],
     },
@@ -95,34 +135,41 @@ export const handbooks = {
             {
                 header: setLanguages('ID'),
                 ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+                ...setType(TYPE.ID, true),
             },
             {
                 header: setLanguages('Название', '', ''),
                 ...setAccessor('oiname', 100, 150, TYPE.STRING, true, true, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('Полное название', '', ''),
                 ...setAccessor('oifname', 200, null, TYPE.STRING, true, true, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('Адрес', '', ''),
                 ...setAccessor('oiaddr', 200, 200, TYPE.STRING, true, false, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('Номер аккаунта', '', ''),
                 ...setAccessor('oiaccnumber', 100, 100, TYPE.STRING, true, false, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('Банк', '', ''),
                 ...setAccessor('oibank', 100, 150, TYPE.SUB_VALUE, true, false, true),
-                subPath: {path: BANKS, accessor: 'bankname'}
+                subPath: {path: BANKS, accessor: 'bankname'},
+                ...setType(TYPE.SUB_VALUE, true),
             },
             {
                 header: setLanguages('БИН', '', ''),
                 ...setAccessor('oibin', 12, 150, TYPE.STRING, true, false, true),
+                ...setType(TYPE.STRING, true),
             },
         ],
-    },
+    },//поставщик
     [POSITIONS]: {
         name: setLanguages('Должности', '', ''),
         maxWidth: '400px',
@@ -130,10 +177,12 @@ export const handbooks = {
             {
                 header: setLanguages('ID', '', ''),
                 ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+                ...setType(TYPE.ID, true),
             },
             {
-                header: setLanguages('Должности', '', ''),
-                ...setAccessor('positionname', null, null, TYPE.STRING, true, true, true),
+                header: setLanguages('Должность', '', ''),
+                ...setAccessor('positionname', 150, null, TYPE.STRING, true, true, true),
+                ...setType(TYPE.STRING, true),
             },
         ],
     },
@@ -143,84 +192,120 @@ export const handbooks = {
         columns: [
             {
                 header: setLanguages('ID'),
-                ...setAccessor('id', 0, 70, TYPE.ID, false, false, true)
+                ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+                ...setType(TYPE.ID, true),
             },
             {
                 header: setLanguages('Название подтипов'),
                 ...setAccessor('subtypename', 30, 200, TYPE.STRING, true, true, true),
+                ...setType(TYPE.STRING, true),
             },
             {
                 header: setLanguages('Описание', 'Сипаттама', 'Description'),
                 ...setAccessor('subtypedescr', 200, null, TYPE.STRING, false, true, true),
+                ...setType(TYPE.STRING, true),
             },
         ],
     },
     [SUBJECTS]: {
         name: setLanguages('Субъекты', '', ''),
-        maxWidth: '1500px',
+        maxWidth: '1000px',
         columns: [
             {
                 header: setLanguages('ID'),
-                ...setAccessor('id', 0, 70, TYPE.ID, false, false, true),
+                ...setAccessor('id',70),
+                ...setOrdering(false, true),
+                ...setType(TYPE.ID, true),
             },
             {
-                header: setLanguages('Subaccname',),
-                ...setAccessor('subaccname', 100, 100, TYPE.STRING, true, true, true),
+                header: setLanguages('Номер лицевого счета',),
+                ...setAccessor('subaccnumber',  250),
+                ...setOrdering(true, true),
+                ...setType(TYPE.NUMBER, true),
+                ...setValidation(/^\d{1,10}$/,/^\d{10}$/),
             },
             {
-                header: setLanguages('Subaccnumber',),
-                ...setAccessor('subaccnumber', 100, 100, TYPE.STRING, true, true, true),
+                header: setLanguages('Нименование',),
+                ...setAccessor('subname',  200),
+                ...setOrdering(true, true),
+                ...setType(TYPE.STRING, true),
+                ...setValidation(/^.+$/,/^.+$/),
             },
             {
-                header: setLanguages('Subaccpos',),
-                ...setAccessor('subaccpos', 300, 300, TYPE.SUB_VALUE, true, true, true),
-                subPath: {path: POSITIONS, accessor: 'positionname'}
+                header: setLanguages('БИН',),
+                ...setAccessor('subbin',  250),
+                ...setOrdering(true, true),
+                ...setType(TYPE.STRING, true),
+                ...setValidation(/^\d{0,12}$/,/^\d{12}$/),
             },
             {
-                header: setLanguages('Subaddr',),
-                ...setAccessor('subaddr', 100, 100, TYPE.STRING, true, true, true),
+                header: setLanguages('Действует с',),
+                ...setAccessor('substart', 200),
+                ...setOrdering(true, true),
+                ...setType(TYPE.DATE, true),
+                ...setValidation('0000{-}00{-}00',/^\d{4}-\d{2}-\d{2}$/ ),
             },
             {
-                header: setLanguages('Subbin',),
-                ...setAccessor('subbin', 100, 100, TYPE.STRING, true, true, true),
+                header: setLanguages('ФИО руководителя',),
+                ...setAccessor('subheadname',  350),
+                ...setType(TYPE.STRING, false),
+                ...setValidation(new RegExp(`^(${onlyWord}{1,100}(\\s?|\\.?)){0,3}$`),/^.+$/)
             },
             {
-                header: setLanguages('Subdescr',),
-                ...setAccessor('subdescr', 100, 100, TYPE.STRING, true, true, true),
+                header: setLanguages('Должность руководителя',),
+                ...setAccessor('subheadpos', 250),
+                subPath: {path: POSITIONS, accessor: 'positionname'},
+                ...setType(TYPE.SUB_VALUE, false),
+                ...setBreak(),
             },
             {
-                header: setLanguages('Subheadname',),
-                ...setAccessor('subheadname', 100, 100, TYPE.STRING, true, true, true),
+                header: setLanguages('ФИО бухгалтера',),
+                ...setAccessor('subaccname', 350),
+                ...setOrdering(true, true),
+                ...setType(TYPE.STRING, false),
+                ...setValidation(new RegExp(`^(${onlyWord}{1,100}(\\s?|\\.?)){0,3}$`),/^.+$/)
             },
             {
-                header: setLanguages('Subheadpos',),
-                ...setAccessor('subheadpos', 100, 100, TYPE.SUB_VALUE, true, true, true),
-                subPath: {path: POSITIONS, accessor: 'positionname'}
+                header: setLanguages('Должность бухгалтера',),
+                ...setAccessor('subaccpos', 250),
+                subPath: {path: POSITIONS, accessor: 'positionname'},
+                ...setType(TYPE.SUB_VALUE, false),
+                required: true,
+                ...setBreak(),
             },
             {
-                header: setLanguages('Subname',),
-                ...setAccessor('subname', 100, 100, TYPE.STRING, true, true, true),
+                header: setLanguages('Вид лица',),
+                ...setAccessor('subphys', 200),
+                options: ['Юрлицо', 'Физлицо',],
+                ...setType(TYPE.BOOLEAN, false),
             },
             {
-                header: setLanguages('Subphone',),
-                ...setAccessor('subphone', 100, 100, TYPE.STRING, true, true, true),
+                header: setLanguages('Тип организации',),
+                ...setAccessor('subtype',  200),
+                subPath: {path: SUB_TYPES, accessor: 'subtypename'},
+                ...setType(TYPE.SUB_VALUE, false),
+                ...setBreak(),
             },
             {
-                header: setLanguages('Subphys',),
-                ...setAccessor('subphys', 100, 100, TYPE.BOOLEAN, true, true, true),
-                options: ['Физлицо', 'Юрлицо']
+                header: setLanguages('Адрес',),
+                ...setAccessor('subaddr', 300),
+                ...setType(TYPE.STRING, false),
+                ...setValidation(/^.+$/,/^.+$/),
             },
             {
-                header: setLanguages('Substart',),
-                ...setAccessor('substart', 200, 160, TYPE.DATE, true, true, true),
+                header: setLanguages('Номер телефона',),
+                ...setAccessor('subphone', 300),
+                ...setType(TYPE.STRING, false),
+                ...setValidation('+{7}(000)000-0000', /^\d{11}$/),
             },
             {
-                header: setLanguages('Subtype',),
-                ...setAccessor('subtype', 100, 100, TYPE.SUB_VALUE, true, true, true),
-                subPath: {path: SUB_TYPES, accessor: 'subtypename'}
+                header: setLanguages('Описание',),
+                ...setAccessor('subdescr', 300),
+                ...setType(TYPE.STRING, false),
+                ...setValidation(/^.+$/,/^.+$/),
             },
         ],
-    },
+    }, //потребитель
 }
 
 export function getHandbooks() {

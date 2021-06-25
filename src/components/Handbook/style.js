@@ -20,6 +20,7 @@ const useStyle = makeStyles(theme => ({
     },
     row: {
         overflowWrap: 'break-word',
+        cursor: 'pointer',
         '& > *': {
             borderBottom: 'unset',
             padding: '12px 12px',
@@ -73,6 +74,14 @@ const useStyle = makeStyles(theme => ({
                 opacity: 0.5
             }
         }
+    },
+    sidemenu: {
+        display: 'flex',
+        flexFlow: 'column',
+        '& > *': {
+            margin: theme.spacing(1)
+        }
+
     }
 }))
 

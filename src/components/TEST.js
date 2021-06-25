@@ -1,8 +1,6 @@
-import React, {useState, useEffect} from 'react';
-import * as api from '../api/api'
+import React from 'react';
 
-export default function TEST({handbookName, preparedValue}) {
-    const [newRow, setNewRow] = useState()
-    api.addElementHandbook(handbookName,row)
+export default function TEST() {
+    return 'dasd'
 }
 
