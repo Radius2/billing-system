@@ -3,17 +3,16 @@ import React, {useState} from 'react';
 
 const MAX_LENGTH = 20
 
-export default function FilterTextField({changeBlock, filterHandler, checkValid}) {
+export default function FilterTextField({changeBlock, filterHandler}) {
     const [input, setInput] = useState('')
     return <TextField
         value={input}
         onChange={(e) => {
-            checkValid(()=>{
             const newValue = e.target.value.length <= MAX_LENGTH ? e.target.value : e.target.value.slice(0, MAX_LENGTH)
-            if (newValue === input) return
+            if (newValue === input) return undefined
             setInput(newValue);
             filterHandler(newValue)
-            })
+
         }}
         fullWidth/>
 }

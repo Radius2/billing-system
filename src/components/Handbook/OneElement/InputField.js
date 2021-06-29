@@ -17,6 +17,7 @@ export default function InputField({maskInput=maskInputInit, maskValidation=mask
 
     useEffect(() => {
         setIsValid((prev) => {
+                if (!maskValidation) return true
                 if (typeof value === 'boolean') return true;
                 if (type === 'boolean') return false;
                 if ( typeof value !== 'string') return false;
@@ -38,6 +39,7 @@ export default function InputField({maskInput=maskInputInit, maskValidation=mask
         return (
             <IMaskInput
                 unmask
+                radix="."
                 lazy={false}
                 {...props}
                 {...maskInput}
@@ -51,7 +53,7 @@ export default function InputField({maskInput=maskInputInit, maskValidation=mask
             disabled={!editing}
             error={!isValid}
             InputLabelProps={{shrink: true}}
-            className={clsx(classes.input, !editing && classes.inputDisabled, isChanged && isValid && classes.inputChanged,)}
+            className={clsx(classes.inputMui, !editing && classes.inputDisabled, isChanged && isValid && classes.inputChanged,)}
             select={type === TYPE.BOOLEAN}
             label={label}
             value={value}

@@ -3,7 +3,7 @@ import * as api from '../../api/api';
 import {LanguageContext} from '../../App';
 import {INTERFACE_DIALOG} from '../../util/language';
 
-export default function useData({handbookName, pageSize = 20,  snackbarHandler, setDefaultCurrentMod, selectedRows, setErrMessage}) {
+export default function useData({handbookName, pageSize = 20, snackbarHandler, setDefaultCurrentMod, selectedRows, setErrMessage}) {
     const [data, setData] = useState([]); //данные формы
     const [hasMore, setHasMore] = useState(false) // внутренняя безопасность
     const [page, setPage] = useState(1);//страниза пагинации
@@ -13,6 +13,7 @@ export default function useData({handbookName, pageSize = 20,  snackbarHandler, 
     const [filterParams, setFilterParams] = useState({}) //фильтр квери параметры запроса элементов справочника
     const [sortParams, setSortParams] = useState({desc: 0, ordering: 'id'})//квери параметр сортировки
     const [activeFilter, setActiveFilter] = useState(false); //активный фильтр
+    const [reloadData, setReloadData] = useState(false); //перезагрузка данных
     const {lang} = useContext(LanguageContext)
 
     const getElements = useCallback((page) => {
@@ -34,7 +35,7 @@ export default function useData({handbookName, pageSize = 20,  snackbarHandler, 
             .finally(() => {
                 setLoading(false);
             })
-    }, [sortParams, filterParams, sortParams])
+    }, [sortParams, filterParams, sortParams,])
 
     //сохранить новую строку в БД  и запросить новую строку в локальный справочник
     const addRow = useCallback((payload) => {
@@ -123,6 +124,14 @@ export default function useData({handbookName, pageSize = 20,  snackbarHandler, 
         }
     }, [handbookName, filterParams, sortParams, getElements])
 
+    //получение данных справочника при загрузке компонента
+    useEffect(() => {
+        if (!reloadData) return
+        setPage(1);
+        setReloadData(false);
+        getElements(1);
+    }, [reloadData])
+
     useEffect(() => {
             if (page > 1) getElements(page)
         }
@@ -147,6 +156,7 @@ export default function useData({handbookName, pageSize = 20,  snackbarHandler, 
         sortParamsHandler,
         filterParamsHandler,
         activeFilter,
-        setActiveFilter
+        setActiveFilter,
+        setReloadData
     }
 }

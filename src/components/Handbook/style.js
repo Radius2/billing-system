@@ -77,6 +77,8 @@ const useStyle = makeStyles(theme => ({
     },
     sidemenu: {
         display: 'flex',
+        margin: '0 ' + theme.spacing(1) + 'px',
+        height: 'max-content',
         flexFlow: 'column',
         '& > *': {
             margin: theme.spacing(1)

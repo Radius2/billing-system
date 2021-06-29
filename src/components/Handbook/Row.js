@@ -9,6 +9,7 @@ export default function Row({clickRowHandler, columns, data, deleteClass, childr
 
 
     function dateFormat(date = '') {
+        if (!date) return ''
         return date.split('-').reverse().join('.')
     }
 

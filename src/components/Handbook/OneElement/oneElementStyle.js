@@ -9,10 +9,7 @@ const useStyle = makeStyles(theme => ({
     container: {
         padding: theme.spacing(2),
     },
-    input: {
-        margin: theme.spacing(1),
-        display: 'inline-flex',
-        width: props => props.width,
+    inputMui: {
         '& .MuiFormLabel-root': {
             color: theme.palette.text.primary,
             fontSize: '1.1rem',
@@ -21,6 +18,9 @@ const useStyle = makeStyles(theme => ({
         '& .MuiInputBase-input': {
             fontWeight: 400,
         },
+        margin: theme.spacing(1) + 'px !important',
+        display: 'inline-flex',
+        width: props => props.width,
     },
     inputChanged: {
         '& .MuiInput-underline:before, .MuiInput-underline:after': {
@@ -38,11 +38,11 @@ const useStyle = makeStyles(theme => ({
         flexFlow: 'column'
     },
     actionPanel: {
-        display: 'flex',
-        justifyContent: 'flex-end',
         '& > *': {
             margin: theme.spacing(1),
         },
+        display: 'flex',
+        justifyContent: 'flex-end',
     }
 }))
 

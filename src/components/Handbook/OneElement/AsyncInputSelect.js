@@ -1,11 +1,11 @@
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Modal from '@material-ui/core/Modal';
 import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
 import clsx from 'clsx';
 import * as api from '../../../api/api'
-import {TextField} from '@material-ui/core';
+import {TextField, Dialog} from '@material-ui/core';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
+import Handbook from '../Handbook';
 import OneElement from './OneElement';
 import useStyle from './oneElementStyle';
 
@@ -18,7 +18,8 @@ export default function AsyncInputSelect({width, setIsValidArray, setIsChangedAr
     const [value, setValue] = useState(startValue ?? {})//внутреннее значение
     const [inputValue, setInputValue] = useState('')
     const [options, setOptions] = useState([]);
-    const [openModal, setOpenModal] = useState(false);
+    const [openModalHandbook, setOpenModalHandbook] = useState(false);
+    const [openModalOneElement, setOpenModalOneElement] = useState(false);
     const [preparedValue, setPreparedValue] = useState({})
     const [isChanged, setIsChanged] = useState(false);
     const [isValid, setIsValid] = useState(false);
@@ -70,20 +71,41 @@ export default function AsyncInputSelect({width, setIsValidArray, setIsChangedAr
     }
 
     function modalCancelHandler() {
-        setOpenModal(false)
+        setOpenModalHandbook(false)
+        setOpenModalOneElement(false)
     }
 
     function modalSubmitHandler(data, elementData) {
         const newValue = {...data, ...elementData}
         setValue(newValue)
         selectHandler(newValue)
-        setOpenModal(false)
+        setOpenModalHandbook(false)
+        setOpenModalOneElement(false)
     }
 
     return (<>
-        {openModal ?
+        {openModalHandbook ?
+            <Dialog
+                maxWidth={false}
+                PaperComponent='div'
+                className={classes.root}
+                open={openModalHandbook}
+                onClose={modalCancelHandler}>
+                <Box style={{
+                    display: 'flex',
+                    height: 'calc(100vh - 64px)',
+                    paddingBottom: '8px',
+                    justifyContent: 'center',
+                }}>
+                    <Handbook
+                        handbook={subPath.path}
+                        clickRowHandler={modalSubmitHandler}
+                    />
+                </Box>
+            </Dialog> : null}
+        {openModalOneElement ?
             <OneElement
-                open={openModal}
+                open={openModalOneElement}
                 cancelHandler={modalCancelHandler}
                 submitHandler={modalSubmitHandler}
                 subValue={{handbookName: subPath.path, id: 'add'}}
@@ -91,7 +113,7 @@ export default function AsyncInputSelect({width, setIsValidArray, setIsChangedAr
         }
         {editing ? (
                 <Autocomplete
-                    className={classes.input}
+                    className={classes.inputMui}
                     options={options}
                     value={value}
                     inputValue={inputValue}
@@ -103,11 +125,13 @@ export default function AsyncInputSelect({width, setIsValidArray, setIsChangedAr
                         if (typeof newValue === 'string') {
                             setTimeout(() => {
                                 setPreparedValue({[subPath.accessor]: newValue})
-                                setOpenModal(true);
+                                console.log('1')
+                                setOpenModalOneElement(true);
                             });
                         } else if (newValue && newValue.inputValue) {
                             setPreparedValue({[subPath.accessor]: newValue.inputValue})
-                            setOpenModal(true);
+                            console.log('2')
+                            newValue.newWindow ? setOpenModalHandbook(true) : setOpenModalOneElement(true);
                         } else {
                             setValue(newValue)
                             selectHandler(newValue)
@@ -115,14 +139,19 @@ export default function AsyncInputSelect({width, setIsValidArray, setIsChangedAr
                     }}
                     filterOptions={(options, params) => {
                         const filtered = filter(options, params);
-
                         if (params.inputValue !== '') {
-                            filtered.push({
-                                inputValue: params.inputValue,
-                                [subPath.accessor]: `Создать "${params.inputValue}"`,
-                            });
+                            filtered.push(
+                                {
+                                    inputValue: params.inputValue,
+                                    [subPath.accessor]: `Создать "${params.inputValue}"`,
+                                },
+                                {
+                                    inputValue: params.inputValue,
+                                    [subPath.accessor]: `Поиск в новом окне`,
+                                    newWindow: true,
+                                },
+                            );
                         }
-
                         return filtered;
                     }}
                     onOpen={() => setIsOpen(true)}
@@ -155,7 +184,7 @@ export default function AsyncInputSelect({width, setIsValidArray, setIsChangedAr
                     disabled={!editing}
                     required={editing}
                     label={label ?? ''}
-                    className={clsx(classes.input, !editing && classes.inputDisabled)}
+                    className={clsx(classes.inputMui, !editing && classes.inputDisabled)}
                     value={startValue[subPath.accessor]}
                 />)}
     </>);

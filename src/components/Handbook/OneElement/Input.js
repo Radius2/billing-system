@@ -1,33 +1,38 @@
-import React from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {TYPE} from '../../../util/handbook';
 import AsyncInputSelect from './AsyncInputSelect';
 import InputField from './InputField';
 
 export default function Input({column, value, editing, setIsValidArray, setIsChangedArray, updateValues, lang}) {
-    const {type, accessor} = column;
+    const {type} = column;
+    const inputField = useCallback((props) => <InputField
+        key={column.accessor}
+        inputHandler={(newValue) => {
+            console.log(newValue)
+            updateValues(newValue, column)
+        }}
+        type={type}
+        maskInput={column.maskInput}
+        maskValidation={column.maskValidation}
+        setIsValidArray={setIsValidArray}
+        setIsChangedArray={setIsChangedArray}
+        editing={editing}
+        width={column.width}
+        label={column.header[lang]}
+        htmlId={column.accessor}
+        options={column.options}
+        value={value?.toString()}
+        {...props}
+    />, [updateValues])
     switch (type) {
         default:
         case TYPE.STRING:
-        case TYPE.BOOLEAN:
         case TYPE.DATE:
-            return (
-                <InputField
-                    key={column.accessor}
-                    type={type}
-                    maskInput={column.maskInput}
-                    maskValidation={column.maskValidation}
-                    setIsValidArray={setIsValidArray}
-                    setIsChangedArray={setIsChangedArray}
-                    editing={editing}
-                    width={column.width}
-                    label={column.header[lang]}
-                    inputHandler={(newValue) => updateValues(newValue, column)}
-                    htmlId={column.accessor}
-                    options={column.options}
-                    value={value}
-                >
-                </InputField>
-            );
+            return inputField({});
+        case TYPE.BOOLEAN:
+            return inputField({value: value});
+        case TYPE.NUMBER:
+            return inputField({inputHandler: (newValue) => updateValues(+newValue, column)})
         case TYPE.SUB_VALUE:
             return (
                 <AsyncInputSelect

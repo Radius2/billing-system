@@ -35,9 +35,9 @@ function changeReduce(obj = {}) {
 }
 
 export default function OneElement({open, submitHandler, cancelHandler, subValue, preparedValue = {}}) {
-    const [handbookName] = useState(subValue?.handbookName); // название формы
-    const [idElement] = useState(subValue?.id?.toString()||0); // id element
-    const [columns] = useState(handbooks[handbookName].columns); //шапка формы
+    const {handbookName, id: idElement} = subValue // название формы
+    const [columns,setColumns] = useState(handbooks[handbookName].columns); //шапка формы
+    useEffect(()=>setColumns(handbooks[handbookName].columns),[subValue.handbookName])
 
     const {lang} = useContext(LanguageContext);
     const classes = useStyle();
@@ -59,7 +59,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
     }, [isChangedArray])
 
     useEffect(() => {
-        if (idElement.toUpperCase() === 'ADD' || idElement===0) {
+        if (idElement.toUpperCase() === 'ADD' || idElement === 0) {
             setLoading(false);
             return setElementData(newElement(columns, preparedValue))
         }
@@ -98,7 +98,10 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
             column={column}
             value={value}
             lang={lang}
-            updateValues={(value) => setElementData(prev => ({...prev, [column.accessor]: value}))}
+            updateValues={(value) => {
+                console.log(value, 'one')
+                setElementData(prev => ({...prev, [column.accessor]: value}))
+            }}
             editing={editing}
             setIsValidArray={(value) => setIsValidArray(prev => ({...prev, [column.accessor]: !!value}))}
             setIsChangedArray={(value) => setIsChangedArray(prev => ({...prev, [column.accessor]: !!value}))}
@@ -106,9 +109,9 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
     }, [editing, lang, setIsValidArray])
 
     return (
-        <Modal
-            disableAutoFocus
+        <Dialog
             open={open}
+            maxWidth={false}
             className={classes.root}
             onClose={closeHandler}
             aria-labelledby="simple-modal-title"
@@ -176,6 +179,6 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                         </Box> : null}
                 </Box>
             </Box>
-        </Modal>
+        </Dialog>
     )
 }
