@@ -8,16 +8,17 @@ import {
     DialogContent,
     DialogContentText,
     DialogActions,
-    Typography, Modal
+    Typography
 } from '@material-ui/core';
-import CreateIcon from '@material-ui/icons/Create';
+import HistoryIcon from '@material-ui/icons/History';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {LanguageContext} from '../../../App';
 import {handbooks} from '../../../util/handbook';
 import {INTERFACE_LANGUAGE} from '../../../util/language';
+import HistoryElement from '../HistoryElement/HistoryElement';
 import TooltipButton from '../TooltipButton';
+import InputSwitch from './InputSwitch';
 import useStyle from './oneElementStyle';
-import Input from './Input';
 import * as api from '../../../api/api'
 
 function newElement(columns, preparedValue = {}) {
@@ -36,8 +37,8 @@ function changeReduce(obj = {}) {
 
 export default function OneElement({open, submitHandler, cancelHandler, subValue, preparedValue = {}}) {
     const {handbookName, id: idElement} = subValue // название формы
-    const [columns,setColumns] = useState(handbooks[handbookName].columns); //шапка формы
-    useEffect(()=>setColumns(handbooks[handbookName].columns),[subValue.handbookName])
+    const [columns, setColumns] = useState(handbooks[handbookName].columns); //шапка формы
+    useEffect(() => setColumns(handbooks[handbookName].columns), [subValue.handbookName])
 
     const {lang} = useContext(LanguageContext);
     const classes = useStyle();
@@ -49,6 +50,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
     const [isValidElement, setIsValidElement] = useState(true);
     const [isChangedElement, setIsChangedElement] = useState(true);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openHistory, setOpenHistory] = useState(false);
 
     useEffect(() => {
         setIsValidElement(validationReduce(isValidArray))
@@ -93,7 +95,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
     }
 
     const input = useCallback((column, value) => {
-        return <Input
+        return <InputSwitch
             key={column.accessor}
             column={column}
             value={value}
@@ -126,34 +128,33 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={cancelHandler} color="primary">
-                            Выход
+                            {INTERFACE_LANGUAGE.exit[lang]}
                         </Button>
                         <Button onClick={() => setOpenDialog(false)} color="primary" autoFocus>
-                            Отмена
+                            {INTERFACE_LANGUAGE.cancel[lang]}
                         </Button>
                     </DialogActions>
                 </Dialog>
-                {/*<Paper>*/}
-                {/*    <TooltipButton*/}
-                {/*        icon={<CreateIcon/>}*/}
-                {/*        active={editing}*/}
-                {/*        tooltipTitle={INTERFACE_LANGUAGE.update[lang]}*/}
-                {/*        actionHandler={(e) => {*/}
-                {/*            e.stopPropagation()*/}
-                {/*            setEditing(!editing);*/}
-                {/*            history.push(idElement + '?edit=' + Number(!editing))*/}
-                {/*        }}/>*/}
-                {/*</Paper>*/}
+                {openHistory ?
+                    <HistoryElement open={openHistory} onClose={() => setOpenHistory(false)} handbookName={handbookName}
+                                    id={idElement}/>
+                    : null
+                }
                 <Box component={Paper} className={classes.container} style={{width: handbooks[handbookName].maxWidth}}>
                     <Box className={classes.namePanel}>
-                        {idElement.toUpperCase() !== 'ADD' ?
-                            <Typography variant={'subtitle1'}>
-                                {`ID: ${idElement}`}
+                        <Box>
+                            {idElement.toUpperCase() !== 'ADD' ?
+                                <Typography variant={'subtitle1'}>
+                                    {`ID: ${idElement}`}
+                                </Typography>
+                                : null}
+                            <Typography variant={'h6'}>
+                                {handbooks[handbookName].name[lang]}
                             </Typography>
-                            : null}
-                        <Typography variant={'h6'}>
-                            {handbooks[handbookName].name[lang]}
-                        </Typography>
+                        </Box>
+                        {handbookName === 'subjects' ? <TooltipButton size='medium' tooltipTitle='история'
+                                                                      actionHandler={() => setOpenHistory(true)}
+                                                                      icon={<HistoryIcon/>}/> : null}
                     </Box>
                     <Divider/>
                     {loading ? null : (

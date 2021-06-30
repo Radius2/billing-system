@@ -1,14 +1,6 @@
 import {makeStyles} from '@material-ui/core';
 
 const useStyle = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    container: {
-        padding: theme.spacing(2),
-    },
     inputMui: {
         '& .MuiFormLabel-root': {
             color: theme.palette.text.primary,
@@ -32,19 +24,6 @@ const useStyle = makeStyles(theme => ({
             color: theme.palette.text.primary,
         },
     },
-    namePanel: {
-        padding: theme.spacing(1),
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-    },
-    actionPanel: {
-        '& > *': {
-            margin: theme.spacing(1),
-        },
-        display: 'flex',
-        justifyContent: 'flex-end',
-    }
 }))
 
 export default useStyle;

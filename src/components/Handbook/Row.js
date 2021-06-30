@@ -4,7 +4,7 @@ import {TYPE} from '../../util/handbook';
 import useStyle from './style';
 import clsx from 'clsx';
 
-export default function Row({clickRowHandler, columns, data, deleteClass, children}) {
+export default function Row({clickRowHandler=()=>{}, columns, data, deleteClass, children}) {
     const classes = useStyle();
 
 

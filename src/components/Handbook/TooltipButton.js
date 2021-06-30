@@ -1,11 +1,11 @@
 import {IconButton, Tooltip} from '@material-ui/core';
 import React from 'react';
 
-export default function TooltipButton({active, actionHandler, icon, tooltipTitle}) {
+export default function TooltipButton({active,size='small', actionHandler, icon, tooltipTitle}) {
     return (
         <Tooltip title={tooltipTitle}>
             <IconButton
-                size={'small'}
+                size={size}
                 color={active ? 'primary' : 'default'}
                 aria-label={tooltipTitle}
                 onClick={actionHandler}>

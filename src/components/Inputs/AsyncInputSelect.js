@@ -2,16 +2,16 @@ import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
 import clsx from 'clsx';
-import * as api from '../../../api/api'
+import * as api from '../../api/api'
 import {TextField, Dialog} from '@material-ui/core';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import Handbook from '../Handbook';
-import OneElement from './OneElement';
-import useStyle from './oneElementStyle';
+import Handbook from '../Handbook/Handbook';
+import OneElement from '../Handbook/OneElement/OneElement';
+import useStyle from './inputStyle';
 
 const filter = createFilterOptions();
 
-export default function AsyncInputSelect({width, setIsValidArray, setIsChangedArray, editing, startValue, label, subPath, selectHandler}) {
+export default function AsyncInputSelect({width, onIsValidChange, onIsChangedChange, editing = true, startValue, label, subPath, onChange}) {
     const classes = useStyle({width});
     const [loading, setLoading] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
@@ -31,11 +31,11 @@ export default function AsyncInputSelect({width, setIsValidArray, setIsChangedAr
     }, [value]);
 
     useEffect(() => {
-        setIsChangedArray(isChanged)
+        onIsChangedChange(isChanged)
     }, [isChanged]);
 
     useEffect(() => {
-        setIsValidArray(isValid)
+        onIsValidChange(isValid)
     }, [isValid]);
 
 
@@ -78,7 +78,7 @@ export default function AsyncInputSelect({width, setIsValidArray, setIsChangedAr
     function modalSubmitHandler(data, elementData) {
         const newValue = {...data, ...elementData}
         setValue(newValue)
-        selectHandler(newValue)
+        onChange(newValue)
         setOpenModalHandbook(false)
         setOpenModalOneElement(false)
     }
@@ -134,7 +134,7 @@ export default function AsyncInputSelect({width, setIsValidArray, setIsChangedAr
                             newValue.newWindow ? setOpenModalHandbook(true) : setOpenModalOneElement(true);
                         } else {
                             setValue(newValue)
-                            selectHandler(newValue)
+                            onChange(newValue)
                         }
                     }}
                     filterOptions={(options, params) => {

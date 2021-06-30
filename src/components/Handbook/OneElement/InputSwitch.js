@@ -1,38 +1,31 @@
 import React, {useCallback, useMemo} from 'react';
 import {TYPE} from '../../../util/handbook';
-import AsyncInputSelect from './AsyncInputSelect';
-import InputField from './InputField';
+import AsyncInputSelect from '../../Inputs/AsyncInputSelect';
+import InputField from '../../Inputs/InputField';
 
-export default function Input({column, value, editing, setIsValidArray, setIsChangedArray, updateValues, lang}) {
+export default function InputSwitch({column, value, editing, setIsValidArray, setIsChangedArray, updateValues, lang}) {
     const {type} = column;
-    const inputField = useCallback((props) => <InputField
+    const inputField = useCallback(() => <InputField
         key={column.accessor}
-        inputHandler={(newValue) => {
-            console.log(newValue)
-            updateValues(newValue, column)
-        }}
+        onChange={(newValue) => updateValues(newValue, column)}
         type={type}
         maskInput={column.maskInput}
         maskValidation={column.maskValidation}
-        setIsValidArray={setIsValidArray}
-        setIsChangedArray={setIsChangedArray}
+        onIsValidChange={setIsValidArray}
+        onIsChangedChange={setIsChangedArray}
         editing={editing}
         width={column.width}
         label={column.header[lang]}
-        htmlId={column.accessor}
         options={column.options}
-        value={value?.toString()}
-        {...props}
+        value={value}
     />, [updateValues])
     switch (type) {
         default:
         case TYPE.STRING:
         case TYPE.DATE:
-            return inputField({});
         case TYPE.BOOLEAN:
-            return inputField({value: value});
         case TYPE.NUMBER:
-            return inputField({inputHandler: (newValue) => updateValues(+newValue, column)})
+            return inputField();
         case TYPE.SUB_VALUE:
             return (
                 <AsyncInputSelect
@@ -40,11 +33,11 @@ export default function Input({column, value, editing, setIsValidArray, setIsCha
                     width={column.width}
                     editing={editing}
                     startValue={value}
-                    setIsValidArray={setIsValidArray}
-                    setIsChangedArray={setIsChangedArray}
+                    onIsValidChange={setIsValidArray}
+                    onIsChangedChange={setIsChangedArray}
                     subPath={column.subPath}
                     label={column.header[lang]}
-                    selectHandler={(newValue) => updateValues(newValue, column)}
+                    onChange={(newValue) => updateValues(newValue, column)}
                 />)
         case TYPE.ID:
             return null

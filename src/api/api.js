@@ -43,6 +43,10 @@ export function getHandbook(nameHandbook, queryParams = {}) {
         {params: queryParams});
 }
 
+export function getHandbookHistory(nameHandbook, id) {
+    return api.get('/' + nameHandbook + '_hist/' + id)
+}
+
 export function getElementHandbook(nameHandbook, id) {
     return api.get('/' + nameHandbook + '/' + id)
 }
