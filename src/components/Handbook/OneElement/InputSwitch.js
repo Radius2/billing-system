@@ -5,7 +5,7 @@ import InputField from '../../Inputs/InputField';
 
 export default function InputSwitch({column, value, editing, setIsValidArray, setIsChangedArray, updateValues, lang}) {
     const {type} = column;
-    const inputField = useCallback(() => <InputField
+    const inputField = useCallback((props) => <InputField
         key={column.accessor}
         onChange={(newValue) => updateValues(newValue, column)}
         type={type}
@@ -18,6 +18,7 @@ export default function InputSwitch({column, value, editing, setIsValidArray, se
         label={column.header[lang]}
         options={column.options}
         value={value}
+        {...props}
     />, [updateValues])
     switch (type) {
         default:
@@ -25,14 +26,16 @@ export default function InputSwitch({column, value, editing, setIsValidArray, se
         case TYPE.DATE:
         case TYPE.BOOLEAN:
         case TYPE.NUMBER:
-            return inputField();
+            return inputField({});
+        case TYPE.SUB_SUB_VALUE:
+            return inputField({value:value[column?.subSubPath?.accessor]?.[column.subSubPath.subAccessor],editing:false});
         case TYPE.SUB_VALUE:
             return (
                 <AsyncInputSelect
-                    key={column.accessor}
+                    key={column.subPath.accessor}
                     width={column.width}
                     editing={editing}
-                    startValue={value}
+                    value={value}
                     onIsValidChange={setIsValidArray}
                     onIsChangedChange={setIsChangedArray}
                     subPath={column.subPath}

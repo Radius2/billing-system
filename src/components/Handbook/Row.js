@@ -19,16 +19,17 @@ export default function Row({clickRowHandler=()=>{}, columns, data, deleteClass,
                 return column.options[Number(value)]
             case TYPE.DATE:
                 return dateFormat(value)
+            case TYPE.SUB_VALUE:
+                return value[column.subPath.accessor];
+            case TYPE.SUB_SUB_VALUE:
+                return value[column?.subSubPath?.accessor]?.[column.subSubPath.subAccessor]
             default:
                 return value
         }
     }
 
-    const cell = useCallback((dataCell,column,index) => {
+    const cell = useCallback((value,column,index) => {
         if (!column.mainValue) return null
-        const {type} = column;
-        const subValue = type === TYPE.SUB_VALUE
-        const value = !subValue ? dataCell : dataCell?.[column.subPath.accessor];
         return (
             <TableCell
                 key={column.accessor+index}>

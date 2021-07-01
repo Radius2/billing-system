@@ -32,7 +32,7 @@ export default function HeadTable({ columns, sortParams, sortParamsHandler, filt
                         </ButtonBase>
                         {activeFilter && column.filter ?
                             <FilterTextField checkValid={checkValid}
-                                             filterHandler={(value) => filterParamsHandler(column.accessor, value)}/>
+                                             filterHandler={(value) => filterParamsHandler(column.subPath?.accessor ?? column.accessor, value)}/>
                             : null}
                     </TableCell>)
             )}

@@ -47,6 +47,7 @@ export default function InputField({maskInput = maskInputInit, maskValidation = 
 
     function valueSwitch(value) {
         switch (type) {
+            default:
             case TYPE.DATE:
             case TYPE.STRING:
             case  TYPE.BOOLEAN:
@@ -73,7 +74,7 @@ export default function InputField({maskInput = maskInputInit, maskValidation = 
             error={!isValid}
             {...type === TYPE.DATE ? {type: 'date'} : {}}
             InputLabelProps={{shrink: true}}
-            className={clsx(classes.inputMui, !editing && classes.inputDisabled, isChanged && isValid && classes.inputChanged,)}
+            className={clsx(classes.inputMui, !editing && classes.inputDisabled, editing && isChanged && isValid && classes.inputChanged,)}
             select={type === TYPE.BOOLEAN}
             label={label}
             value={valueSwitch(value)}

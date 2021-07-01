@@ -11,11 +11,10 @@ import useStyle from './inputStyle';
 
 const filter = createFilterOptions();
 
-export default function AsyncInputSelect({width, onIsValidChange, onIsChangedChange, editing = true, startValue, label, subPath, onChange}) {
+export default function AsyncInputSelect({width, onIsValidChange, onIsChangedChange, editing = true, value={}, label, subPath, onChange}) {
     const classes = useStyle({width});
     const [loading, setLoading] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
-    const [value, setValue] = useState(startValue ?? {})//внутреннее значение
     const [inputValue, setInputValue] = useState('')
     const [options, setOptions] = useState([]);
     const [openModalHandbook, setOpenModalHandbook] = useState(false);
@@ -23,7 +22,7 @@ export default function AsyncInputSelect({width, onIsValidChange, onIsChangedCha
     const [preparedValue, setPreparedValue] = useState({})
     const [isChanged, setIsChanged] = useState(false);
     const [isValid, setIsValid] = useState(false);
-    const {current: initId} = useRef(startValue?.id)
+    const [initId] = useState(value?.id)
 
     useEffect(() => {
         setIsValid(!!value.id)
@@ -77,7 +76,6 @@ export default function AsyncInputSelect({width, onIsValidChange, onIsChangedCha
 
     function modalSubmitHandler(data, elementData) {
         const newValue = {...data, ...elementData}
-        setValue(newValue)
         onChange(newValue)
         setOpenModalHandbook(false)
         setOpenModalOneElement(false)
@@ -133,7 +131,6 @@ export default function AsyncInputSelect({width, onIsValidChange, onIsChangedCha
                             console.log('2')
                             newValue.newWindow ? setOpenModalHandbook(true) : setOpenModalOneElement(true);
                         } else {
-                            setValue(newValue)
                             onChange(newValue)
                         }
                     }}
@@ -156,14 +153,13 @@ export default function AsyncInputSelect({width, onIsValidChange, onIsChangedCha
                     }}
                     onOpen={() => setIsOpen(true)}
                     onClose={closeAutocompleteHandler}
-                    getOptionLabel={(option) => option[subPath.accessor] || ''}
+                    getOptionLabel={(option) => option[subPath.accessor]?.toString() || ''}
                     renderInput={(params) => (
                         <TextField
                             {...params}
                             InputLabelProps={{shrink: true}}
                             error={!isValid}
                             disabled={!editing}
-                            required={editing}
                             label={label ?? ''}
                             className={clsx(isChanged && isValid && classes.inputChanged,)}
                             InputProps={{
@@ -182,10 +178,9 @@ export default function AsyncInputSelect({width, onIsValidChange, onIsChangedCha
                 <TextField
                     InputLabelProps={{shrink: true}}
                     disabled={!editing}
-                    required={editing}
                     label={label ?? ''}
                     className={clsx(classes.inputMui, !editing && classes.inputDisabled)}
-                    value={startValue[subPath.accessor]}
+                    value={value[subPath.accessor]}
                 />)}
     </>);
 }

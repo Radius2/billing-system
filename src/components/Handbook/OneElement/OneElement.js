@@ -96,7 +96,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
 
     const input = useCallback((column, value) => {
         return <InputSwitch
-            key={column.accessor}
+            key={column.accessor+(column.subPath?.accessor ?? '')}
             column={column}
             value={value}
             lang={lang}
@@ -152,7 +152,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                                 {handbooks[handbookName].name[lang]}
                             </Typography>
                         </Box>
-                        {handbookName === 'subjects' ? <TooltipButton size='medium' tooltipTitle='история'
+                        {handbookName === 'subjects' && idElement!=='add' ? <TooltipButton size='medium' tooltipTitle='история'
                                                                       actionHandler={() => setOpenHistory(true)}
                                                                       icon={<HistoryIcon/>}/> : null}
                     </Box>

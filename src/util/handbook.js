@@ -9,6 +9,7 @@ export const TYPE = {
     STRING: 'string',
     NUMBER: 'number',
     SUB_VALUE: 'subValue',
+    SUB_SUB_VALUE: 'subsubvalue',
     BR: 'newRow'
 }
 
@@ -17,12 +18,14 @@ const AREAS = 'areas';
 const BANKS = 'banks';
 const BUILDING_TYPES = 'building_types';
 const CASH_DESKS = 'cashdesks';
+const CITIES = 'cities'
 const CHARGE_TYPES = 'chargetypes';
 const CONNECTORS = 'connectors';
 const CUSTOMER_GROUPS = 'customergroups'
 const ESO = 'eso'
 const FORM_TYPES = 'form_types';
 const GRP = 'grp';
+const HOUSES = 'houses';
 const INPUT_TYPES = 'input_types';
 const KSK = 'ksk';
 const OBJ_TYPES = 'objtypes';
@@ -204,6 +207,27 @@ export const handbooks = {
             },
         ],
     },
+    [CITIES]: {
+        name: setLanguages('Города', '', ''),
+        maxWidth: '400px',
+        columns: [
+            {
+                header: setLanguages('ID', '', ''),
+                ...setAccessor('id', 70),
+                ...setType(TYPE.ID, true),
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /^.+/)
+
+            },
+            {
+                header: setLanguages('Город', '', ''),
+                ...setAccessor('cityname', 250),
+                ...setType(TYPE.STRING, true),
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /^.+/)
+            },
+        ],
+    },
     [CHARGE_TYPES]: {
         name: setLanguages('Типы начислений', '', ''),
         maxWidth: '400px',
@@ -238,8 +262,8 @@ export const handbooks = {
 
             },
             {
-                header: setLanguages('Наименование уровня подсоединения', '', ''),
-                ...setAccessor('connectorname', 250),
+                header: setLanguages('Уровень подсоединения', '', ''),
+                ...setAccessor('connectorname', 300),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),
                 ...setValidation(/^.{0,100}/, /^.+/)
@@ -259,7 +283,7 @@ export const handbooks = {
 
             },
             {
-                header: setLanguages('Наименование группы потребителя', '', ''),
+                header: setLanguages('Группа потребителей', '', ''),
                 ...setAccessor('customergroupname', 250),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),
@@ -312,7 +336,7 @@ export const handbooks = {
                 ...setType(TYPE.STRING, true),
                 ...setType(TYPE.SUB_VALUE, true),
                 subPath: {path: SUBJECTS, accessor: 'subname'},
-                ...setOrdering(),
+                ...setOrdering(true, true),
             },
         ],
     },//Subject accounts
@@ -361,6 +385,116 @@ export const handbooks = {
                 ...setOrdering(true, true),
                 ...setValidation(/^.{0,100}/, /^.+/)
             },
+        ],
+    },
+    [HOUSES]: {
+        name: setLanguages('Здания',),
+        maxWidth: '1000px',
+        columns: [
+            {
+                header: setLanguages('ID'),
+                ...setAccessor('id', 70,),
+                ...setType(TYPE.ID, true),
+                ...setOrdering(false, true),
+                ...setValidation()
+            },
+            {
+                header: setLanguages('Город',),
+                ...setAccessor('street', 200,),
+                ...setType(TYPE.SUB_SUB_VALUE, true),
+                subSubPath: {accessor: 'city', subAccessor: 'cityname'},
+                ...setOrdering(),
+                ...setValidation(/^.{0,100}/, false)
+            },
+            {
+                header: setLanguages('Улица',),
+                ...setAccessor('street', 300,),
+                ...setType(TYPE.SUB_VALUE, true),
+                subPath: {path: STREETS, accessor: 'streetname'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /^.+/)
+            },
+            {
+                header: setLanguages('№ дома',),
+                ...setAccessor('housenumber', 100,),
+                ...setType(TYPE.STRING, true),
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /^.+/)
+            },
+            {
+                header: setLanguages('Сооружение',),
+                ...setAccessor('buildingnumber', 100,),
+                ...setType(TYPE.STRING, false),
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, false)
+            },
+            {
+                header: setLanguages('Тип сооружения',),
+                ...setAccessor('buildingtype', 150,),
+                ...setType(TYPE.SUB_VALUE, false),
+                subPath: {path: BUILDING_TYPES, accessor: 'buildingtypename'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, false),
+                ...setBreak(),
+            },
+            {
+                header: setLanguages('Участок',),
+                ...setAccessor('area', 200,),
+                ...setType(TYPE.SUB_VALUE, false),
+                subPath: {path: AREAS, accessor: 'areaname'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, false)
+            },
+            {
+                header: setLanguages('Присоединение',),
+                ...setAccessor('connector', 200,),
+                ...setType(TYPE.SUB_VALUE, false),
+                subPath: {path: CONNECTORS, accessor: 'connectorname'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /.+/)
+            },
+            {
+                header: setLanguages('Тип отпуска',),
+                ...setAccessor('inputtype', 200,),
+                ...setType(TYPE.SUB_VALUE, false),
+                subPath: {path: INPUT_TYPES, accessor: 'inputtypename'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /.+/)
+            },
+            {
+                header: setLanguages('Надежность',),
+                ...setAccessor('reliability', 150,),
+                ...setType(TYPE.SUB_VALUE, false),
+                subPath: {path: RELIABILITIES, accessor: 'reliabilityname'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /.+/),
+                ...setBreak(),
+            },
+            {
+                header: setLanguages('Напряжение',),
+                ...setAccessor('voltage', 150,),
+                ...setType(TYPE.SUB_VALUE, false),
+                subPath: {path: VOLTAGES, accessor: 'voltagename'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /.+/)
+            },
+            {
+                header: setLanguages('КСК',),
+                ...setAccessor('ksk', 200,),
+                ...setType(TYPE.SUB_VALUE, false),
+                subPath: {path: KSK, accessor: 'kskname'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /.+/)
+            },
+            {
+                header: setLanguages('РП',),
+                ...setAccessor('rp', 200,),
+                ...setType(TYPE.SUB_VALUE, false),
+                subPath: {path: RP, accessor: 'rpname'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, /.+/)
+            },
+
         ],
     },
     [INPUT_TYPES]: {
@@ -616,7 +750,7 @@ export const handbooks = {
                 ...setAccessor('inputvoltage', 230),
                 ...setType(TYPE.SUB_VALUE, true),
                 subPath: {path: VOLTAGES, accessor: 'voltagename'},
-                ...setOrdering(false,false),
+                ...setOrdering(false, false),
                 ...setValidation(/^.{0,100}/, /^.+/)
             },
             {
@@ -624,7 +758,7 @@ export const handbooks = {
                 ...setAccessor('outputvoltage1', 230),
                 ...setType(TYPE.SUB_VALUE, true),
                 subPath: {path: VOLTAGES, accessor: 'voltagename'},
-                ...setOrdering(false,false),
+                ...setOrdering(false, false),
                 ...setValidation(/^.{0,100}/, /^.+/)
             },
             {
@@ -632,7 +766,7 @@ export const handbooks = {
                 ...setAccessor('outputvoltage2', 230),
                 ...setType(TYPE.SUB_VALUE, true),
                 subPath: {path: VOLTAGES, accessor: 'voltagename'},
-                ...setOrdering(false,false),
+                ...setOrdering(false, false),
                 ...setValidation(/^.{0,100}/, /^.+/)
             },
             {
@@ -640,7 +774,15 @@ export const handbooks = {
                 ...setAccessor('tp', 200),
                 ...setType(TYPE.SUB_VALUE, true),
                 subPath: {path: TP, accessor: 'tpname'},
-                ...setOrdering(false,false),
+                ...setOrdering(false, false),
+                ...setValidation(/^.{0,100}/, /^.+/)
+            },
+            {
+                header: setLanguages('ГРП', '', ''),
+                ...setAccessor('tp', 200),
+                ...setType(TYPE.SUB_SUB_VALUE, false),
+                subSubPath: {accessor: 'grp', subAccessor: 'grpname'},
+                ...setOrdering(false, false),
                 ...setValidation(/^.{0,100}/, /^.+/)
             },
         ],
@@ -687,7 +829,8 @@ export const handbooks = {
             {
                 header: setLanguages('Город',),
                 ...setAccessor('city', 200),
-                ...setType(TYPE.STRING, true),
+                ...setType(TYPE.SUB_VALUE, true),
+                subPath: {path: CITIES, accessor: 'cityname'},
                 ...setOrdering(true, true),
                 ...setValidation(/^.{0,100}/, /^.+/)
             },
