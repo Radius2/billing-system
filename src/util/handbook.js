@@ -55,7 +55,7 @@ export function setAccessor(accessor, widthColumn) {
 }
 
 //Установка маски ввода согласно  react-imask и валидации регул выражением
-function setValidation(maskInput = /\.{0,200}/, maskValidation = /\.{0,200}/, additionMaskInput) {
+export function setValidation(maskInput = /\.{0,200}/, maskValidation = /\.{0,200}/, additionMaskInput) {
     return {
         maskInput: {
             mask: maskInput,

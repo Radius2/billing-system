@@ -1,5 +1,5 @@
-import React, {useState, useRef} from 'react';
-import {Switch, Route, Redirect, useLocation} from 'react-router';
+import React, {useRef, useState} from 'react';
+import {Redirect, Route, Switch, useLocation} from 'react-router';
 import Interface from './components/Interface/Interface';
 import Login from './components/Login/Login';
 import {deleteToken} from './api/api';
@@ -10,6 +10,7 @@ export const LanguageContext = React.createContext();
 
 const navArr = [
     {to: '/handbook', name: 'Все справочники'},
+    {to: '/electricity_balances', name: 'Балансы электроэнергии'},
 ];
 
 export default function App() {
