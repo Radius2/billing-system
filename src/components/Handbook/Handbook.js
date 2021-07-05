@@ -2,7 +2,7 @@ import AddIcon from '@material-ui/icons/Add';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
-import {Box, Paper, TableContainer, Table, TableBody, Checkbox, IconButton, Tooltip} from '@material-ui/core';
+import {Box, Paper, TableContainer, Table, TableBody, Checkbox} from '@material-ui/core';
 import InfiniteScrollBorder from './InfiniteScrollBorder';
 import LoadingRow from './LoadingRow';
 import OneElement from './OneElement/OneElement';
@@ -22,7 +22,7 @@ function getColSpan(columns) {
     return columns.reduce((acc, curr) => acc + Number(curr.mainValue), 0)
 }
 
-export default function Handbook({match, handbook, clickRowHandler}) {
+export default function Handbook({match, handbook, clickRowHandler, preparedFilter, bindingVariant}) {
     const classes = useStyle();
     const {lang} = useContext(LanguageContext)
     const [handbookName, setHandbook] = useState(handbook || match.params.name); // название формы
@@ -53,6 +53,11 @@ export default function Handbook({match, handbook, clickRowHandler}) {
         setReloadData,
     } = useData({handbookName, selectedRows, snackbarHandler, setDefaultCurrentMod, setErrMessage})
 
+    useEffect(() => {
+        if (!preparedFilter) return undefined
+        filterParamsHandler(preparedFilter.accessor, preparedFilter.id)
+    }, [preparedFilter])
+
     // сброс на дефолтные значения
     useEffect(() => {
         setHandbook(handbook || match.params.name);
@@ -63,6 +68,10 @@ export default function Handbook({match, handbook, clickRowHandler}) {
     useEffect(() => {
         editing ? setColSpan(getColSpan(columns) + 1) : getColSpan(columns)
     }, [editing, handbookName, columns])
+
+    useEffect(() => {
+        if (bindingVariant) setCurrentMod('delete')
+    }, [bindingVariant])
 
 
     const closeErrMessageHandler = useCallback(() => {
@@ -100,16 +109,17 @@ export default function Handbook({match, handbook, clickRowHandler}) {
         setSnackbarMess(mess);
     }
 
-    function openOneElementHandler(id, submitHandler = () => {
-        setOpenOneElement(false);
-        setReloadData(true)
-    }) {
+    function openOneElementHandler(id, submitHandler, preparedValue = {}) {
         setOpenModalProps({
             subValue: {
                 handbookName: handbookName,
                 id: id.toString()
             },
-            submitHandler
+            submitHandler: submitHandler ?? function () {
+                setOpenOneElement(false);
+                setReloadData(true)
+            },
+            preparedValue
         })
         setOpenOneElement(true)
 
@@ -131,7 +141,7 @@ export default function Handbook({match, handbook, clickRowHandler}) {
                 snackbarMess={openSnackbar ? snackbarMess : INTERFACE_DIALOG.invalidRequiredField[lang]}
                 success={openSnackbar}/>
 
-            {editing ?
+            {editing && !bindingVariant ?
                 <Box className={classes.sidemenu} component={Paper} elevation={2}>
                     {
                         iconButton.map(button => (
@@ -145,8 +155,8 @@ export default function Handbook({match, handbook, clickRowHandler}) {
                     }
                 </Box>
                 : null}
-            <Box component={Paper} elevation={3}
-                 style={{display: 'flex', flexFlow: 'column', height: '100%', overflow: 'hidden'}}>
+            <Box component={Paper} elevation={bindingVariant ? 0 : 2}
+                 style={{display: 'flex', flexFlow: 'column', maxHeight: '100%', height:'max-content', overflow: 'hidden'}}>
                 {/*Шапка над таблицей*/}
                 <ToolbarHeader
                     handbookName={handbooks[handbookName].name[lang]}
@@ -156,9 +166,15 @@ export default function Handbook({match, handbook, clickRowHandler}) {
                     activeFilterMod={activeFilter}
                     cancelButtonHandler={setDefaultCurrentMod}
                     deleteButtonHandler={deleteRows}
+                    bindingVariant={bindingVariant}
+                    addHandler={() => openOneElementHandler('add', null, preparedFilter.preparedValue)}
+
                 />
                 <TableContainer
-                    style={{maxWidth: handbooks[handbookName].maxWidth, height: '100%', overflow: 'scroll'}}>
+                    style={{
+                        maxWidth: bindingVariant ? '100%' : handbooks[handbookName].maxWidth,
+                        overflow: 'scroll'
+                    }}>
                     <Table style={{tableLayout: 'fixed'}} stickyHeader>
                         <HeadTable
                             activeFilter={activeFilter}
@@ -205,8 +221,8 @@ export default function Handbook({match, handbook, clickRowHandler}) {
                                     }
                                 </Row>)
                             })}
-                            {loading ?
-                                <LoadingRow colSpan={colSpan}/>
+                            {loading || data.length === 0 ?
+                                <LoadingRow colSpan={colSpan} empty={data.length === 0 && !loading}/>
                                 : null}
                             {showInfinityScrollRow ?
                                 <InfiniteScrollBorder

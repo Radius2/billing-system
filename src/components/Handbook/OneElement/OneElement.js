@@ -15,6 +15,7 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {LanguageContext} from '../../../App';
 import {handbooks} from '../../../util/handbook';
 import {INTERFACE_LANGUAGE} from '../../../util/language';
+import Handbook from '../Handbook';
 import HistoryElement from '../HistoryElement/HistoryElement';
 import TooltipButton from '../TooltipButton';
 import InputSwitch from './InputSwitch';
@@ -96,7 +97,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
 
     const input = useCallback((column, value) => {
         return <InputSwitch
-            key={column.accessor+(column.subPath?.accessor ?? '')}
+            key={column.accessor + (column.subPath?.accessor ?? '')}
             column={column}
             value={value}
             lang={lang}
@@ -114,11 +115,13 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
         <Dialog
             open={open}
             maxWidth={false}
+            fullScreen={handbookName === 'subjects'}
             className={classes.root}
             onClose={closeHandler}
             aria-labelledby="simple-modal-title"
             aria-describedby="simple-modal-description">
-            <Box>
+            <Box
+                style={{width: handbooks[handbookName].maxWidth}}>
                 <Dialog open={openDialog}>
                     <DialogTitle>Подтвердите действие</DialogTitle>
                     <DialogContent>
@@ -140,7 +143,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                                     id={idElement}/>
                     : null
                 }
-                <Box component={Paper} className={classes.container} style={{width: handbooks[handbookName].maxWidth}}>
+                <Box component={Paper} className={classes.container}>
                     <Box className={classes.namePanel}>
                         <Box>
                             {idElement.toUpperCase() !== 'ADD' ?
@@ -152,9 +155,10 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                                 {handbooks[handbookName].name[lang]}
                             </Typography>
                         </Box>
-                        {handbookName === 'subjects' && idElement!=='add' ? <TooltipButton size='medium' tooltipTitle='история'
-                                                                      actionHandler={() => setOpenHistory(true)}
-                                                                      icon={<HistoryIcon/>}/> : null}
+                        {handbooks[handbookName].hasHistory && idElement.toLowerCase() !== 'add' ?
+                            <TooltipButton size='medium' tooltipTitle='история'
+                                           actionHandler={() => setOpenHistory(true)}
+                                           icon={<HistoryIcon/>}/> : null}
                     </Box>
                     <Divider/>
                     {loading ? null : (
@@ -179,6 +183,14 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                             <Button size="large" onClick={closeHandler}>Отмена</Button>
                         </Box> : null}
                 </Box>
+                {handbooks[handbookName].bindingData ?
+                    <Handbook handbook={handbooks[handbookName].bindingData.handbookName}
+                              bindingVariant
+                              preparedFilter={{
+                                  accessor: handbooks[handbookName].bindingData.filter,
+                                  id: idElement,
+                                  preparedValue: {[handbooks[handbookName].bindingData.preparedAccessor]: elementData}
+                              }}/> : null}
             </Box>
         </Dialog>
     )

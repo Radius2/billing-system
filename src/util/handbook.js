@@ -50,8 +50,8 @@ const VOLTAGES = 'voltages'
 const onlyWord = '[A-zА-яЁё]'
 
 //Установка имени параметра и ширины колонки
-export function setAccessor(accessor, widthColumn) {
-    return {accessor: accessor.toLowerCase(), width: widthColumn + 'px'}
+export function setAccessor(accessor, widthColumn, lowerCase = false) {
+    return {accessor: accessor.toLowerCase(), width: widthColumn + 'px', lowerCase}
 }
 
 //Установка маски ввода согласно  react-imask и валидации регул выражением
@@ -158,7 +158,7 @@ export const handbooks = {
             },
             {
                 header: setLanguages('Описание', 'Сипаттама', 'Description'),
-                ...setAccessor('bankdescr', 300),
+                ...setAccessor('bankdescr', 300, true),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),
                 ...setValidation(/^.{0,200}/, /^.+/),
@@ -317,7 +317,7 @@ export const handbooks = {
         maxWidth: '800px',
         columns: [
             {
-                header: setLanguages('Номер счера', '', ''),
+                header: setLanguages('Номер счета', '', ''),
                 ...setAccessor('accnumber', 200),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),
@@ -325,7 +325,7 @@ export const handbooks = {
             },
             {
                 header: setLanguages('Название банка', '', ''),
-                ...setAccessor('bank', 200),
+                ...setAccessor('bank', 200, true),
                 ...setType(TYPE.SUB_VALUE, true),
                 subPath: {path: BANKS, accessor: 'bankname'},
                 ...setOrdering(),
@@ -360,7 +360,7 @@ export const handbooks = {
             },
             {
                 header: setLanguages('Описание', 'Сипаттама', 'Description'),
-                ...setAccessor('formtypedescr', 250),
+                ...setAccessor('formtypedescr', 250, true),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),
                 ...setValidation(/^.{0,100}/, /^.+/)
@@ -422,7 +422,7 @@ export const handbooks = {
                 ...setValidation(/^.{0,100}/, /^.+/)
             },
             {
-                header: setLanguages('Сооружение',),
+                header: setLanguages('Корпус',),
                 ...setAccessor('buildingnumber', 100,),
                 ...setType(TYPE.STRING, false),
                 ...setOrdering(true, true),
@@ -433,6 +433,14 @@ export const handbooks = {
                 ...setAccessor('buildingtype', 150,),
                 ...setType(TYPE.SUB_VALUE, false),
                 subPath: {path: BUILDING_TYPES, accessor: 'buildingtypename'},
+                ...setOrdering(true, true),
+                ...setValidation(/^.{0,100}/, false),
+            },
+            {
+                header: setLanguages('Район',),
+                ...setAccessor('sector', 150,),
+                ...setType(TYPE.SUB_VALUE, false),
+                subPath: {path: SECTORS, accessor: 'sectorname'},
                 ...setOrdering(true, true),
                 ...setValidation(/^.{0,100}/, false),
                 ...setBreak(),
@@ -811,6 +819,7 @@ export const handbooks = {
     [STREETS]: {
         name: setLanguages('Улицы'),
         maxWidth: '800px',
+        hasHistory: true,
         columns: [
             {
                 header: setLanguages('ID'),
@@ -870,7 +879,7 @@ export const handbooks = {
             },
             {
                 header: setLanguages('Описание', 'Сипаттама', 'Description'),
-                ...setAccessor('subtypedescr', 300),
+                ...setAccessor('subtypedescr', 300, true),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),
                 ...setValidation(/^.{0,100}/, /^.+/)
@@ -880,6 +889,8 @@ export const handbooks = {
     [SUBJECTS]: {
         name: setLanguages('Субъекты', '', ''),
         maxWidth: '1050px',
+        hasHistory: true,
+        bindingData: {handbookName: SUB_BANKS, filter: 'subid', preparedAccessor:'subj'},
         columns: [
             {
                 header: setLanguages('ID'),
@@ -891,12 +902,12 @@ export const handbooks = {
                 header: setLanguages('Номер лицевого счета',),
                 ...setAccessor('subaccnumber', 250),
                 ...setOrdering(true, true),
-                ...setType(TYPE.NUMBER, true),
+                ...setType(TYPE.STRING, true),
                 ...setValidation(/^\d{1,10}$/, /^\d{10}$/),
             },
             {
                 header: setLanguages('Наименование',),
-                ...setAccessor('subname', 200),
+                ...setAccessor('subname', 200, true),
                 ...setOrdering(true, true),
                 ...setType(TYPE.STRING, true),
                 ...setValidation(/^.+$/, /^.+$/),
@@ -917,7 +928,7 @@ export const handbooks = {
             },
             {
                 header: setLanguages('ФИО руководителя',),
-                ...setAccessor('subheadname', 350),
+                ...setAccessor('subheadname', 350, true),
                 ...setType(TYPE.STRING, false),
                 ...setValidation(new RegExp(`^(${onlyWord}{1,100}(\\s?|\\.?)){0,3}$`), /^.+$/)
             },
@@ -930,7 +941,7 @@ export const handbooks = {
             },
             {
                 header: setLanguages('ФИО бухгалтера',),
-                ...setAccessor('subaccname', 350),
+                ...setAccessor('subaccname', 350, true),
                 ...setOrdering(true, true),
                 ...setType(TYPE.STRING, false),
                 ...setValidation(new RegExp(`^(${onlyWord}{1,100}(\\s?|\\.?)){0,3}$`), /^.+$/)
@@ -970,7 +981,7 @@ export const handbooks = {
             },
             {
                 header: setLanguages('Описание',),
-                ...setAccessor('subdescr', 300),
+                ...setAccessor('subdescr', 300, true),
                 ...setType(TYPE.STRING, false),
                 ...setValidation(/^.+$/, /^.+$/),
             },

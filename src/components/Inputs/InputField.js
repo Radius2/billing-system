@@ -8,7 +8,12 @@ import useStyle from './inputStyle';
 const maskInputInit = {mask: /\S*/}
 const maskValidationInit = false
 
-export default function InputField({maskInput = maskInputInit, maskValidation = maskValidationInit, editing=true, onIsValidChange=()=>{}, onIsChangedChange=()=>{}, width, value, label, onChange=()=>{}, type, options = null}) {
+export default function InputField({
+                                       maskInput = maskInputInit, maskValidation = maskValidationInit, upperCase, editing = true, onIsValidChange = () => {
+    }, onIsChangedChange = () => {
+    }, width, value, label, onChange = () => {
+    }, type, options = null
+                                   }) {
     const classes = useStyle({width});
     const {current: initValue} = useRef(value);
     const [isChanged, setIsChanged] = useState(false);
@@ -62,7 +67,7 @@ export default function InputField({maskInput = maskInputInit, maskValidation = 
             case TYPE.DATE:
             case TYPE.STRING:
             case  TYPE.SUB_VALUE:
-                return onChange(value);
+                return onChange(upperCase ? value.toUpperCase() : value);
             case TYPE.NUMBER:
                 return onChange(value ? +value : '');
         }

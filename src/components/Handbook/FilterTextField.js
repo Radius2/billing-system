@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 
 const MAX_LENGTH = 20
 
-export default function FilterTextField({changeBlock, filterHandler}) {
+export default function FilterTextField({filterHandler}) {
     const [input, setInput] = useState('')
     return <TextField
         value={input}

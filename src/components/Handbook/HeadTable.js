@@ -6,7 +6,7 @@ import {LanguageContext} from '../../App';
 import FilterTextField from './FilterTextField';
 import useStyle from './style';
 
-export default function HeadTable({ columns, sortParams, sortParamsHandler, filterParamsHandler, activeFilter, checkValid, editing}) {
+export default function HeadTable({ columns, sortParams, sortParamsHandler, filterParamsHandler, activeFilter, editing}) {
     const classes = useStyle();
     const {lang} = useContext(LanguageContext)
 
@@ -31,7 +31,7 @@ export default function HeadTable({ columns, sortParams, sortParamsHandler, filt
                                 fontSize='small'/>
                         </ButtonBase>
                         {activeFilter && column.filter ?
-                            <FilterTextField checkValid={checkValid}
+                            <FilterTextField
                                              filterHandler={(value) => filterParamsHandler(column.subPath?.accessor ?? column.accessor, value)}/>
                             : null}
                     </TableCell>)

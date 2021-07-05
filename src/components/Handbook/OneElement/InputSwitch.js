@@ -15,6 +15,7 @@ export default function InputSwitch({column, value, editing, setIsValidArray, se
         onIsChangedChange={setIsChangedArray}
         editing={editing}
         width={column.width}
+        upperCase={!column.lowerCase}
         label={column.header[lang]}
         options={column.options}
         value={value}
@@ -28,7 +29,10 @@ export default function InputSwitch({column, value, editing, setIsValidArray, se
         case TYPE.NUMBER:
             return inputField({});
         case TYPE.SUB_SUB_VALUE:
-            return inputField({value:value[column?.subSubPath?.accessor]?.[column.subSubPath.subAccessor],editing:false});
+            return inputField({
+                value: value[column?.subSubPath?.accessor]?.[column.subSubPath.subAccessor],
+                editing: false
+            });
         case TYPE.SUB_VALUE:
             return (
                 <AsyncInputSelect
