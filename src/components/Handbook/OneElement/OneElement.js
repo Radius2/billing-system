@@ -10,14 +10,17 @@ import {
     DialogActions,
     Typography
 } from '@material-ui/core';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import HistoryIcon from '@material-ui/icons/History';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {LanguageContext} from '../../../App';
 import {handbooks} from '../../../util/handbook';
 import {INTERFACE_LANGUAGE} from '../../../util/language';
+import PreventActionDialog from '../../Util/PreventActionDialog';
 import Handbook from '../Handbook';
 import HistoryElement from '../HistoryElement/HistoryElement';
 import TooltipButton from '../TooltipButton';
+import DeleteDialog from './DeleteDialog';
 import InputSwitch from './InputSwitch';
 import useStyle from './oneElementStyle';
 import * as api from '../../../api/api'
@@ -52,6 +55,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
     const [isChangedElement, setIsChangedElement] = useState(true);
     const [openDialog, setOpenDialog] = useState(false);
     const [openHistory, setOpenHistory] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
     useEffect(() => {
         setIsValidElement(validationReduce(isValidArray))
@@ -122,22 +126,23 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
             aria-describedby="simple-modal-description">
             <Box
                 style={{width: handbooks[handbookName].maxWidth}}>
-                <Dialog open={openDialog}>
-                    <DialogTitle>Подтвердите действие</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            Элемент был изменен. Выйти без сохранения.
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={cancelHandler} color="primary">
-                            {INTERFACE_LANGUAGE.exit[lang]}
-                        </Button>
-                        <Button onClick={() => setOpenDialog(false)} color="primary" autoFocus>
-                            {INTERFACE_LANGUAGE.cancel[lang]}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+
+                {/*окно удаления с историей*/}
+                <DeleteDialog
+                    openDialog={openDeleteModal}
+                    deleteHandler={(closeTime) => {
+                        api.delElementHandbookWithTime(handbookName, +idElement, {[handbooks[handbookName].deleteAccessor]:closeTime})
+                            .then(submitHandler)
+                            .catch(err => console.log(err.message))
+                    }}
+                    closeHandler={() => setOpenDeleteModal(false)}/>
+
+                {/*окно "вы точно хотите выйти" если изменили данные*/}
+                <PreventActionDialog openDialog={openDialog}
+                                     submitHandler={() => setOpenDialog(false)}
+                                     cancelHandler={cancelHandler}/>
+
+                {/*история изменений*/}
                 {openHistory ?
                     <HistoryElement open={openHistory} onClose={() => setOpenHistory(false)} handbookName={handbookName}
                                     id={idElement}/>
@@ -155,10 +160,22 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                                 {handbooks[handbookName].name[lang]}
                             </Typography>
                         </Box>
-                        {handbooks[handbookName].hasHistory && idElement.toLowerCase() !== 'add' ?
-                            <TooltipButton size='medium' tooltipTitle='история'
-                                           actionHandler={() => setOpenHistory(true)}
-                                           icon={<HistoryIcon/>}/> : null}
+                        {handbooks[handbookName].hasHistory && idElement.toLowerCase() !== 'add' &&
+                        <>
+                            <TooltipButton
+                                size='medium'
+                                tooltipTitle={INTERFACE_LANGUAGE.delete[lang]}
+                                actionHandler={() => {
+                                    setOpenDeleteModal(true)
+                                }}
+                                icon={<DeleteForeverIcon fontSize='default'/>}
+                            />
+                            <TooltipButton
+                                size='medium'
+                                tooltipTitle='История'
+                                actionHandler={() => setOpenHistory(true)}
+                                icon={<HistoryIcon/>}/>
+                        </>}
                     </Box>
                     <Divider/>
                     {loading ? null : (
@@ -183,7 +200,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                             <Button size="large" onClick={closeHandler}>Отмена</Button>
                         </Box> : null}
                 </Box>
-                {handbooks[handbookName].bindingData ?
+                {handbooks[handbookName].bindingData && idElement.toUpperCase() !== 'ADD' ?
                     <Handbook handbook={handbooks[handbookName].bindingData.handbookName}
                               bindingVariant
                               preparedFilter={{

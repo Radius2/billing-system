@@ -78,26 +78,6 @@ export default function Handbook({match, handbook, clickRowHandler, preparedFilt
         setErrMessage('')
     }, [])
 
-    const iconButton = useMemo(() => [
-            {
-                name: 'delete',
-                icon: <DeleteForeverIcon fontSize='default'/>,
-                tooltipTitle: INTERFACE_LANGUAGE.delete[lang],
-                action: () => {
-                    setCurrentMod(currentMod === 'delete' ? 'update' : 'delete')
-                }
-            },
-            {
-                name: 'add',
-                icon: <AddIcon fontSize='default'/>,
-                tooltipTitle: INTERFACE_LANGUAGE.add[lang],
-                action: () => {
-                    openOneElementHandler('Add')
-                },
-            }
-        ], [currentMod, lang]
-    )
-
     function setDefaultCurrentMod(rest = true) {
         setCurrentMod('update');
         if (rest) setSelectedRows([])
@@ -143,20 +123,32 @@ export default function Handbook({match, handbook, clickRowHandler, preparedFilt
 
             {editing && !bindingVariant ?
                 <Box className={classes.sidemenu} component={Paper} elevation={2}>
-                    {
-                        iconButton.map(button => (
-                            <TooltipButton
-                                key={button.name}
-                                tooltipTitle={button.tooltipTitle}
-                                actionHandler={button.action}
-                                active={currentMod === button.name}
-                                icon={button.icon}
-                            />))
-                    }
+                    {handbookName !== 'subjects' && <TooltipButton
+                        tooltipTitle={INTERFACE_LANGUAGE.delete[lang]}
+                        actionHandler={() => {
+                            setCurrentMod(currentMod === 'delete' ? 'update' : 'delete')
+                        }}
+                        active={currentMod === 'delete'}
+                        icon={<DeleteForeverIcon fontSize='default'/>}
+                    />}
+                    <TooltipButton
+                        tooltipTitle={INTERFACE_LANGUAGE.add[lang]}
+                        actionHandler={() => {
+                            openOneElementHandler('Add')
+                        }}
+                        active={currentMod === 'add'}
+                        icon={<AddIcon fontSize='default'/>}
+                    />
                 </Box>
                 : null}
-            <Box component={Paper} elevation={bindingVariant ? 0 : 2}
-                 style={{display: 'flex', flexFlow: 'column', maxHeight: '100%', height:'max-content', overflow: 'hidden'}}>
+            <Box component={Paper} elevation={bindingVariant ? 0 : 3}
+                 style={{
+                     display: 'flex',
+                     flexFlow: 'column',
+                     maxHeight: '100%',
+                     height: 'min-content',
+                     overflow: 'hidden'
+                 }}>
                 {/*Шапка над таблицей*/}
                 <ToolbarHeader
                     handbookName={handbooks[handbookName].name[lang]}

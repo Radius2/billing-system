@@ -37,6 +37,9 @@ const useStyle = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
+        '& > :first-child': {
+            marginRight: 'auto'
+        }
     },
     actionPanel: {
         '& > *': {

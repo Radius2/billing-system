@@ -56,6 +56,11 @@ export function delElementsHandbook(nameHandbook, ids) {
         {ids});
 }
 
+export function delElementHandbookWithTime(nameHandbook, id, closed) {
+    return api.post('/' + nameHandbook + '_del',
+        {id, ...closed});
+}
+
 export function addElementHandbook(nameHandbook, payload) {
     return api.post('/' + nameHandbook + '_add',
         payload);

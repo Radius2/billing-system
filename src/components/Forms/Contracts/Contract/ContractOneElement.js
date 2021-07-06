@@ -1,23 +1,19 @@
 import {
     Box,
     Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle, Divider,
+    Dialog,Divider,
     Typography, Tabs, Tab, withStyles
 } from '@material-ui/core';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import * as api from '../../../../api/api';
 import {LanguageContext} from '../../../../App';
-import {INTERFACE_LANGUAGE} from '../../../../util/language';
 import InputSwitch from '../../../Handbook/OneElement/InputSwitch';
 import useStyle from '../../../Handbook/OneElement/oneElementStyle';
+import PreventActionDialog from '../../../Util/PreventActionDialog';
 import {TabPanel} from '../../../Util/TabPanel';
 import {structureTable} from '../contractStructure';
 
-const AntTabs = withStyles({
+const AntTabs = withStyles(theme => ({
     indicator: {
         display: 'flex',
         justifyContent: 'center',
@@ -28,7 +24,7 @@ const AntTabs = withStyles({
             backgroundColor: 'black',
         },
     },
-})((props) => <Tabs {...props} TabIndicatorProps={{children: <span/>}}/>);
+}))((props) => <Tabs {...props} TabIndicatorProps={{children: <span/>}}/>);
 
 
 function validationReduce(obj = {}) {
@@ -141,23 +137,9 @@ export default function ContractOneElement({formStructure, str, id: idElement, o
             aria-describedby="simple-modal-description">
             <Box
                 style={{height: '100vh'}}>
-                <Dialog open={openDialog}>
-                    <DialogTitle>Подтвердите действие</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            Элемент был изменен. Выйти без сохранения.
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={cancelHandler} color="primary">
-                            {INTERFACE_LANGUAGE.exit[lang]}
-                        </Button>
-                        <Button onClick={() => setOpenDialog(false)} color="primary" autoFocus>
-                            {INTERFACE_LANGUAGE.cancel[lang]}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-
+                <PreventActionDialog openDialog={openDialog}
+                                     submitHandler={() => setOpenDialog(false)}
+                                     cancelHandler={cancelHandler}/>
                 <Box className={classes.container}
                      style={{width: structureTable.maxWidth, height: '100%', display: 'flex', flexFlow: 'column'}}>
                     <Box className={classes.namePanel}>

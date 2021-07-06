@@ -118,7 +118,7 @@ export default function AsyncInputSelect({width, onIsValidChange, onIsChangedCha
                     noOptionsText='пусто'
                     disableClearable
                     getOptionSelected={(option, value) => option.id === value.id}
-                    onInputChange={(e, newInputValue) => setInputValue(newInputValue)}
+                    onInputChange={(e, newInputValue) => setInputValue(newInputValue.toUpperCase())}
                     onChange={(e, newValue) => {
                         if (typeof newValue === 'string') {
                             setTimeout(() => {

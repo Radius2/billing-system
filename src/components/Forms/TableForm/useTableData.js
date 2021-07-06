@@ -65,7 +65,7 @@ export default function useTableData({formName, pageSize = 20, setErrMessage}) {
 
     //получение данных справочника при загрузке компонента
     useEffect(() => {
-        return undefined; //отмена подгрузки
+
         setPage(1);
         const timer = setTimeout(() => {
             getElements(1);

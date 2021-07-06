@@ -241,7 +241,7 @@ export const handbooks = {
 
             },
             {
-                header: setLanguages('Наименование типа начислений', '', ''),
+                header: setLanguages('Тип начисления', '', ''),
                 ...setAccessor('chargetypename', 250),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),
@@ -850,18 +850,18 @@ export const handbooks = {
                 ...setOrdering(true, true),
                 ...setValidation('0000{-}00{-}00', /^\d{4}-\d{2}-\d{2}$/),
             },
-            {
-                header: setLanguages('Закрыта',),
-                ...setAccessor('closed', 150),
-                ...setType(TYPE.DATE, true),
-                ...setOrdering(true, true),
-                ...setValidation('0000{-}00{-}00', false),
-            },
+            // {
+            //     header: setLanguages('Закрыта',),
+            //     ...setAccessor('closed', 150),
+            //     ...setType(TYPE.DATE, true),
+            //     ...setOrdering(true, true),
+            //     ...setValidation('0000{-}00{-}00', false),
+            // },
         ],
     },
     [SUB_TYPES]: {
         name: setLanguages('Виды субъектов'),
-        maxWidth: '600px',
+        maxWidth: '650px',
         columns: [
             {
                 header: setLanguages('ID'),
@@ -871,7 +871,7 @@ export const handbooks = {
                 ...setValidation()
             },
             {
-                header: setLanguages('Название подтипов'),
+                header: setLanguages('Наименование вида'),
                 ...setAccessor('subtypename', 250),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),
@@ -879,7 +879,7 @@ export const handbooks = {
             },
             {
                 header: setLanguages('Описание', 'Сипаттама', 'Description'),
-                ...setAccessor('subtypedescr', 300, true),
+                ...setAccessor('subtypedescr', 250, true),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),
                 ...setValidation(/^.{0,100}/, /^.+/)
@@ -890,6 +890,7 @@ export const handbooks = {
         name: setLanguages('Субъекты', '', ''),
         maxWidth: '1050px',
         hasHistory: true,
+        deleteAccessor: 'subclose',
         bindingData: {handbookName: SUB_BANKS, filter: 'subid', preparedAccessor:'subj'},
         columns: [
             {
