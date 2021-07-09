@@ -1,7 +1,7 @@
 import {
     Box,
     Button,
-    Dialog,Divider,
+    Dialog, Divider,
     Typography, Tabs, Tab, withStyles
 } from '@material-ui/core';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
@@ -11,7 +11,7 @@ import InputSwitch from '../../../Handbook/OneElement/InputSwitch';
 import useStyle from '../../../Handbook/OneElement/oneElementStyle';
 import PreventActionDialog from '../../../Util/PreventActionDialog';
 import {TabPanel} from '../../../Util/TabPanel';
-import {structureTable} from '../contractStructure';
+import {structureTable} from '../../formStructures/contractStructure';
 
 const AntTabs = withStyles(theme => ({
     indicator: {
@@ -41,7 +41,7 @@ function newElement(structure, preparedValue = {}) {
     return {...newArr, ...preparedValue}
 }
 
-export default function ContractOneElement({formStructure, str, id: idElement, open, submitHandler, cancelHandler}) {
+export default function OneElementTableForm({formStructure, str, id: idElement, open, submitHandler, cancelHandler}) {
     const {formName, mainValues, tabs, bindingData} = formStructure
     const {lang} = useContext(LanguageContext);
     const classes = useStyle();
@@ -158,21 +158,24 @@ export default function ContractOneElement({formStructure, str, id: idElement, o
                     <Box>
                         {!loading && <>
                             {parametersBlock(mainValues.parameters)}
-                            <AntTabs
-                                style={{textTransform: 'none'}}
-                                value={tabIndex}
-                                onChange={(e, newVal) => setTabIndex(newVal)}
-                                indicatorColor="primary"
-                                variant="scrollable"
-                                scrollButtons="auto">
-                                {tabs.map((tab, index) => <Tab style={{textTransform: 'none'}} label={tab.name[lang]}
-                                                               key={index}/>)}
-                            </AntTabs>
-                            {tabs.map((tab, index) => (
-                                <TabPanel key={index} value={tabIndex} index={index}>
-                                    {parametersBlock(tab.parameters)}
-                                </TabPanel>))
-                            }
+                            {tabs && <>
+                                <AntTabs
+                                    style={{textTransform: 'none'}}
+                                    value={tabIndex}
+                                    onChange={(e, newVal) => setTabIndex(newVal)}
+                                    indicatorColor="primary"
+                                    variant="scrollable"
+                                    scrollButtons="auto">
+                                    {tabs.map((tab, index) => <Tab style={{textTransform: 'none'}}
+                                                                   label={tab.name[lang]}
+                                                                   key={index}/>)}
+                                </AntTabs>
+                                {tabs?.map((tab, index) => (
+                                    <TabPanel key={index} value={tabIndex} index={index}>
+                                        {parametersBlock(tab.parameters)}
+                                    </TabPanel>))
+                                }
+                            </>}
                         </>}
                     </Box>
                     {editing ? <Box

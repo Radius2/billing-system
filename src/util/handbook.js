@@ -580,7 +580,7 @@ export const handbooks = {
 
             },
             {
-                header: setLanguages('Наименование типа', '', ''),
+                header: setLanguages('Наименование', '', ''),
                 ...setAccessor('objtypename', 250),
                 ...setType(TYPE.STRING, true),
                 ...setOrdering(true, true),

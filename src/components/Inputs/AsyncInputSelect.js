@@ -4,14 +4,14 @@ import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
 import clsx from 'clsx';
 import * as api from '../../api/api'
 import {TextField, Dialog} from '@material-ui/core';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Handbook from '../Handbook/Handbook';
 import OneElement from '../Handbook/OneElement/OneElement';
 import useStyle from './inputStyle';
 
 const filter = createFilterOptions();
 
-export default function AsyncInputSelect({width, onIsValidChange, onIsChangedChange, editing = true, value={}, label, subPath, onChange}) {
+export default function AsyncInputSelect({width, onIsValidChange, onIsChangedChange, editing = true, value = {}, label, subPath, onChange}) {
     const classes = useStyle({width});
     const [loading, setLoading] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
@@ -123,12 +123,10 @@ export default function AsyncInputSelect({width, onIsValidChange, onIsChangedCha
                         if (typeof newValue === 'string') {
                             setTimeout(() => {
                                 setPreparedValue({[subPath.accessor]: newValue})
-                                console.log('1')
                                 setOpenModalOneElement(true);
                             });
                         } else if (newValue && newValue.inputValue) {
                             setPreparedValue({[subPath.accessor]: newValue.inputValue})
-                            console.log('2')
                             newValue.newWindow ? setOpenModalHandbook(true) : setOpenModalOneElement(true);
                         } else {
                             onChange(newValue)
@@ -146,7 +144,7 @@ export default function AsyncInputSelect({width, onIsValidChange, onIsChangedCha
                                     inputValue: params.inputValue,
                                     [subPath.accessor]: `Поиск в новом окне`,
                                     newWindow: true,
-                                },
+                                }
                             );
                         }
                         return filtered;

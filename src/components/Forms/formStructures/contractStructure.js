@@ -10,11 +10,11 @@ import {
 } from '../util/constructorFunction'
 import {setLanguages} from '../../../util/language';
 
-const FORM_NAME = 'contracts'
+export const FORM_NAME = 'contracts'
 
 const BR = setBreak();
 
-const ACCESSORS = {
+export const ACCESSORS = {
     AREA: 'area',
     BARCODE: 'barcode',
     CONSIGNEE: 'consignee',
