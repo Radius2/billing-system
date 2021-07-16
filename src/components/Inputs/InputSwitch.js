@@ -1,9 +1,9 @@
 import React, {useCallback, useMemo} from 'react';
-import {TYPE} from '../../../util/handbook';
-import AsyncInputSelect from '../../Inputs/AsyncInputSelect';
-import InputField from '../../Inputs/InputField';
+import {TYPE} from '../../util/handbook';
+import AsyncInputSelect from './AsyncInputSelect';
+import InputField from './InputField';
 
-export default function InputSwitch({column, value, editing, setIsValidArray, setIsChangedArray, updateValues, lang}) {
+export default function InputSwitch({column, value, editing, setIsValidArray, setIsChangedArray, updateValues, lang, width}) {
     const {type} = column;
     const inputField = useCallback((props) => <InputField
         key={column.accessor}
@@ -14,7 +14,7 @@ export default function InputSwitch({column, value, editing, setIsValidArray, se
         onIsValidChange={setIsValidArray}
         onIsChangedChange={setIsChangedArray}
         editing={editing}
-        width={column.width}
+        width={width || column.width}
         upperCase={!column.lowerCase}
         label={column.header[lang]}
         options={column.options}
@@ -37,7 +37,7 @@ export default function InputSwitch({column, value, editing, setIsValidArray, se
             return (
                 <AsyncInputSelect
                     key={column.subPath.accessor}
-                    width={column.width}
+                    width={width || column.width}
                     editing={editing}
                     value={value}
                     onIsValidChange={setIsValidArray}

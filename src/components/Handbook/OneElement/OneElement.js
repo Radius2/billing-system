@@ -20,8 +20,8 @@ import PreventActionDialog from '../../Util/PreventActionDialog';
 import Handbook from '../Handbook';
 import HistoryElement from '../HistoryElement/HistoryElement';
 import TooltipButton from '../TooltipButton';
-import DeleteDialog from './DeleteDialog';
-import InputSwitch from './InputSwitch';
+import DeleteDialog from '../../Util/DeleteDialog';
+import InputSwitch from '../../Inputs/InputSwitch';
 import useStyle from './oneElementStyle';
 import * as api from '../../../api/api'
 
@@ -39,11 +39,8 @@ function changeReduce(obj = {}) {
     return Object.values(obj).reduce((prev, cur) => prev || cur, false)
 }
 
-export default function OneElement({open, submitHandler, cancelHandler, subValue, preparedValue = {}}) {
-    const {handbookName, id: idElement} = subValue // название формы
-    const [columns, setColumns] = useState(handbooks[handbookName].columns); //шапка формы
-    useEffect(() => setColumns(handbooks[handbookName].columns), [subValue.handbookName])
-
+export default function OneElement({open, submitHandler, cancelHandler, structure, id:idElement, preparedValue = {}}) {
+    const {formName, columns} = structure;
     const {lang} = useContext(LanguageContext);
     const classes = useStyle();
     const [elementData, setElementData] = useState({});
@@ -70,14 +67,14 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
             setLoading(false);
             return setElementData(newElement(columns, preparedValue))
         }
-        api.getElementHandbook(handbookName, +idElement)
+        api.getElementHandbook(formName, +idElement)
             .then(({data}) => setElementData(data))
             .catch(() => console.log('error'))
             .finally(() => setLoading(false))
-    }, [handbookName])
+    }, [formName])
 
     function addElement() {
-        api.addElementHandbook(handbookName, elementData)
+        api.addElementHandbook(formName, elementData)
             .then(({data}) => {
                 submitHandler(data, elementData)
                 cancelHandler()
@@ -86,7 +83,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
     }
 
     function updateElement() {
-        api.updElementHandbook(handbookName, elementData)
+        api.updElementHandbook(formName, elementData)
             .then((resp) => submitHandler(resp))
             .catch(() => console.log('err'))
     }
@@ -119,19 +116,19 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
         <Dialog
             open={open}
             maxWidth={false}
-            fullScreen={handbookName === 'subjects'}
+            fullScreen={formName === 'subjects'}
             className={classes.root}
             onClose={closeHandler}
             aria-labelledby="simple-modal-title"
             aria-describedby="simple-modal-description">
             <Box
-                style={{width: handbooks[handbookName].maxWidth}}>
+                style={{width: structure.maxWidth}}>
 
                 {/*окно удаления с историей*/}
                 <DeleteDialog
                     openDialog={openDeleteModal}
                     deleteHandler={(closeTime) => {
-                        api.delElementHandbookWithTime(handbookName, +idElement, {[handbooks[handbookName].deleteAccessor]:closeTime})
+                        api.delElementHandbookWithTime(formName, +idElement, {[structure.deleteAccessor]:closeTime})
                             .then(submitHandler)
                             .catch(err => console.log(err.message))
                     }}
@@ -144,7 +141,7 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
 
                 {/*история изменений*/}
                 {openHistory ?
-                    <HistoryElement open={openHistory} onClose={() => setOpenHistory(false)} handbookName={handbookName}
+                    <HistoryElement open={openHistory} onClose={() => setOpenHistory(false)} handbookName={formName}
                                     id={idElement}/>
                     : null
                 }
@@ -157,10 +154,10 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                                 </Typography>
                                 : null}
                             <Typography variant={'h6'}>
-                                {handbooks[handbookName].name[lang]}
+                                {structure.name[lang]}
                             </Typography>
                         </Box>
-                        {handbooks[handbookName].hasHistory && idElement.toLowerCase() !== 'add' &&
+                        {structure.hasHistory && idElement.toLowerCase() !== 'add' &&
                         <>
                             <TooltipButton
                                 size='medium'
@@ -200,13 +197,13 @@ export default function OneElement({open, submitHandler, cancelHandler, subValue
                             <Button size="large" onClick={closeHandler}>Отмена</Button>
                         </Box> : null}
                 </Box>
-                {handbooks[handbookName].bindingData && idElement.toUpperCase() !== 'ADD' ?
-                    <Handbook handbook={handbooks[handbookName].bindingData.handbookName}
+                {structure.bindingData && idElement.toUpperCase() !== 'ADD' ?
+                    <Handbook structure={handbooks[structure.bindingData.handbookName]}
                               bindingVariant
                               preparedFilter={{
-                                  accessor: handbooks[handbookName].bindingData.filter,
+                                  accessor: structure.bindingData.filter,
                                   id: idElement,
-                                  preparedValue: {[handbooks[handbookName].bindingData.preparedAccessor]: elementData}
+                                  preparedValue: {[structure.bindingData.preparedAccessor]: elementData}
                               }}/> : null}
             </Box>
         </Dialog>

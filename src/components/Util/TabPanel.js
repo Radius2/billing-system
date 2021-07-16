@@ -1,9 +1,9 @@
 import React from 'react';
 import {Box} from '@material-ui/core';
 
-export function TabPanel({children, value, index}) {
+export function TabPanel({children, value, index, style={}}) {
     return (
-        <Box style={{marginTop: '8px', display: value === index ? 'block' : 'none'}}>
+        <Box style={{display: value === index ? 'block' : 'none', height: '100%', width: '100%', ...style}}>
             {children}
         </Box>)
 

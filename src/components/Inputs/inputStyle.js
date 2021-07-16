@@ -4,8 +4,9 @@ const useStyle = makeStyles(theme => ({
     inputMui: {
         '& .MuiFormLabel-root': {
             color: theme.palette.text.primary,
-            fontSize: '1.1rem',
+            fontSize: '1.05rem',
             fontWeight: 500,
+            whiteSpace:'nowrap',
         },
         '& .MuiInputBase-input': {
             fontWeight: 400,

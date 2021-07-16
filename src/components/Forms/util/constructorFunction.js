@@ -35,6 +35,6 @@ export function setHeader(RU, KZ, EN) {
     return {header: setLanguages(RU, KZ, EN)}
 }
 
-export function setSubPath(path, accessor) {
-    return {subPath: {path, accessor}}
+export function setSubPath(structure, accessor) {
+    return {subPath: {structure, accessor}}
 }

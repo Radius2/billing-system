@@ -1,9 +1,9 @@
 import {useCallback, useContext, useState, useEffect} from 'react';
-import * as api from '../../api/api';
-import {LanguageContext} from '../../App';
-import {INTERFACE_DIALOG} from '../../util/language';
+import * as api from '../api/api';
+import {LanguageContext} from '../App';
+import {INTERFACE_DIALOG} from '../util/language';
 
-export default function useData({handbookName, pageSize = 20, snackbarHandler, setDefaultCurrentMod, selectedRows, setErrMessage}) {
+export default function useData({formName, pageSize = 20, snackbarHandler, setDefaultCurrentMod, selectedRows, setErrMessage}) {
     const [data, setData] = useState([]); //данные формы
     const [hasMore, setHasMore] = useState(false) // внутренняя безопасность
     const [page, setPage] = useState(1);//страниза пагинации
@@ -18,7 +18,7 @@ export default function useData({handbookName, pageSize = 20, snackbarHandler, s
 
     const getElements = useCallback((page) => {
         setLoading(true);
-        api.getHandbook(handbookName, {page, page_size: pageSize, ...filterParams, ...sortParams})
+        api.getHandbook(formName, {page, page_size: pageSize, ...filterParams, ...sortParams})
             .then((resp) => {
                 const currentDataLength = (page === 1) ? 0 : data.length
                 const isHasMore = resp.data.count > (resp.data.values.length + currentDataLength) && resp.data.values.length === pageSize
@@ -39,9 +39,9 @@ export default function useData({handbookName, pageSize = 20, snackbarHandler, s
 
     //сохранить новую строку в БД  и запросить новую строку в локальный справочник
     const addRow = useCallback((payload) => {
-        api.addElementHandbook(handbookName, payload)
+        api.addElementHandbook(formName, payload)
             .then((resp) => {
-                return api.getElementHandbook(handbookName, resp.data.id)
+                return api.getElementHandbook(formName, resp.data.id)
             })
             .then(resp => {
                 setDefaultCurrentMod()
@@ -49,12 +49,12 @@ export default function useData({handbookName, pageSize = 20, snackbarHandler, s
                 (setData(prev => ([...prev, resp.data])));
             })
             .catch(err => setErrMessage(err.message))
-    }, [handbookName, setDefaultCurrentMod, lang, snackbarHandler])
+    }, [formName, setDefaultCurrentMod, lang, snackbarHandler])
 
     //обновить строку и получить перезаписанную сткоку из БД
     const updateRow = useCallback((payload, index) => {
-        api.updElementHandbook(handbookName, payload)
-            .then((resp) => api.getElementHandbook(handbookName, resp.data.id))
+        api.updElementHandbook(formName, payload)
+            .then((resp) => api.getElementHandbook(formName, resp.data.id))
             .then(resp => {
                 if (index === selectedRows[0]) setDefaultCurrentMod()
                 setData(prev => {
@@ -64,13 +64,13 @@ export default function useData({handbookName, pageSize = 20, snackbarHandler, s
                 snackbarHandler({error: false, mess: INTERFACE_DIALOG.successSaveModal[lang]});
             })
             .catch(err => setErrMessage(err.message))
-    }, [handbookName, setDefaultCurrentMod, lang, snackbarHandler, selectedRows])
+    }, [formName, setDefaultCurrentMod, lang, snackbarHandler, selectedRows])
 
 
     //удалить строку локально и из БД
     const deleteRows = useCallback(() => {
             const ids = selectedRows.map((index) => data[index].id);
-            api.delElementsHandbook(handbookName, ids)
+            api.delElementsHandbook(formName, ids)
                 .then(resp => {
                     setData(prev => {
                         snackbarHandler({error: false, mess: INTERFACE_DIALOG.successDeleteModal[lang]})
@@ -82,9 +82,11 @@ export default function useData({handbookName, pageSize = 20, snackbarHandler, s
                     })
                 })
                 .catch(err => setErrMessage(err.message))
-                .finally(setDefaultCurrentMod)
+                .finally(()=> {
+                    setDefaultCurrentMod()
+                })
         }
-        , [handbookName, setDefaultCurrentMod, lang, snackbarHandler, selectedRows, console]
+        , [formName, setDefaultCurrentMod, lang, snackbarHandler, selectedRows, console]
     )
 
     const getMore = useCallback(() => {
@@ -111,10 +113,11 @@ export default function useData({handbookName, pageSize = 20, snackbarHandler, s
         setSortParams({desc: 0, ordering: 'id'});
         setShowInfinityScrollRow(false);
         setData([])
-    }, [handbookName])
+    }, [formName])
 
     //получение данных справочника при загрузке компонента
     useEffect(() => {
+        setLoading(true);
         setPage(1);
         const timer = setTimeout(() => {
             getElements(1);
@@ -122,7 +125,7 @@ export default function useData({handbookName, pageSize = 20, snackbarHandler, s
         return () => {
             clearTimeout(timer);
         }
-    }, [handbookName, filterParams, sortParams, getElements])
+    }, [formName, filterParams, sortParams, getElements])
 
     //получение данных справочника при загрузке компонента
     useEffect(() => {

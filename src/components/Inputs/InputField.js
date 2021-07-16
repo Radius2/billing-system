@@ -9,10 +9,22 @@ const maskInputInit = {mask: /\S*/}
 const maskValidationInit = false
 
 export default function InputField({
-                                       maskInput = maskInputInit, maskValidation = maskValidationInit, upperCase, editing = true, onIsValidChange = () => {
-    }, onIsChangedChange = () => {
-    }, width, value, label, onChange = () => {
-    }, type, options = null
+                                       value,
+                                       type,
+                                       maskInput = maskInputInit,
+                                       maskValidation = maskValidationInit,
+                                       upperCase,
+                                       editing = true,
+                                       onIsValidChange = () => {
+                                       },
+                                       onIsChangedChange = () => {
+                                       },
+                                       onChange = () => {
+                                       },
+
+                                       width,
+                                       label,
+                                       options = null
                                    }) {
     const classes = useStyle({width});
     const {current: initValue} = useRef(value);

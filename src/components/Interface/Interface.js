@@ -21,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
     drawer: {
         width: WIDE_SIDEMENU + 'px',
         flexShrink: 0,
-        backgroundColor: theme.palette.grey[400],
-        color: theme.palette.getContrastText(theme.palette.grey[400]),
+        backgroundColor: theme.palette.background.paper,
+        color: theme.palette.getContrastText(theme.palette.background.paper),
         paddingLeft: '8px',
         overflowY: 'scroll',
         '&::-webkit-scrollbar-thumb': {

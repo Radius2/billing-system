@@ -41,6 +41,12 @@ const useStyle = makeStyles(theme => ({
             marginRight: 'auto'
         }
     },
+    namePanelForm: {
+        padding: theme.spacing(1),
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
     actionPanel: {
         '& > *': {
             margin: theme.spacing(1),
