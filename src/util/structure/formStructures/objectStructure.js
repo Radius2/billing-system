@@ -1,8 +1,8 @@
-import { handbooks } from '../../../util/handbook';
-import OneElementObjectForm from '../TableForm/OneElementTableForm/OneElementObjectForm';
-import { TYPE } from '../util/constant';
-import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../util/constructorFunction';
-import { setLanguages } from '../../../util/language';
+import { handbooks } from '../handbookStructure/handbook';
+import ObjectFormOneElement from '../../../components/Handbook/OneElement/ObjectFormOneElement';
+import { TYPE } from '../../constant';
+import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../../constructorFunction';
+import { setLanguages } from '../../language';
 
 export const FORM_NAME = 'objects';
 
@@ -82,7 +82,7 @@ export const structureTable = {
   name: setLanguages('Точки учета', '', ''),
   maxWidth: '1000px',
   formName: FORM_NAME,
-  oneElementComponent: props => OneElementObjectForm({ str: str, ...props }),
+  oneElementComponent: props => ObjectFormOneElement({ str: str, ...props }),
   columns: [
     { ...str[ACCESSORS.ID] },
     { ...str[ACCESSORS.OBJECT_NAME] },

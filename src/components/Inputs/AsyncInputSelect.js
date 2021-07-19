@@ -6,7 +6,7 @@ import * as api from '../../api/api';
 import { TextField, Dialog } from '@material-ui/core';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Handbook from '../Handbook/Handbook';
-import OneElement from '../Handbook/OneElement/OneElement';
+import HandbookOneElement from '../Handbook/OneElement/HandbookOneElement';
 import useStyle from './inputStyle';
 
 const filter = createFilterOptions();
@@ -91,7 +91,7 @@ export default function AsyncInputSelect({
     setOpenModalOneElement(false);
   }
 
-  const OneElementComponent = useMemo(() => subPath.structure().oneElementComponent || OneElement, [subPath]);
+  const OneElementComponent = useMemo(() => subPath.structure().oneElementComponent || HandbookOneElement, [subPath]);
 
   return (
     <>

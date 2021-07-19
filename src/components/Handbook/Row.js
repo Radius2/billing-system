@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { TableCell, TableRow } from '@material-ui/core';
-import { TYPE } from '../../util/handbook';
-import useStyle from './style';
+import { TYPE } from '../../util/structure/handbookStructure/handbook';
+import useStyle from './handbookStyle';
 import clsx from 'clsx';
 
 export default function Row({ clickRowHandler = () => {}, columns, data, deleteClass, children }) {

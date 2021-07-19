@@ -1,20 +1,20 @@
 import { Box, Button, Dialog } from '@material-ui/core';
 import React, { useState } from 'react';
-import useOneElement from '../../../../hooks/useOneElement';
-import useStyle from '../../../Handbook/OneElement/oneElementStyle';
-import HouseSelect from '../../../Inputs/HouseSelect';
-import { StyledTab, StyledTabs } from '../../../Styled/StyledTabs';
-import PreventActionDialog from '../../../Util/PreventActionDialog';
-import { TabPanel } from '../../../Util/TabPanel';
-import { ACCESSORS, str } from '../../formStructures/objectStructure';
-import DividerText from '../DividerText';
-import TitleOneElement from '../TitleOneElement';
-import DeleteDialog from '../../../Util/DeleteDialog';
-import Handbook from '../../../Handbook/Handbook';
-import * as acts from '../../formStructures/actStructure';
-import * as objContracts from '../../formStructures/objContractsStructure';
+import useOneElement from '../../../hooks/useOneElement';
+import useStyle from './oneElementStyle';
+import HouseSelect from '../../Inputs/HouseSelect';
+import { StyledTab, StyledTabs } from '../../StyledComponents/StyledTabs';
+import PreventActionDialog from '../../Shared/PreventActionDialog';
+import { TabPanel } from '../../Shared/TabPanel';
+import { ACCESSORS, str } from '../../../util/structure/formStructures/objectStructure';
+import DividerText from '../../Shared/DividerText';
+import TitleOneElement from './Components/TitleOneElement';
+import DeleteDialog from '../../Shared/DeleteDialog';
+import Handbook from '../Handbook';
+import * as acts from '../../../util/structure/formStructures/actStructure';
+import * as objContracts from '../../../util/structure/formStructures/objContractsStructure';
 
-export default function OneElementObjectForm({ structure, id, open, submitHandler, cancelHandler, preparedValue = {} }) {
+export default function ObjectFormOneElement({ structure, id, open, submitHandler, cancelHandler, preparedValue = {} }) {
   const { formName } = structure;
   const classes = useStyle();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);

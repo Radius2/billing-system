@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {useHistory} from 'react-router';
 import {LanguageContext} from '../../../App';
-import {getHandbooks} from '../../../util/handbook';
+import {getHandbooks} from '../../../util/structure/handbookStructure/handbook';
 import {INTERFACE_DIALOG, INTERFACE_LANGUAGE} from '../../../util/language';
 
 const useStyle = makeStyles(theme => ({
@@ -37,8 +37,18 @@ const useStyle = makeStyles(theme => ({
         position: 'absolute',
         top: '40px',
         right: '0',
-        width: '400px',
+        width: '500px',
+        maxHeight: '600px',
+        overflow: 'auto',
         zIndex: 10000,
+    },
+    input: {
+        backgroundColor: theme.palette.background.paper,
+        border: 'none',
+        borderRadius: theme.shape.borderRadius,
+        '&  *': {
+            border: 'none'
+        }
     }
 }))
 
@@ -94,15 +104,15 @@ function DirectoryResult({lang, haveResult, searchResult, selectHandler, searchI
 }
 
 export default function Search() {
-    const {lang} = useContext(LanguageContext);
-    const inputRef = useRef();
-    const menuRef = useRef();
     const classes = useStyle();
+    const {lang} = useContext(LanguageContext);
     const history = useHistory();
     const [options] = useState(getHandbooks());
     const [searchInput, setSearchInput] = useState('');
     const [searchResult, setSearchResult] = useState([])
     const [fullWidth, setFullWidth] = useState(false)
+    const menuRef = useRef();
+    const inputRef = useRef();
 
     function handleListKeyDown(e) {
         if (e.key === 'ArrowDown' && searchResult.length > 0) menuRef.current.focus()
@@ -120,16 +130,20 @@ export default function Search() {
 
     return <Box className={clsx(classes.search, (fullWidth || searchInput.length > 0) && classes.search_active)}>
         <TextField
+            className={classes.input}
             inputRef={inputRef}
             value={searchInput}
+            inputProps={{style:{border:'none'}}}
             onChange={e => setSearchInput(e.target.value)}
             onKeyDown={handleListKeyDown}
             size='small'
+            placeholder='поиск...'
             onFocus={() => setFullWidth(true)}
             onBlur={() => setFullWidth(false)}
             variant='outlined'
             InputProps={{
-                startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment>,
+                startAdornment: <InputAdornment position="start"><SearchIcon
+                    style={{marginRight: '8px'}}/></InputAdornment>,
             }}/>
         {searchInput.length > 0 ?
             <ClickAwayListener onClickAway={(e) => {

@@ -5,16 +5,16 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { Box, Paper, TableContainer, Table, TableBody, Checkbox } from '@material-ui/core';
 import InfiniteScrollBorder from './InfiniteScrollBorder';
 import LoadingRow from './LoadingRow';
-import OneElement from './OneElement/OneElement';
+import HandbookOneElement from './OneElement/HandbookOneElement';
 import Row from './Row';
 import HeadTable from './HeadTable';
-import TooltipButton from './TooltipButton';
+import TooltipButton from '../Shared/TooltipButton';
 import ToolbarHeader from './ToolbarHeader';
 import ModalMessage from '../Modal';
 import Feedback from './Feedback';
 import { LanguageContext } from '../../App';
 import { INTERFACE_DIALOG, INTERFACE_LANGUAGE } from '../../util/language';
-import useStyle from './style';
+import useStyle from './handbookStyle';
 import useData from '../../hooks/useData';
 
 function getColSpan(columns) {
@@ -96,7 +96,7 @@ export default function Handbook({ structure, clickRowHandler, preparedFilter, b
     setOpenOneElement(true);
   }
 
-  const OneElementComponent = useMemo(() => structure.oneElementComponent || OneElement, [structure]);
+  const OneElementComponent = useMemo(() => structure.oneElementComponent || HandbookOneElement, [structure]);
 
   return (
     <Box className={classes.root} style={{ minWidth: 'content' }}>

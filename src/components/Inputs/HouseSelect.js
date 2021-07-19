@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {handbooks} from '../../util/handbook';
+import {handbooks} from '../../util/structure/handbookStructure/handbook';
 import AsyncInputSelect from './AsyncInputSelect';
 
 export default function HouseSelect({

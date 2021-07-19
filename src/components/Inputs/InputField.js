@@ -1,7 +1,7 @@
 import {TextField, MenuItem} from '@material-ui/core';
 import clsx from 'clsx';
 import React, {useEffect, useCallback, useRef, useState} from 'react';
-import {TYPE} from '../../util/handbook';
+import {TYPE} from '../../util/structure/handbookStructure/handbook';
 import {IMaskInput} from 'react-imask'
 import useStyle from './inputStyle';
 

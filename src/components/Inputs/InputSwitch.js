@@ -1,10 +1,12 @@
-import React, {useCallback, useMemo} from 'react';
-import {TYPE} from '../../util/handbook';
+import React, {useCallback,} from 'react';
+import {TYPE} from '../../util/structure/handbookStructure/handbook';
 import AsyncInputSelect from './AsyncInputSelect';
 import InputField from './InputField';
 
 export default function InputSwitch({column, value, editing, setIsValidArray, setIsChangedArray, updateValues, lang, width}) {
     const {type} = column;
+    if (type=== TYPE.SUB_SUB_VALUE) console.log(value)
+
     const inputField = useCallback((props) => <InputField
         key={column.accessor}
         onChange={(newValue) => updateValues(newValue, column)}
@@ -29,6 +31,7 @@ export default function InputSwitch({column, value, editing, setIsValidArray, se
         case TYPE.NUMBER:
             return inputField({});
         case TYPE.SUB_SUB_VALUE:
+
             return inputField({
                 value: value[column?.subSubPath?.accessor]?.[column.subSubPath.subAccessor],
                 editing: false

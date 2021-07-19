@@ -6,8 +6,8 @@ import clsx from 'clsx';
 import React, {useContext} from 'react';
 import {LanguageContext} from '../../App';
 import {INTERFACE_LANGUAGE} from '../../util/language';
-import useStyle from './style';
-import TooltipButton from './TooltipButton';
+import useStyle from './handbookStyle';
+import TooltipButton from '../Shared/TooltipButton';
 
 export default function ToolbarHeader({handbookName, deleteMod, selected, deleteButtonHandler, cancelButtonHandler, filterToggleHandler, addHandler, activeFilterMod, bindingVariant}) {
     const classes = useStyle();

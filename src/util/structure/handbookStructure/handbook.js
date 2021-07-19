@@ -1,4 +1,4 @@
-import { AVAILABLE_LANGUAGE, setLanguages } from './language';
+import { AVAILABLE_LANGUAGE, setLanguages } from '../../language';
 
 export const HANDBOOK_PATH = '/handbook/';
 

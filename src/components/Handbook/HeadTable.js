@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import React, {useContext} from 'react';
 import {LanguageContext} from '../../App';
 import FilterTextField from './FilterTextField';
-import useStyle from './style';
+import useStyle from './handbookStyle';
 
 export default function HeadTable({ columns, sortParams, sortParamsHandler, filterParamsHandler, activeFilter, editing}) {
     const classes = useStyle();

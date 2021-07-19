@@ -5,7 +5,7 @@ export default function DividerText ({text}){
     return (
         <Box style={{margin: '8px 8px'}}>
             <Divider/>
-            <Typography variant='subtitle2' color={'textSecondary'}>{text}</Typography>
+            <Typography variant='overline' color={'textSecondary'}>{text}</Typography>
             <Divider/>
         </Box>
     )

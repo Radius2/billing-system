@@ -1,8 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import * as api from '../api/api';
 import { LanguageContext } from '../App';
-import { changeReduce, newElement, validationReduce } from '../components/Forms/util/formFunctions';
+import { changeReduce, newElement, validationReduce } from '../util/formFunctions';
 import InputSwitch from '../components/Inputs/InputSwitch';
+import {TYPE} from '../util/structure/handbookStructure/handbook';
 
 export default function useOneElement({ formName, id, str, preparedValue, submitHandler, cancelHandler }) {
   const { lang } = useContext(LanguageContext);
@@ -96,7 +97,10 @@ export default function useOneElement({ formName, id, str, preparedValue, submit
     accessor => {
       if (loading) return undefined;
       const column = str[accessor];
-      const value = data[accessor];
+      const value = data[column.accessor];
+
+      if (column.type=== TYPE.SUB_SUB_VALUE) console.log(accessor)
+
       return (
         <InputSwitch
           key={column.accessor + (column.subPath?.accessor ?? '')}
@@ -107,7 +111,7 @@ export default function useOneElement({ formName, id, str, preparedValue, submit
           updateValues={value => {
             setData(prev => ({ ...prev, [column.accessor]: value }));
           }}
-          editing={editing}
+          editing={editing && !column.noEditing}
           setIsValidArray={value => setIsValidArray(prev => ({ ...prev, [column.accessor]: !!value }))}
           setIsChangedArray={value => setIsChangedArray(prev => ({ ...prev, [column.accessor]: !!value }))}
         />

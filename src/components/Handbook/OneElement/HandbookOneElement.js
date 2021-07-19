@@ -4,23 +4,19 @@ import {
     Paper,
     Divider,
     Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
     Typography
 } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import HistoryIcon from '@material-ui/icons/History';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {LanguageContext} from '../../../App';
-import {handbooks} from '../../../util/handbook';
+import {handbooks} from '../../../util/structure/handbookStructure/handbook';
 import {INTERFACE_LANGUAGE} from '../../../util/language';
-import PreventActionDialog from '../../Util/PreventActionDialog';
+import PreventActionDialog from '../../Shared/PreventActionDialog';
 import Handbook from '../Handbook';
 import HistoryElement from '../HistoryElement/HistoryElement';
-import TooltipButton from '../TooltipButton';
-import DeleteDialog from '../../Util/DeleteDialog';
+import TooltipButton from '../../Shared/TooltipButton';
+import DeleteDialog from '../../Shared/DeleteDialog';
 import InputSwitch from '../../Inputs/InputSwitch';
 import useStyle from './oneElementStyle';
 import * as api from '../../../api/api'
@@ -39,7 +35,7 @@ function changeReduce(obj = {}) {
     return Object.values(obj).reduce((prev, cur) => prev || cur, false)
 }
 
-export default function OneElement({open, submitHandler, cancelHandler, structure, id:idElement, preparedValue = {}}) {
+export default function HandbookOneElement({open, submitHandler, cancelHandler, structure, id:idElement, preparedValue = {}}) {
     const {formName, columns} = structure;
     const {lang} = useContext(LanguageContext);
     const classes = useStyle();

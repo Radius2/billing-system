@@ -1,8 +1,7 @@
 import {Box, Divider, Tooltip, Typography} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-import useStyle from '../../Handbook/OneElement/oneElementStyle';
-import TooltipButton from '../../Handbook/TooltipButton';
+import useStyle from '../oneElementStyle';
+import TooltipButton from '../../../Shared/TooltipButton';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 

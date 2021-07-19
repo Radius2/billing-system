@@ -1,5 +1,5 @@
 //Установка имени параметра и ширины колонки
-import {setLanguages} from '../../../util/language';
+import {setLanguages} from './language';
 
 export function setAccessor(accessor, widthColumn, lowerCase = false) {
     return {accessor: accessor.toLowerCase(), width: widthColumn + 'px', lowerCase}
@@ -37,4 +37,8 @@ export function setHeader(RU, KZ, EN) {
 
 export function setSubPath(structure, accessor) {
     return {subPath: {structure, accessor}}
+}
+
+export function setSubSubPath(accessor, subAccessor) {
+    return {subSubPath: {accessor, subAccessor}}
 }

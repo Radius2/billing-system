@@ -1,11 +1,11 @@
 import { Box, Button, Dialog } from '@material-ui/core';
-import React, { useState, useEffect } from 'react';
-import useOneElement from '../../../../hooks/useOneElement';
-import useStyle from '../../../Handbook/OneElement/oneElementStyle';
-import PreventActionDialog from '../../../Util/PreventActionDialog';
-import { ACCESSORS, str } from '../../formStructures/actStructure';
-import TitleOneElement from '../TitleOneElement';
-import DeleteDialog from '../../../Util/DeleteDialog';
+import React, { useState} from 'react';
+import useOneElement from '../../../hooks/useOneElement';
+import useStyle from './oneElementStyle';
+import PreventActionDialog from '../../Shared/PreventActionDialog';
+import { ACCESSORS, str } from '../../../util/structure/formStructures/actStructure';
+import TitleOneElement from './Components/TitleOneElement';
+import DeleteDialog from '../../Shared/DeleteDialog';
 
 export default function OneElementContractForm({ structure, id, open, submitHandler, cancelHandler, preparedValue = {} }) {
   const { formName } = structure;

@@ -1,8 +1,8 @@
-import { handbooks } from '../../../util/handbook';
-import OneElementContractForm from '../TableForm/OneElementTableForm/OneElementContractForm';
-import { TYPE } from '../util/constant';
-import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../util/constructorFunction';
-import { setLanguages } from '../../../util/language';
+import { handbooks } from '../handbookStructure/handbook';
+import ContractFormOneElement from '../../../components/Handbook/OneElement/ContractFormOneElement';
+import { TYPE } from '../../constant';
+import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../../constructorFunction';
+import { setLanguages } from '../../language';
 
 export const FORM_NAME = 'contracts';
 
@@ -119,7 +119,7 @@ export const structureTable = {
   name: setLanguages('Договоры', '', ''),
   maxWidth: '900px',
   noDeleteButton: true,
-  oneElementComponent: props => OneElementContractForm({ str: str, ...props }),
+  oneElementComponent: props => ContractFormOneElement({ str: str, ...props }),
   formName: FORM_NAME,
   columns: [
     { ...str[ACCESSORS.ID] },

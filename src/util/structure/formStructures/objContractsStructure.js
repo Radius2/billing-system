@@ -1,9 +1,18 @@
-import OneElementObjContractForm from '../TableForm/OneElementTableForm/OneElementObjContractForm';
+import OneElementObjContractForm from '../../../components/Handbook/OneElement/ObjContractFormOneElement';
 import * as contracts from './contractStructure';
 import * as objects from './objectStructure';
-import { TYPE } from '../util/constant';
-import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../util/constructorFunction';
-import { setLanguages } from '../../../util/language';
+import { TYPE } from '../../constant';
+import {
+  setBreak,
+  setAccessor,
+  setType,
+  setValidation,
+  setOrdering,
+  setHeader,
+  setSubPath,
+  setSubSubPath
+} from '../../constructorFunction';
+import { setLanguages } from '../../language';
 
 export const FORM_NAME = 'objcontracts';
 
@@ -11,9 +20,13 @@ const BR = setBreak();
 
 export const ACCESSORS = {
   CONTRACT: 'contract',
+  CONTRACT_SUBJECT: 'contract_subject',
+  CONTRACT_START_DATE: 'contract_start_date',
   END_DATE: 'enddate',
   ID: 'id',
   OBJECT: 'object',
+  OBJECT_REGQTY: 'object_regqty',
+  OBJECT_CITY: 'object_city',
   START_DATE: 'startdate',
 };
 
@@ -26,6 +39,25 @@ export const str = {
     ...setSubPath(() => contracts.structureTable, 'contractnumber'),
     ...setValidation(),
   },
+  [ACCESSORS.CONTRACT_START_DATE]: {
+    noEditing:true,
+    ...setHeader('Дата начала'),
+    ...setAccessor(ACCESSORS.CONTRACT, 200),
+    ...setType(TYPE.SUB_VALUE, true),
+    ...setOrdering(true, true),
+    ...setSubPath(() => contracts.structureTable, 'startdate'),
+    ...setValidation(),
+  },
+
+  [ACCESSORS.CONTRACT_SUBJECT]: {
+    ...setHeader('Субъект'),
+    ...setAccessor(ACCESSORS.CONTRACT, 200),
+    ...setType(TYPE.SUB_SUB_VALUE, true),
+    ...setOrdering(),
+    ...setSubSubPath('customer', 'subname'),
+    ...setValidation(),
+  },
+
   [ACCESSORS.END_DATE]: {
     ...setHeader('Дата закрытия'),
     ...setAccessor(ACCESSORS.END_DATE, 150),
@@ -46,6 +78,33 @@ export const str = {
     ...setType(TYPE.SUB_VALUE, true),
     ...setOrdering(true, true),
     ...setSubPath(() => objects.structureTable, objects.ACCESSORS.OBJECT_NAME),
+    ...setValidation(),
+  },
+  [ACCESSORS.OBJECT_REGQTY]: {
+    noEditing:true,
+    ...setHeader('Количество проживающих'),
+    ...setAccessor(ACCESSORS.OBJECT, 200),
+    ...setType(TYPE.SUB_VALUE, true),
+    ...setOrdering(true, true),
+    ...setSubPath(() => objects.structureTable, objects.ACCESSORS.REG_QTY),
+    ...setValidation(),
+  },
+  [ACCESSORS.OBJECT_CITY]: {
+    noEditing:true,
+    ...setHeader('Город'),
+    ...setAccessor(ACCESSORS.OBJECT, 200),
+    ...setType(TYPE.SUB_VALUE, true),
+    ...setOrdering(true, true),
+    ...setSubSubPath('street', 'city'),
+    ...setValidation(),
+  },
+  [ACCESSORS.OBJECT_CITY]: {
+    noEditing:true,
+    ...setHeader('Город'),
+    ...setAccessor(ACCESSORS.OBJECT, 200),
+    ...setType(TYPE.SUB_VALUE, true),
+    ...setOrdering(true, true),
+    ...setSubSubPath('street', 'city'),
     ...setValidation(),
   },
   [ACCESSORS.START_DATE]: {

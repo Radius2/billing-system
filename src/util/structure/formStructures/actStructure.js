@@ -1,9 +1,9 @@
-import OneElementActsForm from '../TableForm/OneElementTableForm/OneElementActsForm';
+import OneElementActsForm from '../../../components/Handbook/OneElement/ActsFormOneElement';
 import * as objects from './objectStructure';
-import { TYPE } from '../util/constant';
-import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../util/constructorFunction';
-import { setLanguages } from '../../../util/language';
-import { handbooks } from '../../../util/handbook';
+import { TYPE } from '../../constant';
+import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../../constructorFunction';
+import { setLanguages } from '../../language';
+import { handbooks } from '../handbookStructure/handbook';
 
 export const FORM_NAME = 'acts';
 

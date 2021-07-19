@@ -1,5 +1,5 @@
-import {setAccessor, setBreak, setType, TYPE} from './handbook';
-import {setLanguages} from './language';
+import {setAccessor, setBreak, setType, TYPE} from '../handbookStructure/handbook';
+import {setLanguages} from '../../language';
 
 export const subjects = {
     name: setLanguages('История изменения субъекта'),

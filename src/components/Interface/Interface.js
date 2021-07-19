@@ -2,7 +2,7 @@ import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import React, {useState, useMemo} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import {Box, Drawer, IconButton, Divider} from '@material-ui/core';
+import {Box, Drawer, IconButton, Divider, Toolbar} from '@material-ui/core';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Content from '../Content/Content';
 import Header from './Header/Header';
@@ -21,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
     drawer: {
         width: WIDE_SIDEMENU + 'px',
         flexShrink: 0,
-        backgroundColor: theme.palette.background.paper,
-        color: theme.palette.getContrastText(theme.palette.background.paper),
+        backgroundColor: theme.palette.sideMenu,
+        color: theme.palette.getContrastText(theme.palette.sideMenu),
         paddingLeft: '8px',
         overflowY: 'scroll',
         '&::-webkit-scrollbar-thumb': {
@@ -56,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 0,
     },
     transition: {
-        marginRight: 'auto',
         '& *': {
             transition: '0.5s',
         }
@@ -85,7 +84,9 @@ export default function Interface({navArr, logout}) {
                     anchor="left"
                     className={classes.drawerPaper}
                     classes={{paper: classes.drawer}}>
-                <Typography variant='h6' align='center'>Billing</Typography>
+                <Toolbar>
+                    <Typography style={{flexGrow: 1}} variant='h6' align='center'>Billing</Typography>
+                </Toolbar>
                 <Divider/>
                 <Sidemenu navArr={navArr}/>
             </Drawer>
