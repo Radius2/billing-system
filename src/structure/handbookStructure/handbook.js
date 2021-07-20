@@ -1,4 +1,4 @@
-import { AVAILABLE_LANGUAGE, setLanguages } from '../../language';
+import { AVAILABLE_LANGUAGE, setLanguages } from '../../util/language';
 
 export const HANDBOOK_PATH = '/handbook/';
 
@@ -332,7 +332,7 @@ export const handbooks = {
       },
       {
         header: setLanguages('Субъект'),
-        ...setAccessor('subj', 200),
+        ...setAccessor('subj', 200, true),
         ...setType(TYPE.STRING, true),
         ...setType(TYPE.SUB_VALUE, true),
         subPath: { structure: () => handbooks[SUBJECTS], accessor: 'subname' },
@@ -829,7 +829,7 @@ export const handbooks = {
         header: setLanguages('ID'),
         ...setAccessor('id', 70),
         ...setType(TYPE.ID, true),
-        ...setOrdering(),
+        ...setOrdering(false,true),
         ...setValidation(),
       },
       {
@@ -844,14 +844,14 @@ export const handbooks = {
         ...setAccessor('city', 200),
         ...setType(TYPE.SUB_VALUE, true),
         subPath: { structure: () => handbooks[CITIES], accessor: 'cityname' },
-        ...setOrdering(true, true),
+        ...setOrdering(),
         ...setValidation(/^.{0,100}/, /^.+/),
       },
       {
         header: setLanguages('Создана'),
         ...setAccessor('created', 150),
         ...setType(TYPE.DATE, true),
-        ...setOrdering(true, true),
+        ...setOrdering(),
         ...setValidation('0000{-}00{-}00', /^\d{4}-\d{2}-\d{2}$/),
       },
       // {

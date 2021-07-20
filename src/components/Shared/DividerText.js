@@ -1,11 +1,28 @@
 import {Box, Divider, Typography} from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import React from 'react';
 
-export default function DividerText ({text}){
+const useStyle = makeStyles((theme) => ({
+    margin: {
+        margin: '8px'
+    },
+    text: {
+        fontWeight: 500,
+        color: theme.palette.text.primary,
+        opacity: 0.7,
+    },
+}))
+
+export default function DividerText({text}) {
+    const classes = useStyle()
     return (
-        <Box style={{margin: '8px 8px'}}>
+        <Box className={classes.margin}>
             <Divider/>
-            <Typography variant='overline' color={'textSecondary'}>{text}</Typography>
+            <Typography
+                className={classes.text}
+                variant='overline'
+            >
+                {text}</Typography>
             <Divider/>
         </Box>
     )

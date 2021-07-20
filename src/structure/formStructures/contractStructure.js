@@ -1,8 +1,8 @@
 import { handbooks } from '../handbookStructure/handbook';
-import ContractFormOneElement from '../../../components/Handbook/OneElement/ContractFormOneElement';
-import { TYPE } from '../../constant';
-import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../../constructorFunction';
-import { setLanguages } from '../../language';
+import ContractFormOneElement from '../../components/OneElement/ContractFormOneElement';
+import { TYPE } from '../../util/constant';
+import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../../util/constructorFunction';
+import { setLanguages } from '../../util/language';
 
 export const FORM_NAME = 'contracts';
 
@@ -40,7 +40,7 @@ export const str = {
   },
   [ACCESSORS.CONSIGNEE]: {
     ...setHeader('Грузополучатель'),
-    ...setAccessor(ACCESSORS.CONSIGNEE, 350),
+    ...setAccessor(ACCESSORS.CONSIGNEE, 350, true),
     ...setType(TYPE.SUB_VALUE, true),
     ...setOrdering(),
     ...setSubPath(() => handbooks.subjects, 'subname'),
@@ -55,9 +55,9 @@ export const str = {
   },
   [ACCESSORS.CUSTOMER]: {
     ...setHeader('Субъект'),
-    ...setAccessor(ACCESSORS.CUSTOMER, 250),
+    ...setAccessor(ACCESSORS.CUSTOMER, 250, true),
     ...setType(TYPE.SUB_VALUE, true),
-    ...setOrdering(true, true),
+    ...setOrdering(false, false),
     ...setSubPath(() => handbooks.subjects, 'subname'),
     ...setValidation(),
   },
@@ -79,7 +79,7 @@ export const str = {
   },
   [ACCESSORS.ESO]: {
     ...setHeader('ЭСО'),
-    ...setAccessor(ACCESSORS.ESO, 350),
+    ...setAccessor(ACCESSORS.ESO, 350, true),
     ...setType(TYPE.SUB_VALUE, true),
     ...setOrdering(),
     ...setSubPath(() => handbooks.eso, 'esoname'),

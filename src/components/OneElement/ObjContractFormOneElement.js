@@ -1,15 +1,15 @@
 import {Box, Button, Dialog} from '@material-ui/core';
 import React, {useState, useEffect} from 'react';
-import useOneElement from '../../../hooks/useOneElement';
+import useOneElement from '../../hooks/useOneElement';
 import useStyle from './oneElementStyle';
-import InputField from '../../Inputs/InputField';
-import PreventActionDialog from '../../Shared/PreventActionDialog';
-import {ACCESSORS, str} from '../../../util/structure/formStructures/objContractsStructure';
-import DividerText from '../../Shared/DividerText';
+import InputField from '../Inputs/InputField';
+import PreventActionDialog from '../Shared/PreventActionDialog';
+import {ACCESSORS, str} from '../../structure/formStructures/objContractsStructure';
+import DividerText from '../Shared/DividerText';
 import TitleOneElement from './Components/TitleOneElement';
-import DeleteDialog from '../../Shared/DeleteDialog';
+import DeleteDialog from '../Shared/DeleteDialog';
 
-export default function OneElementContractForm({structure, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
+export default function ActDetailsFormOneElement({structure,index, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
     const {formName} = structure
     const classes = useStyle();
     const [deletedElement, setDeletedElement] = useState(false)

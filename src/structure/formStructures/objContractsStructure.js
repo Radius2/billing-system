@@ -1,7 +1,7 @@
-import OneElementObjContractForm from '../../../components/Handbook/OneElement/ObjContractFormOneElement';
+import OneElementObjContractForm from '../../components/OneElement/ObjContractFormOneElement';
 import * as contracts from './contractStructure';
 import * as objects from './objectStructure';
-import { TYPE } from '../../constant';
+import { TYPE } from '../../util/constant';
 import {
   setBreak,
   setAccessor,
@@ -11,8 +11,8 @@ import {
   setHeader,
   setSubPath,
   setSubSubPath
-} from '../../constructorFunction';
-import { setLanguages } from '../../language';
+} from '../../util/constructorFunction';
+import { setLanguages } from '../../util/language';
 
 export const FORM_NAME = 'objcontracts';
 
@@ -44,7 +44,7 @@ export const str = {
     ...setHeader('Дата начала'),
     ...setAccessor(ACCESSORS.CONTRACT, 200),
     ...setType(TYPE.SUB_VALUE, true),
-    ...setOrdering(true, true),
+    ...setOrdering(),
     ...setSubPath(() => contracts.structureTable, 'startdate'),
     ...setValidation(),
   },
@@ -62,14 +62,14 @@ export const str = {
     ...setHeader('Дата закрытия'),
     ...setAccessor(ACCESSORS.END_DATE, 150),
     ...setType(TYPE.DATE, true),
-    ...setOrdering(true, true),
+    ...setOrdering(),
     ...setValidation('0000{-}00{-}00', /\d{4}-\d{2}-\d{2}/),
   },
   [ACCESSORS.ID]: {
     ...setHeader('ID'),
     ...setAccessor(ACCESSORS.ID, 70),
     ...setType(TYPE.ID, true),
-    ...setOrdering(true, true),
+    ...setOrdering(false, true),
     ...setValidation(),
   },
   [ACCESSORS.OBJECT]: {
@@ -77,7 +77,7 @@ export const str = {
     ...setAccessor(ACCESSORS.OBJECT, 200),
     ...setType(TYPE.SUB_VALUE, true),
     ...setOrdering(true, true),
-    ...setSubPath(() => objects.structureTable, objects.ACCESSORS.OBJECT_NAME),
+    ...setSubPath(() => objects.structureTable, 'objectname'),
     ...setValidation(),
   },
   [ACCESSORS.OBJECT_REGQTY]: {
@@ -85,33 +85,15 @@ export const str = {
     ...setHeader('Количество проживающих'),
     ...setAccessor(ACCESSORS.OBJECT, 200),
     ...setType(TYPE.SUB_VALUE, true),
-    ...setOrdering(true, true),
-    ...setSubPath(() => objects.structureTable, objects.ACCESSORS.REG_QTY),
-    ...setValidation(),
-  },
-  [ACCESSORS.OBJECT_CITY]: {
-    noEditing:true,
-    ...setHeader('Город'),
-    ...setAccessor(ACCESSORS.OBJECT, 200),
-    ...setType(TYPE.SUB_VALUE, true),
-    ...setOrdering(true, true),
-    ...setSubSubPath('street', 'city'),
-    ...setValidation(),
-  },
-  [ACCESSORS.OBJECT_CITY]: {
-    noEditing:true,
-    ...setHeader('Город'),
-    ...setAccessor(ACCESSORS.OBJECT, 200),
-    ...setType(TYPE.SUB_VALUE, true),
-    ...setOrdering(true, true),
-    ...setSubSubPath('street', 'city'),
+    ...setOrdering(),
+    ...setSubPath(() => objects.structureTable, 'regqty'),
     ...setValidation(),
   },
   [ACCESSORS.START_DATE]: {
     ...setHeader('Дата открытия'),
     ...setAccessor(ACCESSORS.START_DATE, 150),
     ...setType(TYPE.DATE, true),
-    ...setOrdering(true, true),
+    ...setOrdering(),
     ...setValidation('0000{-}00{-}00', /\d{4}-\d{2}-\d{2}/),
   },
 };
@@ -133,13 +115,20 @@ export const structureTable = {
 
 export const structureTableForContracts = {
   name: setLanguages(''),
+  filterAccessor: 'actualdate',
+  typeFilterAccessor: 'date',
+  filterAccessorLabel: setLanguages('Показать актуальные на'),
   formName: FORM_NAME,
   noDeleteButton: true,
   maxWidth: '400px',
   oneElementComponent: props => OneElementObjContractForm({ str: str, ...props }),
   columns: [{ ...str[ACCESSORS.OBJECT] }, { ...str[ACCESSORS.START_DATE] }, { ...str[ACCESSORS.END_DATE] }],
 };
+
 export const structureTableForObjects = {
+  filterAccessor: 'actualdate',
+  typeFilterAccessor: 'date',
+  filterAccessorLabel: setLanguages('Показать актуальные на'),
   name: setLanguages(''),
   formName: FORM_NAME,
   noDeleteButton: true,

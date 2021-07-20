@@ -1,8 +1,8 @@
 import { handbooks } from '../handbookStructure/handbook';
-import ObjectFormOneElement from '../../../components/Handbook/OneElement/ObjectFormOneElement';
-import { TYPE } from '../../constant';
-import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../../constructorFunction';
-import { setLanguages } from '../../language';
+import ObjectFormOneElement from '../../components/OneElement/ObjectFormOneElement';
+import { TYPE } from '../../util/constant';
+import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../../util/constructorFunction';
+import { setLanguages } from '../../util/language';
 
 export const FORM_NAME = 'objects';
 

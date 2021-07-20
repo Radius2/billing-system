@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {LanguageContext} from '../../../App';
-import * as historyHandbook from '../../../util/structure/aditionalStructure/historyHandook'
+import * as historyHandbook from '../../../structure/aditionalStructure/historyHandook'
 import InputField from '../../Inputs/InputField';
 
 const useStyle = makeStyles(theme => ({

@@ -2,9 +2,9 @@ import {ButtonBase, TableCell, TableHead, TableRow, Typography} from '@material-
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import clsx from 'clsx';
 import React, {useContext} from 'react';
-import {LanguageContext} from '../../App';
+import {LanguageContext} from '../../../App';
 import FilterTextField from './FilterTextField';
-import useStyle from './handbookStyle';
+import useStyle from '../handbookStyle';
 
 export default function HeadTable({ columns, sortParams, sortParamsHandler, filterParamsHandler, activeFilter, editing}) {
     const classes = useStyle();

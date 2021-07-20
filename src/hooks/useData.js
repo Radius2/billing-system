@@ -39,24 +39,19 @@ export default function useData({formName, pageSize = 20, snackbarHandler, setDe
 
     //сохранить новую строку в БД  и запросить новую строку в локальный справочник
     const addRow = useCallback((payload) => {
-        api.addElementHandbook(formName, payload)
-            .then((resp) => {
-                return api.getElementHandbook(formName, resp.data.id)
-            })
+        api.getElementHandbook(formName, payload.id)
             .then(resp => {
-                setDefaultCurrentMod()
                 snackbarHandler({error: false, mess: INTERFACE_DIALOG.successSaveModal[lang]});
                 (setData(prev => ([...prev, resp.data])));
             })
             .catch(err => setErrMessage(err.message))
-    }, [formName, setDefaultCurrentMod, lang, snackbarHandler])
+    }, [formName, lang, snackbarHandler])
 
     //обновить строку и получить перезаписанную сткоку из БД
-    const updateRow = useCallback((payload, index) => {
-        api.updElementHandbook(formName, payload)
-            .then((resp) => api.getElementHandbook(formName, resp.data.id))
+    const updateRow = useCallback((index) => {
+        console.log('update', index)
+        api.getElementHandbook(formName, data[index].id)
             .then(resp => {
-                if (index === selectedRows[0]) setDefaultCurrentMod()
                 setData(prev => {
                     prev[index] = resp.data;
                     return [...prev]
@@ -64,11 +59,11 @@ export default function useData({formName, pageSize = 20, snackbarHandler, setDe
                 snackbarHandler({error: false, mess: INTERFACE_DIALOG.successSaveModal[lang]});
             })
             .catch(err => setErrMessage(err.message))
-    }, [formName, setDefaultCurrentMod, lang, snackbarHandler, selectedRows])
+    }, [formName, lang, snackbarHandler])
 
 
     //удалить строку локально и из БД
-    const deleteRows = useCallback(() => {
+    const deleteElements = useCallback(() => {
             const ids = selectedRows.map((index) => data[index].id);
             api.delElementsHandbook(formName, ids)
                 .then(resp => {
@@ -82,12 +77,19 @@ export default function useData({formName, pageSize = 20, snackbarHandler, setDe
                     })
                 })
                 .catch(err => setErrMessage(err.message))
-                .finally(()=> {
+                .finally(() => {
                     setDefaultCurrentMod()
                 })
         }
         , [formName, setDefaultCurrentMod, lang, snackbarHandler, selectedRows, console]
     )
+
+    function clearRow(index) {
+        setData(prev => {
+            prev.splice(index, 1)
+            return [...prev]
+        })
+    }
 
     const getMore = useCallback(() => {
         if (hasMore) setPage(prev => prev + 1)
@@ -148,7 +150,8 @@ export default function useData({formName, pageSize = 20, snackbarHandler, setDe
 
     return {
         loading,
-        deleteRows,
+        deleteElements,
+        clearRow,
         addRow,
         updateRow,
         data,

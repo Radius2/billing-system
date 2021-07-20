@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {useHistory} from 'react-router';
 import {LanguageContext} from '../../../App';
-import {getHandbooks} from '../../../util/structure/handbookStructure/handbook';
+import {getHandbooks} from '../../../structure/handbookStructure/handbook';
 import {INTERFACE_DIALOG, INTERFACE_LANGUAGE} from '../../../util/language';
 
 const useStyle = makeStyles(theme => ({

@@ -1,5 +1,5 @@
 import React, {useCallback,} from 'react';
-import {TYPE} from '../../util/structure/handbookStructure/handbook';
+import {TYPE} from '../../structure/handbookStructure/handbook';
 import AsyncInputSelect from './AsyncInputSelect';
 import InputField from './InputField';
 
@@ -39,6 +39,7 @@ export default function InputSwitch({column, value, editing, setIsValidArray, se
         case TYPE.SUB_VALUE:
             return (
                 <AsyncInputSelect
+                    upperCase={!column.lowerCase}
                     key={column.subPath.accessor}
                     width={width || column.width}
                     editing={editing}

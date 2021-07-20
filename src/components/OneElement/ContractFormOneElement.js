@@ -1,24 +1,19 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {Box, Button, Dialog, Typography, Toolbar, TextField} from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import {LanguageContext} from '../../../App';
-import useOneElement from '../../../hooks/useOneElement';
-import {INTERFACE_LANGUAGE} from '../../../util/language';
-import Handbook from '../Handbook';
+import React, {useState, useEffect} from 'react';
+import {Box, Button, Dialog, Typography} from '@material-ui/core';
+import useOneElement from '../../hooks/useOneElement';
 import useStyle from './oneElementStyle';
-import {StyledTab, StyledTabs} from '../../StyledComponents/StyledTabs';
-import DeleteDialog from '../../Shared/DeleteDialog';
-import PreventActionDialog from '../../Shared/PreventActionDialog';
-import {TabPanel} from '../../Shared/TabPanel';
-import {ACCESSORS, str} from '../../../util/structure/formStructures/contractStructure';
-import * as objContract from '../../../util/structure/formStructures/objContractsStructure';
-import DividerText from '../../Shared/DividerText';
+import {StyledTab, StyledTabs} from '../StyledComponents/StyledTabs';
+import DeleteDialog from '../Shared/DeleteDialog';
+import PreventActionDialog from '../Shared/PreventActionDialog';
+import {ACCESSORS, str} from '../../structure/formStructures/contractStructure';
+import * as objContract from '../../structure/formStructures/objContractsStructure';
+import DividerText from '../Shared/DividerText';
 import TitleOneElement from './Components/TitleOneElement';
-import {initDate} from '../../../util/functions';
+import TabPanelForm from './Components/TabPanelForm';
+import BindingHandbookInForm from './Components/BindingHandbookInForm';
 
-export default function ContractFormOneElement({structure, id, open, submitHandler, cancelHandler, preparedValue = {}}, BindingObjects = () =>
+export default function ContractFormOneElement({structure, index, id, open, submitHandler, cancelHandler, preparedValue = {}}, BindingObjects = () =>
     <div/>) {
-    const {lang} = useContext(LanguageContext);
     const {formName} = structure;
     const [tabValue, setTabValue] = useState(0);
     const [deletedElement, setDeletedElement] = useState(false);
@@ -27,6 +22,7 @@ export default function ContractFormOneElement({structure, id, open, submitHandl
     const {data, closeElement, loading, editing, isValidElement, input, closeHandler, addMode, openDialog, setOpenDialog, actionButtonHandler} = useOneElement({
         formName,
         id,
+        index,
         str,
         preparedValue,
         submitHandler,
@@ -83,13 +79,7 @@ export default function ContractFormOneElement({structure, id, open, submitHandl
 
                         {!loading && (
                             <>
-                                <TabPanel value={tabValue} index={0}>
-                                    <Box style={{
-                                        marginLeft: '16px',
-                                        display: 'flex',
-                                        flexFlow: 'column',
-                                        height: '100%'
-                                    }}>
+                                <TabPanelForm index={0} value={tabValue}>
                                         <Box>
                                             <DividerText text={'Основные данные'}/>
                                             {input(ACCESSORS.CONTRACT_NUMBER)}
@@ -119,42 +109,15 @@ export default function ContractFormOneElement({structure, id, open, submitHandl
                                                 </Button>
                                             </Box>
                                         )}
-                                    </Box>
-                                </TabPanel>
-                                <TabPanel value={tabValue} index={1}>
-                                    <Box style={{
-                                        marginLeft: '16px',
-                                        display: 'flex',
-                                        flexFlow: 'column',
-                                        height: '100%'
-                                    }}
-                                    >
-                                        <Toolbar style={{padding: '0', justifyContent: 'space-between'}}>
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                startIcon={<AddIcon/>}
-                                            >
-                                                {INTERFACE_LANGUAGE.add[lang]}
-                                            </Button>
-                                            <TextField
-                                                value={initDate()}
-                                                label={'Показывать актуальные на'}
-                                                type='date'
-                                            />
-                                        </Toolbar>
-                                        <Handbook
-                                            structure={objContract.structureTableForContracts}
-                                            preparedFilter={{
-                                                accessor: 'contractnumber',
-                                                id: data.contractnumber,
-                                                //preparedValue: { contract: data },
-                                            }}
-                                            disableToolbar
-                                            bindingVariant
-                                        />
-                                    </Box>
-                                </TabPanel>
+                                </TabPanelForm>
+                                <TabPanelForm value={tabValue} index={1}>
+                                    <BindingHandbookInForm
+                                        preparedFilter={{
+                                            contractnumber: data.contractnumber,
+                                        }}
+                                        preparedValue={{contract:data}}
+                                        structure={objContract.structureTableForContracts}/>
+                                </TabPanelForm>
                             </>
                         )}
                     </Box>

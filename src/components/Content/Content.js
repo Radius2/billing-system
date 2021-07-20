@@ -2,12 +2,13 @@ import React, { useContext, useState } from 'react';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import { LanguageContext } from '../../App';
-import { structureTable as contracts } from '../../util/structure/formStructures/contractStructure';
-import { structureTable as objects } from '../../util/structure/formStructures/objectStructure';
-import { structureTable as objContracts } from '../../util/structure/formStructures/objContractsStructure';
-import { structureTable as acts } from '../../util/structure/formStructures/actStructure';
+import { structureTable as contracts } from '../../structure/formStructures/contractStructure';
+import { structureTable as objects } from '../../structure/formStructures/objectStructure';
+import { structureTable as objContracts } from '../../structure/formStructures/objContractsStructure';
+import { structureTable as acts } from '../../structure/formStructures/actStructure';
+import { structureTable as actDetails } from '../../structure/formStructures/actDetailStructure';
 import Handbook from '../Handbook/Handbook';
-import { getHandbooks, handbooks } from '../../util/structure/handbookStructure/handbook';
+import { getHandbooks, handbooks } from '../../structure/handbookStructure/handbook';
 import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
 
@@ -44,6 +45,9 @@ export default function Content() {
       </Route>
       <Route path={'/form/acts'}>
         <Handbook structure={acts} />
+      </Route>
+        <Route path={'/form/actdetails'}>
+        <Handbook structure={actDetails} />
       </Route>
     </Switch>
   );
