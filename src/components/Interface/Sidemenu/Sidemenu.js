@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import List from '@material-ui/core/List';
 import {makeStyles} from '@material-ui/core/styles';
+import {LanguageContext} from '../../../App';
 import ListItemNav from './Nav';
 
 const useStyles = makeStyles((theme) => ({
@@ -16,13 +17,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Sidemenu(props) {
+export default function Sidemenu({navArr}) {
     const classes = useStyles();
+    const {lang} = useContext(LanguageContext)
 
     return (
                     <List>
-                        {props.navArr.map((nav, index) => (
-                            <ListItemNav key={index} {...nav} itemClass={classes.item} activeClass={classes.active}/>
+                        {navArr.map((nav, index) => (
+                            <ListItemNav
+                                key={index}
+                                to={nav.path}
+                                name={nav.title[lang]}
+                                itemClass={classes.item}
+                                activeClass={classes.active}/>
                         ))}
                     </List>
     )

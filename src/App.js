@@ -12,15 +12,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 export const LanguageContext = React.createContext();
 export const ThemeContext = React.createContext();
 
-const navArr = [
-    {to: '/handbook', name: 'Все справочники'},
-    {to: '/form/contracts', name: 'Договоры'},
-    {to: '/form/objects', name: 'Точки учета'},
-    {to: '/form/objcontract', name: 'Связка договор/точки учета'},
-    {to: '/form/acts', name: 'Акты'},
-    {to: '/form/actdetails', name: 'Детали актов'},
-];
-
 export default function App() {
     const [lang, setLang] = useState(localStorage.getItem('language') || 'RU');
     const [isDark, setIsDark] = useState(!!localStorage.getItem('isDark') || false);
@@ -67,7 +58,7 @@ export default function App() {
                             )}
                             exact
                         />
-                        {isAuth ? <Interface logout={logout} accessForms={accessForms} navArr={navArr}/> :
+                        {isAuth ? <Interface logout={logout} accessForms={accessForms}/> :
                             <Redirect to='/login'/>}
                     </Switch>
                 </LanguageContext.Provider>

@@ -4,6 +4,7 @@ import React, {useState, useMemo} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {Box, Drawer, IconButton, Divider, Toolbar} from '@material-ui/core';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import {MENU_LINKS} from '../../routes';
 import Content from '../Content/Content';
 import Header from './Header/Header';
 import Sidemenu from './Sidemenu/Sidemenu';
@@ -72,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 
-export default function Interface({navArr, logout}) {
+export default function Interface({logout}) {
     const [showSidemenu, setShowSidemenu] = useState(true)
     const classes = useStyles();
     const content = useMemo(() => <Content/>
@@ -88,7 +89,7 @@ export default function Interface({navArr, logout}) {
                     <Typography style={{flexGrow: 1}} variant='h6' align='center'>Billing</Typography>
                 </Toolbar>
                 <Divider/>
-                <Sidemenu navArr={navArr}/>
+                <Sidemenu navArr={MENU_LINKS}/>
             </Drawer>
             <Box className={clsx(classes.workSpace, showSidemenu && classes.workSpaceShift)}>
                 <Header logout={logout}>
