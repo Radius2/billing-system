@@ -1,24 +1,23 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Button, Dialog, Typography} from '@material-ui/core';
+import {Box, Button, Dialog} from '@material-ui/core';
 import useOneElement from '../../hooks/useOneElement';
-import ObjectFormOneElement from './ObjectFormOneElement';
+import {handbooks} from '../../structure/handbookStructure/handbook';
+import HistoryElement from './HistoryElement/HistoryElement';
 import useStyle from './oneElementStyle';
 import {StyledTab, StyledTabs} from '../StyledComponents/StyledTabs';
 import DeleteDialog from '../Shared/DeleteDialog';
 import PreventActionDialog from '../Shared/PreventActionDialog';
-import {ACCESSORS, str, FORM_NAME as formName} from '../../structure/formStructures/contractStructure';
-import * as objContract from '../../structure/formStructures/objContractsStructure';
+import {ACCESSORS, str, FORM_NAME as formName} from '../../structure/formStructures/subjectStructure';
 import DividerText from '../Shared/DividerText';
 import TitleOneElement from './Components/TitleOneElement';
 import TabPanelForm from './Components/TabPanelForm';
 import BindingHandbookInForm from './Components/BindingHandbookInForm';
+import * as contracts from '../../structure/formStructures/contractStructure'
 
-export default function ContractFormOneElement({index, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
+export default function SubjectFormOneElement({index, id, open, submitHandler, cancelHandler, preparedValue = {}}, ) {
     const [tabValue, setTabValue] = useState(0);
     const [deletedElement, setDeletedElement] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [openModalOneElement, setOpenModalOneElement] = useState(false)
-    const [idModalOneElement, setIdModalOneElement] = useState(false)
     const classes = useStyle();
     const {data, closeElement, loading, editing, isValidElement, input, closeHandler, addMode, openDialog, setOpenDialog, actionButtonHandler} = useOneElement({
         formName,
@@ -49,33 +48,27 @@ export default function ContractFormOneElement({index, id, open, submitHandler, 
                 <DeleteDialog
                     openDialog={openDeleteDialog}
                     closeHandler={() => setOpenDeleteDialog(false)}
-                    deleteHandler={value => closeElement({closedate: value})}
+                    deleteHandler={value => closeElement({subclose: value})}
                 />
                 <Box className={classes.container}
                      style={{width: '1000px', height: '100%', display: 'flex', flexFlow: 'column'}}>
                     <TitleOneElement
                         id={data.id}
                         addMode={addMode}
-                        title={
-                            <>
-                                {`Договор: `}
-                                <Typography component='span' variant='subtitle1'>
-                                    №
-                                </Typography>
-                            </>
-                        }
-                        addTitle={'Создание договора: '}
+                        title={`Субъект: `}
+                        addTitle={'Создание субъекта: '}
                         closeHandler={closeHandler}
-                        nameElement={data[ACCESSORS.CONTRACT_NUMBER]}
+                        nameElement={data[ACCESSORS.SUB_NAME]}
                         deleteElementHandler={() => setOpenDeleteDialog(true)}
                         disableDelete={deletedElement}
                     />
                     <Box style={{flexGrow: 1, display: 'flex', marginTop: '8px'}}>
                         <StyledTabs orientation='vertical' variant='scrollable' value={tabValue}
                                     onChange={(e, v) => setTabValue(v)} style={{minWidth: '200px'}}>
-                            <StyledTab label={'Общие данные'}/>
-                            <StyledTab disabled={addMode} label={'Точки учета'}/>
-                            <StyledTab disabled={addMode} label={'Дополнительно'}/>
+                            <StyledTab label={'Данные'}/>
+                            <StyledTab disabled={addMode} label={'Счета'}/>
+                            <StyledTab disabled={addMode} label={'Договора субъекта'}/>
+                            <StyledTab disabled={addMode} label={'История изменения'}/>
                         </StyledTabs>
 
                         {!loading && (
@@ -83,21 +76,22 @@ export default function ContractFormOneElement({index, id, open, submitHandler, 
                                 <TabPanelForm index={0} value={tabValue}>
                                     <Box>
                                         <DividerText text={'Основные данные'}/>
-                                        {input(ACCESSORS.CONTRACT_NUMBER)}
-                                        {!addMode && <br/>}
-                                        {input(ACCESSORS.START_DATE)}
-                                        {addMode || input(ACCESSORS.END_DATE)}
-                                        <br/>
-                                        {input(ACCESSORS.CUSTOMER)}
-                                        {input(ACCESSORS.CONSIGNEE)}
-                                        <DividerText text={'Данные договора'}/>
-                                        {input(ACCESSORS.ESO)}
-                                        {input(ACCESSORS.ESO_CONTRACT_NUMBER)}
-                                        <br/>
-                                        {input(ACCESSORS.AREA)}
-                                        {input(ACCESSORS.CUSTOMER_GROUP)}
-                                        <br/>
-                                        {input(ACCESSORS.PERSONAL_ACCOUNT)}
+                                        {input(ACCESSORS.ID)}
+                                        {input(ACCESSORS.SUB_ACC_NUMBER)}
+                                        {input(ACCESSORS.SUB_NAME)}
+                                        {input(ACCESSORS.SUB_BIN)}
+                                        {input(ACCESSORS.SUB_START)}
+                                        {input(ACCESSORS.SUB_HEAD_NAME)}
+                                        {input(ACCESSORS.SUB_HEAD_POS)}
+                                        {input(ACCESSORS.SUB_ACC_NAME)}
+                                        {input(ACCESSORS.SUB_ACC_POS)}
+                                        {input(ACCESSORS.SUB_PHYS)}
+                                        {input(ACCESSORS.SUB_TYPE)}
+                                        <DividerText text={'Дополнительные данные'}/>
+                                        {input(ACCESSORS.SUB_ADDR)}
+                                        {input(ACCESSORS.SUB_PHONE)}
+                                        {input(ACCESSORS.SUB_DESCR, '100%')}
+
                                     </Box>
                                     {editing && (
                                         <Box className={classes.actionPanel} style={{marginTop: 'auto'}}>
@@ -114,22 +108,27 @@ export default function ContractFormOneElement({index, id, open, submitHandler, 
                                 <TabPanelForm value={tabValue} index={1}>
                                     <BindingHandbookInForm
                                         preparedFilter={{
-                                            contractnumber: data.contractnumber,
+                                            subid: data.id,
                                         }}
-                                        preparedValue={{contract: data}}
-                                        structure={objContract.structureTableForContracts}
-                                        clickRowHandler={value => {
-                                            setOpenModalOneElement(true);
-                                            setIdModalOneElement(value.object.id)
+                                        preparedValue={{subj: data}}
+                                        structure={handbooks.sub_banks}/>
+                                </TabPanelForm>
+
+                                <TabPanelForm value={tabValue} index={2}>
+                                    {'пока не работает выборка'.toUpperCase()}
+                                    <BindingHandbookInForm
+                                        preparedFilter={{
+                                            // subid: data.id,
                                         }}
+                                        preparedValue={{'consignee': data, 'customer': data}}
+                                        structure={contracts.structureTableForSubjects}/>
+                                </TabPanelForm>
+
+                                <TabPanelForm value={tabValue} index={3}>
+                                    <HistoryElement
+                                        id={data.id}
+                                        handbookName={formName}
                                     />
-                                    {openModalOneElement &&
-                                    <ObjectFormOneElement
-                                        open={openModalOneElement}
-                                        id={idModalOneElement.toString()}
-                                        cancelHandler={() => setOpenModalOneElement(false)}
-                                    />
-                                    }
                                 </TabPanelForm>
                             </>
                         )}

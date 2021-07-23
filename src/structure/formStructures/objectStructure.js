@@ -6,8 +6,6 @@ import { setLanguages } from '../../util/language';
 
 export const FORM_NAME = 'objects';
 
-const BR = setBreak();
-
 export const ACCESSORS = {
   FLAT_NUMBER: 'flatnumber',
   HOUSE: 'house',
@@ -82,7 +80,7 @@ export const structureTable = {
   name: setLanguages('Точки учета', '', ''),
   maxWidth: '1000px',
   formName: FORM_NAME,
-  oneElementComponent: props => ObjectFormOneElement({ str: str, ...props }),
+  oneElementComponent: ObjectFormOneElement,
   columns: [
     { ...str[ACCESSORS.ID] },
     { ...str[ACCESSORS.OBJECT_NAME] },
@@ -90,22 +88,4 @@ export const structureTable = {
     { ...str[ACCESSORS.REG_QTY] },
     { ...str[ACCESSORS.TARIFF_GROUP] },
   ],
-  mainValues: {
-    parameters: [
-      { ...str[ACCESSORS.OBJECT_NAME] },
-      { ...BR },
-      { ...str[ACCESSORS.OBJECT_TYPE] },
-      { ...BR },
-      { ...str[ACCESSORS.REG_QTY] },
-      { ...BR },
-      { ...str[ACCESSORS.TARIFF_GROUP] },
-      { ...BR },
-      { ...str[ACCESSORS.FLAT_NUMBER] },
-      { ...BR },
-      { ...str[ACCESSORS.HOUSE] },
-      { ...BR },
-      { ...str[ACCESSORS.UZO] },
-      { ...BR },
-    ],
-  },
 };

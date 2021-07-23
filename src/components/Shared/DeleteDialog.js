@@ -1,4 +1,4 @@
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@material-ui/core';
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from '@material-ui/core';
 import React, {useContext, useState} from 'react';
 import {LanguageContext} from '../../App';
 import {initDate} from '../../util/functions';
@@ -14,15 +14,15 @@ export default function DeleteDialog({disableField=false, openDialog, deleteHand
 
     return <Dialog open={openDialog}>
         <DialogTitle>Вы действительно хотите удалить?</DialogTitle>
-        {disableField || <DialogContent>
-                <InputField
+         <DialogContent>
+            {disableField ||<InputField
                     type='date'
                     width='200px'
                     label="Удалить с"
                     value={closedDate}
                     onChange={setClosetDate}
-                />
-        </DialogContent>}
+                />}
+        </DialogContent>
         <DialogActions>
             <Button onClick={()=>deleteHandler(closedDate)} color="secondary">
                 {INTERFACE_LANGUAGE.delete[lang]}

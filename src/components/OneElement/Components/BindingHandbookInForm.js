@@ -46,6 +46,7 @@ export function ToolbarBinding({addHandler, filterHandler, accessor, inputType =
             </Button>
             {accessor && <TextField
                 className={classes.input}
+                InputLabelProps={{shrink: true}}
                 type={inputType}
                 value={input}
                 label={label}
@@ -53,13 +54,14 @@ export function ToolbarBinding({addHandler, filterHandler, accessor, inputType =
         </Toolbar>)
 }
 
-export default function BindingHandbookInForm({structure, preparedFilter, preparedValue}) {
+export default function BindingHandbookInForm({structure, preparedFilter, preparedValue, clickRowHandler}) {
     return (
         <Handbook
             structure={structure}
             preparedFilter={preparedFilter}
             preparedValueForOneElement={preparedValue}
             ToolbarComponent={ToolbarBinding}
+            clickRowHandler={clickRowHandler}
             bindingVariant
         />
     )

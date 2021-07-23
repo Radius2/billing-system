@@ -1,15 +1,12 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {getHandbookHistory} from '../../../api/api';
 import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
     Box,
     Divider,
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    makeStyles, Typography
+    makeStyles
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {LanguageContext} from '../../../App';
@@ -32,21 +29,21 @@ const useStyle = makeStyles(theme => ({
     }
 }))
 
-export default function HistoryElement({open, onClose, handbookName, id}) {
+export default function HistoryElement({handbookName, id}) {
     const classes = useStyle()
     const {lang} = useContext(LanguageContext);
     const [historyData, setHistoryData] = useState([])
     const [loading, setLoading] = useState(true)
-    const [columns, setColumns] = useState(historyHandbook[handbookName].columns)
+    const [columns] = useState(historyHandbook[handbookName].columns)
 
     useEffect(() => {
-        if (!handbookName || !id || !open) return undefined
+        if (!handbookName || !id) return undefined
         setLoading(true)
         getHandbookHistory(handbookName, id)
             .then(({data}) => setHistoryData(data))
             .catch((err) => console.log(err.message))
             .finally(() => setLoading(false))
-    }, [handbookName, id, open])
+    }, [handbookName, id])
 
     const inputField = useCallback((column, row) => (
         <React.Fragment key={column.accessor}>
@@ -63,38 +60,24 @@ export default function HistoryElement({open, onClose, handbookName, id}) {
     ), [])
 
     return (
-        <Dialog
-            className={classes.root}
-            onClose={onClose}
-            maxWidth={false}
-            open={open}>
-            <DialogTitle disableTypography>
-                <Typography variant={'h6'}>
-                    {historyHandbook[handbookName].name[lang]}
-                </Typography>
-                <Typography variant={'subtitle1'}>
-                    ID: {id}
-                </Typography>
-            </DialogTitle>
-            <DialogContent>
-                {!loading ? historyData.map((row, index) => (
-                        <Accordion className={classes.accordion} key={index}>
-                            <AccordionSummary
-                                className={classes.headerAccordion}
-                                expandIcon={<ExpandMoreIcon/>}>
-                                {columns.map(column => column.mainValue ? inputField(column, row) : null)}
-                            </AccordionSummary>
-                            <AccordionDetails
-                                className={classes.bodyAccordion}
-                            >
-                                <Box style={{width: '100%'}}>
-                                    {columns.map(column => !column.mainValue ? inputField(column, row) : null)}
-                                </Box>
-                            </AccordionDetails>
-                        </Accordion>
-                    ))
-                    : null}
-            </DialogContent>
-        </Dialog>
+        <>
+            {!loading ? historyData.map((row, index) => (
+                    <Accordion className={classes.accordion} key={index}>
+                        <AccordionSummary
+                            className={classes.headerAccordion}
+                            expandIcon={<ExpandMoreIcon/>}>
+                            {columns.map(column => column.mainValue ? inputField(column, row) : null)}
+                        </AccordionSummary>
+                        <AccordionDetails
+                            className={classes.bodyAccordion}
+                        >
+                            <Box style={{width: '100%'}}>
+                                {columns.map(column => !column.mainValue ? inputField(column, row) : null)}
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+                ))
+                : null}
+        </>
     )
 }

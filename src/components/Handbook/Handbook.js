@@ -21,7 +21,7 @@ function getColSpan(columns) {
     return columns.reduce((acc, curr) => acc + Number(curr.mainValue), 0);
 }
 
-export default function Handbook({structure, index, clickRowHandler, preparedFilter, bindingVariant, ToolbarComponent, preparedValueForOneElement}) {
+export default function Handbook({structure, clickRowHandler, preparedFilter, bindingVariant, ToolbarComponent, preparedValueForOneElement}) {
     const classes = useStyle();
     const {lang} = useContext(LanguageContext);
     const {formName, columns} = structure;
@@ -51,7 +51,6 @@ export default function Handbook({structure, index, clickRowHandler, preparedFil
         filterParamsHandler,
         activeFilter,
         setActiveFilter,
-        setReloadData,
     } = useData({formName, selectedRows, snackbarHandler, setDefaultCurrentMod, setErrMessage});
 
     useEffect(() => {
@@ -86,6 +85,7 @@ export default function Handbook({structure, index, clickRowHandler, preparedFil
     }
 
     function submitOneElement(data, index) {
+        console.log(data,index)
         if (data === 'delete') return clearRow(index)
         if (index === 'add') return addRow(data)
         return updateRow(index)

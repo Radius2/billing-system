@@ -15,8 +15,6 @@ import {handbooks} from '../handbookStructure/handbook';
 
 export const FORM_NAME = 'acts';
 
-const BR = setBreak();
-
 export const ACCESSORS = {
     ACT_DATE: 'actdate',
     ACT_NUMBER: 'actnumber',
@@ -69,7 +67,7 @@ export const structureTable = {
     name: setLanguages('Акты', '', ''),
     maxWidth: '900px',
     formName: FORM_NAME,
-    oneElementComponent: props => OneElementActsForm({str: str, ...props}),
+    oneElementComponent:OneElementActsForm,
     columns: [
         {...str[ACCESSORS.ID]},
         {...str[ACCESSORS.ACT_DATE]},
@@ -84,6 +82,6 @@ export const structureTableForObjects = {
     maxWidth: '900px',
     formName: FORM_NAME,
     noDeleteButton: true,
-    oneElementComponent: props => OneElementActsForm({str: str, ...props}),
+    oneElementComponent: OneElementActsForm,
     columns: [{...str[ACCESSORS.ACT_DATE]}, {...str[ACCESSORS.ACT_NUMBER]}, {...str[ACCESSORS.ACT_TYPE]}],
 };

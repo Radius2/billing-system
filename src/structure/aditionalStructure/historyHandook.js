@@ -1,5 +1,6 @@
-import {setAccessor, setBreak, setType, TYPE} from '../handbookStructure/handbook';
+import {setAccessor, setBreak, setType} from '../handbookStructure/handbook';
 import {setLanguages} from '../../util/language';
+import {TYPE} from '../../util/constant'
 
 export const subjects = {
     name: setLanguages('История изменения субъекта'),
@@ -13,25 +14,25 @@ export const subjects = {
         {
             header: setLanguages('Номер лицевого счета'),
             ...setAccessor('sub_account', 250),
-            ...setType(TYPE.STRING, true),
+            ...setType(TYPE.STRING, false),
         },
         {
             header: setLanguages('Наименование'),
             ...setAccessor('sub_name', 200),
-            ...setType(TYPE.STRING, true),
+            ...setType(TYPE.STRING, false),
         },
         {
             header: setLanguages('БИН'),
             ...setAccessor('bin', 250),
-            ...setType(TYPE.STRING, true),
+            ...setType(TYPE.STRING, false),
         },
         {
-            header: setLanguages('Действует с'),
+            header: setLanguages('Действовала с'),
             ...setAccessor('created', 200),
             ...setType(TYPE.DATE, true),
         },
         {
-            header: setLanguages('Действует до'),
+            header: setLanguages('Действовала до'),
             ...setAccessor('closed', 200),
             ...setType(TYPE.DATE, true),
         },

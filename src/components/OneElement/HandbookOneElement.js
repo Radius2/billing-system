@@ -7,15 +7,13 @@ import {
     Typography
 } from '@material-ui/core';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import HistoryIcon from '@material-ui/icons/History';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, { useContext, useState} from 'react';
 import {LanguageContext} from '../../App';
 import useOneElement from '../../hooks/useOneElement';
 import {handbooks} from '../../structure/handbookStructure/handbook';
 import {INTERFACE_LANGUAGE} from '../../util/language';
 import PreventActionDialog from '../Shared/PreventActionDialog';
 import Handbook from '../Handbook/Handbook';
-import HistoryElement from './HistoryElement/HistoryElement';
 import TooltipButton from '../Shared/TooltipButton';
 import DeleteDialog from '../Shared/DeleteDialog';
 import useStyle from './oneElementStyle';
@@ -25,15 +23,14 @@ export default function HandbookOneElement({open, index, submitHandler, cancelHa
     const {formName, columns} = structure;
     const {lang} = useContext(LanguageContext);
     const classes = useStyle();
-    const [openHistory, setOpenHistory] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
-    const [str, setStr] = useState((() => {
+    const [str] = useState((() => {
         const newStr = {}
         structure.columns.forEach(item => newStr[item.accessor] = item)
         return newStr
     })())
 
-    const {data,idElement, loading, closeElement, editing, isValidElement, input, closeHandler, addMode, openDialog, setOpenDialog, actionButtonHandler} = useOneElement({
+    const {data, idElement, loading, closeElement, editing, isValidElement, input, closeHandler, addMode, openDialog, setOpenDialog, actionButtonHandler} = useOneElement({
         formName,
         index,
         id,
@@ -58,7 +55,7 @@ export default function HandbookOneElement({open, index, submitHandler, cancelHa
                 {/*окно удаления с историей*/}
                 <DeleteDialog
                     openDialog={openDeleteModal}
-                    deleteHandler={(closeTime) => closeElement(closeTime)}
+                    deleteHandler={(closeTime) => closeElement({close: closeTime})}
                     closeHandler={() => setOpenDeleteModal(false)}/>
 
                 {/*окно "вы точно хотите выйти" если изменили данные*/}
@@ -67,11 +64,6 @@ export default function HandbookOneElement({open, index, submitHandler, cancelHa
                                      cancelHandler={cancelHandler}/>
 
                 {/*история изменений*/}
-                {openHistory ?
-                    <HistoryElement open={openHistory} onClose={() => setOpenHistory(false)} handbookName={formName}
-                                    id={idElement}/>
-                    : null
-                }
                 <Box component={Paper} className={classes.container}>
                     <Box className={classes.namePanel}>
                         <Box>
@@ -85,21 +77,12 @@ export default function HandbookOneElement({open, index, submitHandler, cancelHa
                             </Typography>
                         </Box>
                         {structure.hasHistory && !addMode &&
-                        <>
                             <TooltipButton
                                 size='medium'
                                 tooltipTitle={INTERFACE_LANGUAGE.delete[lang]}
-                                actionHandler={() => {
-                                    setOpenDeleteModal(true)
-                                }}
+                                actionHandler={() => setOpenDeleteModal(true)}
                                 icon={<DeleteForeverIcon fontSize='default'/>}
-                            />
-                            <TooltipButton
-                                size='medium'
-                                tooltipTitle='История'
-                                actionHandler={() => setOpenHistory(true)}
-                                icon={<HistoryIcon/>}/>
-                        </>}
+                            />}
                     </Box>
                     <Divider/>
                     {loading ? null : (
@@ -120,8 +103,8 @@ export default function HandbookOneElement({open, index, submitHandler, cancelHa
                             className={classes.actionPanel}>
                             <Button disabled={!isValidElement}
                                     size="large" color='primary'
-                                    onClick={actionButtonHandler}>Сохранить</Button>
-                            <Button size="large" onClick={closeHandler}>Отмена</Button>
+                                    onClick={actionButtonHandler}>{INTERFACE_LANGUAGE.save[lang]}</Button>
+                            <Button size="large" onClick={closeHandler}>{INTERFACE_LANGUAGE.exit[lang]}</Button>
                         </Box> : null}
                 </Box>
                 {structure.bindingData && !addMode &&

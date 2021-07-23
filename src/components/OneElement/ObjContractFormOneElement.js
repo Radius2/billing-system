@@ -4,19 +4,19 @@ import useOneElement from '../../hooks/useOneElement';
 import useStyle from './oneElementStyle';
 import InputField from '../Inputs/InputField';
 import PreventActionDialog from '../Shared/PreventActionDialog';
-import {ACCESSORS, str} from '../../structure/formStructures/objContractsStructure';
+import {ACCESSORS, str, FORM_NAME as formName} from '../../structure/formStructures/objContractsStructure';
 import DividerText from '../Shared/DividerText';
 import TitleOneElement from './Components/TitleOneElement';
 import DeleteDialog from '../Shared/DeleteDialog';
 
-export default function ActDetailsFormOneElement({structure,index, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
-    const {formName} = structure
+export default function ObjContractFormOneElement({index, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
     const classes = useStyle();
     const [deletedElement, setDeletedElement] = useState(false)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const {data, loading, closeElement, editing, isValidElement, input, closeHandler, addMode, openDialog, setOpenDialog, actionButtonHandler} = useOneElement({
         formName,
         id,
+        index,
         str,
         preparedValue,
         submitHandler,

@@ -15,18 +15,20 @@ export default function HouseSelect({
     const [house, setHouse] = useState(initHouse || {})
 
     useEffect(() => {
-        if (street?.city?.id === city.id) return
+        if (street?.city?.id === city?.id) return
         setStreet({});
         setHouse({})
     }, [city])
 
     useEffect(() => {
-        if (house?.street?.id === street.id) return
+        if (street?.id && street?.city?.id !== city?.id) return setCity(street?.city)
+        if ( house?.street?.id === street.id) return
         setHouse({})
         onStreetChange(street)
     }, [street])
 
     useEffect(() => {
+        if (house?.id && house?.street?.id !== street?.id) return setStreet(house?.street)
         onHouseChange(house)
     }, [house])
 
@@ -41,21 +43,21 @@ export default function HouseSelect({
         <AsyncInputSelect
             subPath={{structure: () => handbooks.streets, accessor: 'streetname'}}
             value={street}
-            editing={city.id>=0}
+            editing={city?.id >= 0}
             label="Улица"
             onChange={setStreet}
             width='350px'
-            filterParams={{cityid: city.id}}
+            filterParams={{cityid: city?.id}}
             externalValue={{city}}
         />
         <AsyncInputSelect
             subPath={{structure: () => handbooks.houses, accessor: 'housenumber'}}
             value={house}
-            editing={street.id>=0}
+            editing={street?.id >= 0}
             label="№ дома"
             onChange={setHouse}
             width='350px'
-            filterParams={{streetid: street.id}}
+            filterParams={{streetid: street?.id}}
             externalValue={{street}}
         />
     </>

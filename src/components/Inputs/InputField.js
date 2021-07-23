@@ -1,6 +1,7 @@
 import {TextField, MenuItem} from '@material-ui/core';
 import clsx from 'clsx';
-import React, {useEffect, useCallback, useRef, useState} from 'react';
+import React, {useEffect, useCallback, useRef, useState, useContext} from 'react';
+import {ThemeContext} from '../../App';
 import {TYPE} from '../../structure/handbookStructure/handbook';
 import {IMaskInput} from 'react-imask'
 import useStyle from './inputStyle';
@@ -26,13 +27,14 @@ export default function InputField({
                                        label,
                                        options = null
                                    }) {
-    const classes = useStyle({width});
+    const {isDark} = useContext(ThemeContext)
+    const classes = useStyle({width, isDark});
     const {current: initValue} = useRef(value);
     const [isChanged, setIsChanged] = useState(false);
     const [isValid, setIsValid] = useState(false);
 
     useEffect(() => {
-        setIsValid((prev) => {
+        setIsValid(() => {
                 if (!maskValidation) return true
                 if (typeof value === 'boolean') return true;
                 if (type === 'boolean') return false;
@@ -79,6 +81,7 @@ export default function InputField({
             case TYPE.DATE:
             case TYPE.STRING:
             case  TYPE.SUB_VALUE:
+            default:
                 return onChange(upperCase ? value.toUpperCase() : value);
             case TYPE.NUMBER:
                 return onChange(value ? +value : '');

@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
 import clsx from 'clsx';
 import * as api from '../../api/api';
@@ -8,7 +7,6 @@ import {TextField, Dialog} from '@material-ui/core';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import Handbook from '../Handbook/Handbook';
 import HandbookOneElement from '../OneElement/HandbookOneElement';
-import TooltipButton from '../Shared/TooltipButton';
 import useStyle from './inputStyle';
 
 const filter = createFilterOptions();
@@ -27,6 +25,7 @@ export default function AsyncInputSelect({
                                              onChange,
                                              filterParams = {},
                                              externalValue = {},
+                                             maskValidation,
                                          }) {
     const classes = useStyle({width});
     const [loading, setLoading] = useState(false);
@@ -42,9 +41,9 @@ export default function AsyncInputSelect({
     const [initId] = useState(value?.id);
 
     useEffect(() => {
-        setIsValid(value.id >= 0);
+        setIsValid(!maskValidation || value.id >= 0);
         setIsChanged(initId !== value.id);
-    }, [value]);
+    }, [value, maskValidation]);
 
     useEffect(() => {
         onIsChangedChange(isChanged);
@@ -112,7 +111,8 @@ export default function AsyncInputSelect({
                             paddingBottom: '8px',
                             justifyContent: 'center',
                         }}>
-                        <Handbook structure={subPath.structure()} clickRowHandler={modalSubmitHandler}/>
+                        <Handbook structure={subPath.structure()} clickRowHandler={modalSubmitHandler}
+                                  preparedFilter={filterParams}/>
                     </Box>
                 </Dialog>
             ) : null}
@@ -134,7 +134,6 @@ export default function AsyncInputSelect({
                     inputValue={inputValue}
                     noOptionsText='пусто'
                     disableClearable
-                    forcePopupIcon={false}
                     getOptionSelected={(option, value) => option.id === value.id}
                     onInputChange={(e, newInputValue) => setInputValue(upperCase ? newInputValue.toUpperCase() : newInputValue)}
                     onChange={(e, newValue) => {
@@ -191,14 +190,17 @@ export default function AsyncInputSelect({
                                         {loading ?
                                             <CircularProgress style={{marginLeft: 'auto'}} color='inherit'
                                                               size={18}/> :
-                                            value.id && <TooltipButton
-                                                icon={<OpenInNewIcon/>}
-                                                tooltipTitle={'Просмотр'}
-                                                actionHandler={() => {
-                                                    setIdModalOneElement(value?.id)
-                                                    setOpenModalOneElement(true)
-                                                }}
-                                            />}
+                                            null
+                                            // value.id && <TooltipButton
+                                            //     icon={<OpenInNewIcon/>}
+                                            //     tooltipTitle={'Просмотр'}
+                                            //     actionHandler={() => {
+                                            //         setIdModalOneElement(value?.id)
+                                            //         setOpenModalOneElement(true)
+                                            //     }}
+                                            // />
+                                        }
+
                                         {
                                             params.InputProps.endAdornment
                                         }

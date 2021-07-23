@@ -3,7 +3,7 @@ import {TYPE} from '../../structure/handbookStructure/handbook';
 import AsyncInputSelect from './AsyncInputSelect';
 import InputField from './InputField';
 
-export default function InputSwitch({column, value, editing, setIsValidArray, setIsChangedArray, updateValues, lang, width}) {
+export default function InputSwitch({column, value, editing, setIsValidArray, setIsChangedArray, updateValues, lang, width, filterParams={}}) {
     const {type} = column;
     if (type=== TYPE.SUB_SUB_VALUE) console.log(value)
 
@@ -42,12 +42,14 @@ export default function InputSwitch({column, value, editing, setIsValidArray, se
                     upperCase={!column.lowerCase}
                     key={column.subPath.accessor}
                     width={width || column.width}
+                    maskValidation={column.maskValidation}
                     editing={editing}
                     value={value}
                     onIsValidChange={setIsValidArray}
                     onIsChangedChange={setIsChangedArray}
                     subPath={column.subPath}
                     label={column.header[lang]}
+                    filterParams={filterParams}
                     onChange={(newValue) => updateValues(newValue, column)}
                 />)
         case TYPE.ID:

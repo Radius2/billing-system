@@ -16,8 +16,6 @@ import { setLanguages } from '../../util/language';
 
 export const FORM_NAME = 'objcontracts';
 
-const BR = setBreak();
-
 export const ACCESSORS = {
   CONTRACT: 'contract',
   CONTRACT_SUBJECT: 'contract_subject',
@@ -121,7 +119,7 @@ export const structureTableForContracts = {
   formName: FORM_NAME,
   noDeleteButton: true,
   maxWidth: '400px',
-  oneElementComponent: props => OneElementObjContractForm({ str: str, ...props }),
+  oneElementComponent: OneElementObjContractForm,
   columns: [{ ...str[ACCESSORS.OBJECT] }, { ...str[ACCESSORS.START_DATE] }, { ...str[ACCESSORS.END_DATE] }],
 };
 
@@ -133,6 +131,6 @@ export const structureTableForObjects = {
   formName: FORM_NAME,
   noDeleteButton: true,
   maxWidth: '400px',
-  oneElementComponent: props => OneElementObjContractForm({ str: str, ...props }),
+  oneElementComponent: OneElementObjContractForm,
   columns: [{ ...str[ACCESSORS.CONTRACT] }, { ...str[ACCESSORS.START_DATE] }, { ...str[ACCESSORS.END_DATE] }],
 };

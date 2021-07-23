@@ -10,7 +10,7 @@ export default function Feedback({openSnackbar, snackbarCloseHandler, snackbarMe
             autoHideDuration={2000}
             onClose={snackbarCloseHandler}>
             <Alert
-                elevation={6}
+                elevation={100}
                 variant="filled"
                 onClose={snackbarCloseHandler}
                 severity={success ? 'success' : 'warning'}>

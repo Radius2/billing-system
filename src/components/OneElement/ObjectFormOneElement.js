@@ -1,25 +1,28 @@
 import {Box, Button, Dialog} from '@material-ui/core';
 import React, {useState} from 'react';
 import useOneElement from '../../hooks/useOneElement';
-import * as objContract from '../../structure/formStructures/objContractsStructure';
 import BindingHandbookInForm from './Components/BindingHandbookInForm';
 import TabPanelForm from './Components/TabPanelForm';
+import ContractFormOneElement from './ContractFormOneElement';
 import useStyle from './oneElementStyle';
 import HouseSelect from '../Inputs/HouseSelect';
 import {StyledTab, StyledTabs} from '../StyledComponents/StyledTabs';
 import PreventActionDialog from '../Shared/PreventActionDialog';
 import {TabPanel} from '../Shared/TabPanel';
-import {ACCESSORS, str} from '../../structure/formStructures/objectStructure';
+import {ACCESSORS, str, FORM_NAME as formName} from '../../structure/formStructures/objectStructure';
 import DividerText from '../Shared/DividerText';
 import TitleOneElement from './Components/TitleOneElement';
 import DeleteDialog from '../Shared/DeleteDialog';
 import * as acts from '../../structure/formStructures/actStructure';
+import * as objContract from '../../structure/formStructures/objContractsStructure';
+import * as pu from '../../structure/formStructures/puStructure';
 
-export default function ObjectFormOneElement({structure, index, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
-    const {formName} = structure;
+export default function ObjectFormOneElement({index, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
     const classes = useStyle();
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [tabValue, setTabValue] = useState(0);
+    const [openModalOneElement, setOpenModalOneElement] = useState(false)
+    const [idModalOneElement, setIdModalOneElement] = useState(false)
     const {data, setData, deleteElement, loading, editing, isValidElement, input, closeHandler, addMode, openDialog, setOpenDialog, actionButtonHandler} =
         useOneElement({
             formName,
@@ -61,12 +64,9 @@ export default function ObjectFormOneElement({structure, index, id, open, submit
                         <StyledTabs orientation='vertical' variant='scrollable' value={tabValue}
                                     onChange={(e, v) => setTabValue(v)} style={{minWidth: '200px'}}>
                             <StyledTab label={'Общие данные'}/>
-                            <StyledTab disabled={addMode} label={'Акты нарушений'}/>
+                            <StyledTab disabled={addMode} label={'Акты'}/>
                             <StyledTab disabled={addMode} label={'Договоры по точке'}/>
                             <StyledTab disabled={addMode} label={'Приборы учета'}/>
-                            <StyledTab disabled={addMode} label={'Показания'}/>
-                            <StyledTab disabled={addMode} label={'Еще какие-то данные'}/>
-                            <StyledTab disabled={addMode} label={'И еще какие-то данные'}/>
                         </StyledTabs>
                         {!loading && (
                             <>
@@ -126,7 +126,27 @@ export default function ObjectFormOneElement({structure, index, id, open, submit
                                             objectname: data.objectname,
                                         }}
                                         preparedValue={{object: data}}
-                                        structure={objContract.structureTableForObjects}/>
+                                        structure={objContract.structureTableForObjects}
+                                        clickRowHandler={value => {
+                                        setOpenModalOneElement(true);
+                                        setIdModalOneElement(value.contract.id)
+                                    }}
+                                    />
+                                    {openModalOneElement &&
+                                    <ContractFormOneElement
+                                        open={openModalOneElement}
+                                        id={idModalOneElement.toString()}
+                                        cancelHandler={() => setOpenModalOneElement(false)}
+                                    />}
+                                </TabPanelForm>
+
+                                <TabPanelForm value={tabValue} index={3}>
+                                    <BindingHandbookInForm
+                                        preparedFilter={{
+                                            objectname: data.objectname,
+                                        }}
+                                        preparedValue={{object: data}}
+                                        structure={pu.structureTable}/>
                                 </TabPanelForm>
                             </>
                         )}

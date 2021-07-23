@@ -3,10 +3,9 @@ import ContractFormOneElement from '../../components/OneElement/ContractFormOneE
 import { TYPE } from '../../util/constant';
 import { setBreak, setAccessor, setType, setValidation, setOrdering, setHeader, setSubPath } from '../../util/constructorFunction';
 import { setLanguages } from '../../util/language';
+import * as subjects from './subjectStructure'
 
 export const FORM_NAME = 'contracts';
-
-const BR = setBreak();
 
 export const ACCESSORS = {
   AREA: 'area',
@@ -43,7 +42,7 @@ export const str = {
     ...setAccessor(ACCESSORS.CONSIGNEE, 350, true),
     ...setType(TYPE.SUB_VALUE, true),
     ...setOrdering(),
-    ...setSubPath(() => handbooks.subjects, 'subname'),
+    ...setSubPath(() => subjects.structureTable, 'subname'),
     ...setValidation(/^.{0,20}$/, /^.+$/),
   },
   [ACCESSORS.CONTRACT_NUMBER]: {
@@ -58,7 +57,7 @@ export const str = {
     ...setAccessor(ACCESSORS.CUSTOMER, 250, true),
     ...setType(TYPE.SUB_VALUE, true),
     ...setOrdering(false, false),
-    ...setSubPath(() => handbooks.subjects, 'subname'),
+    ...setSubPath(() => subjects.structureTable, 'subname'),
     ...setValidation(),
   },
   [ACCESSORS.CUSTOMER_GROUP]: {
@@ -75,7 +74,7 @@ export const str = {
     ...setType(TYPE.DATE, true),
     ...setOrdering(),
     ...setValidation('0000{-}00{-}00', false),
-    editing: false,
+    noEditing:true,
   },
   [ACCESSORS.ESO]: {
     ...setHeader('ЭСО'),
@@ -119,7 +118,7 @@ export const structureTable = {
   name: setLanguages('Договоры', '', ''),
   maxWidth: '900px',
   noDeleteButton: true,
-  oneElementComponent: props => ContractFormOneElement({ str: str, ...props }),
+  oneElementComponent: ContractFormOneElement,
   formName: FORM_NAME,
   columns: [
     { ...str[ACCESSORS.ID] },
@@ -128,41 +127,17 @@ export const structureTable = {
     { ...str[ACCESSORS.START_DATE] },
     { ...str[ACCESSORS.END_DATE] },
   ],
-  mainValues: {
-    parameters: [
-      { ...str[ACCESSORS.CONTRACT_NUMBER] },
-      { ...str[ACCESSORS.START_DATE] },
-      { ...BR },
-      { ...str[ACCESSORS.CUSTOMER] },
-      { ...BR },
-      { ...str[ACCESSORS.CONSIGNEE] },
-      { ...BR },
-    ],
-  },
-  tabs: [
-    {
-      name: setLanguages('Точки подключения'),
-      type: 'binding',
-      parameters: [],
-    },
-    {
-      name: setLanguages('Данные договора'),
-      parameters: [
-        { ...str[ACCESSORS.ESO] },
-        { ...str[ACCESSORS.ESO_CONTRACT_NUMBER] },
-        { ...BR },
-        { ...str[ACCESSORS.CUSTOMER_GROUP] },
-        { ...str[ACCESSORS.AREA] },
-        { ...BR },
-
-        { ...str[ACCESSORS.PERSONAL_ACCOUNT] },
-        { ...BR },
-      ],
-    },
-    {
-      name: setLanguages('Дополнительные данные'),
-      parameters: [],
-    },
-  ],
-  bindingData: [],
 };
+
+export const structureTableForSubjects ={
+  ...structureTable,
+  filterAccessor: 'actualdate',
+  typeFilterAccessor: 'date',
+  filterAccessorLabel: setLanguages('Показать актуальные на'),
+  columns: [
+    { ...str[ACCESSORS.ID] },
+    { ...str[ACCESSORS.CONTRACT_NUMBER] },
+    { ...str[ACCESSORS.START_DATE] },
+    { ...str[ACCESSORS.END_DATE] },
+  ],
+}

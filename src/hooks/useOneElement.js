@@ -8,7 +8,7 @@ export default function useOneElement({formName, id, str, preparedValue, submitH
     const {lang} = useContext(LanguageContext);
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [editing, setEditing] = useState(true);
+    const [editing] = useState(true);
     const [isValidArray, setIsValidArray] = useState({});
     const [isChangedArray, setIsChangedArray] = useState({});
     const [isValidElement, setIsValidElement] = useState(true);
@@ -55,7 +55,7 @@ export default function useOneElement({formName, id, str, preparedValue, submitH
     function updateElement() {
         api
             .updElementHandbook(formName, data)
-            .then(resp => {
+            .then(() => {
                 getElementData();
                 setLoading(true);
             })
@@ -69,7 +69,7 @@ export default function useOneElement({formName, id, str, preparedValue, submitH
     function deleteElement() {
         api
             .delElementsHandbook(formName, [+idElement])
-            .then(resp => {
+            .then(() => {
                 submitHandler('delete', index);
                 cancelHandler();
             })
@@ -81,7 +81,7 @@ export default function useOneElement({formName, id, str, preparedValue, submitH
     function closeElement(closed) {
         api
             .delElementHandbookWithTime(formName, idElement, closed)
-            .then(resp => {
+            .then(() => {
                 submitHandler(data, index)
                 cancelHandler();
             })
@@ -98,7 +98,7 @@ export default function useOneElement({formName, id, str, preparedValue, submitH
     }
 
     const input = useCallback(
-        (accessor, width, noEditing) => {
+        (accessor, width, filterParams) => {
             if (loading) return undefined;
             const column = str[accessor];
             const value = data[column.accessor];
@@ -110,10 +110,11 @@ export default function useOneElement({formName, id, str, preparedValue, submitH
                     column={column}
                     value={value}
                     lang={lang}
+                    filterParams={filterParams}
                     updateValues={value => {
                         setData(prev => ({...prev, [column.accessor]: value}));
                     }}
-                    editing={editing && !column.noEditing && !noEditing}
+                    editing={editing && !column.noEditing}
                     setIsValidArray={value => setIsValidArray(prev => ({...prev, [column.accessor]: !!value}))}
                     setIsChangedArray={value => setIsChangedArray(prev => ({...prev, [column.accessor]: !!value}))}
                 />

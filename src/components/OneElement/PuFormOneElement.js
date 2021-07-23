@@ -1,23 +1,20 @@
 import {Box, Button, Dialog} from '@material-ui/core';
-import React, {useState, useEffect, useContext} from 'react';
-import {LanguageContext} from '../../App';
+import React, {useState, useEffect} from 'react';
 import useOneElement from '../../hooks/useOneElement';
-import AsyncInputSelect from '../Inputs/AsyncInputSelect';
 import useStyle from './oneElementStyle';
 import PreventActionDialog from '../Shared/PreventActionDialog';
-import {ACCESSORS, str, FORM_NAME as formName} from '../../structure/formStructures/actDetailStructure';
+import {ACCESSORS, str, FORM_NAME as formName} from '../../structure/formStructures/puStructure';
 import TitleOneElement from './Components/TitleOneElement';
 import DeleteDialog from '../Shared/DeleteDialog';
 
-export default function ActDetailsFormOneElement({index, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
-    const {lang} = useContext(LanguageContext)
+export default function PuFormOneElement({index, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
     const classes = useStyle();
     const [deletedElement, setDeletedElement] = useState(false)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
-    const {data, setData, loading, deleteElement, editing, isValidElement, input, closeHandler, addMode, openDialog, setOpenDialog, actionButtonHandler} = useOneElement({
+    const {data, loading, deleteElement, editing, isValidElement, input, closeHandler, addMode, openDialog, setOpenDialog, actionButtonHandler} = useOneElement({
         formName,
-        index,
         id,
+        index,
         str,
         preparedValue,
         submitHandler,
@@ -51,43 +48,26 @@ export default function ActDetailsFormOneElement({index, id, open, submitHandler
                     <TitleOneElement
                         id={data.id}
                         addMode={addMode}
-                        title={`Детали к акту: `}
-                        addTitle={'Создать детали к акту: '}
+                        title={`Прибор: `}
+                        addTitle={'Создать прибор: '}
                         closeHandler={closeHandler}
-                        nameElement={data?.[ACCESSORS.ACT]?.actnumber}
+                        nameElement={data.id}
                         deleteElementHandler={() => setOpenDeleteDialog(true)}
                         disableDelete={deletedElement}/>
                     {!loading && <>
                         <Box style={{display: 'flex', flexFlow: 'column', height: '100%'}}>
                             <Box>
-                                {input(ACCESSORS.INITIAL_VALUES)}
-
-                                {input(ACCESSORS.INSTALL_DATE)}
-                                <AsyncInputSelect
-                                    subPath={str[ACCESSORS.PU].subPath}
-                                    value={data.pu}
-                                    onChange={val => setData(prev => ({...prev, pu: val}))}
-                                    editing={true}
-                                    label={str[ACCESSORS.PU].header[lang]}
-                                    width='350px'
-                                    filterParams={{objectname: data?.act?.object?.objectname}}
-                                    externalValue={{object: data?.act?.object}}
-                                />
-
-                                {input(ACCESSORS.PU_TYPE)}
-                                {input(ACCESSORS.PU_NUMBER)}
-
-                                {input(ACCESSORS.SEAL_NUMBER)}
-                                {input(ACCESSORS.CHECK_INTERVAL)}
+                                {input(ACCESSORS.START_DATE)}
+                                {addMode || input(ACCESSORS.END_DATE)}
                             </Box>
-                            {editing && <Box
+                            {editing ? <Box
                                 className={classes.actionPanel}
                                 style={{marginTop: 'auto'}}>
                                 <Button disabled={!isValidElement}
                                         size="large" color='primary'
                                         onClick={actionButtonHandler}>Сохранить</Button>
                                 <Button size="large" onClick={closeHandler}>Выход</Button>
-                            </Box>}
+                            </Box> : null}
                         </Box>
                     </>}
                 </Box>
