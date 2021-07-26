@@ -1,6 +1,8 @@
 import {Box, Button, Dialog} from '@material-ui/core';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
+import {LanguageContext} from '../../App';
 import useOneElement from '../../hooks/useOneElement';
+import {INTERFACE_LANGUAGE} from '../../util/language';
 import useStyle from './oneElementStyle';
 import PreventActionDialog from '../Shared/PreventActionDialog';
 import {ACCESSORS, str, FORM_NAME as formName} from '../../structure/formStructures/puStructure';
@@ -9,6 +11,7 @@ import DeleteDialog from '../Shared/DeleteDialog';
 
 export default function PuFormOneElement({index, id, open, submitHandler, cancelHandler, preparedValue = {}}) {
     const classes = useStyle();
+    const {lang}= useContext(LanguageContext);
     const [deletedElement, setDeletedElement] = useState(false)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const {data, loading, deleteElement, editing, isValidElement, input, closeHandler, addMode, openDialog, setOpenDialog, actionButtonHandler} = useOneElement({
@@ -65,8 +68,8 @@ export default function PuFormOneElement({index, id, open, submitHandler, cancel
                                 style={{marginTop: 'auto'}}>
                                 <Button disabled={!isValidElement}
                                         size="large" color='primary'
-                                        onClick={actionButtonHandler}>Сохранить</Button>
-                                <Button size="large" onClick={closeHandler}>Выход</Button>
+                                        onClick={actionButtonHandler}>{INTERFACE_LANGUAGE.save[lang]}</Button>
+                                <Button size="large" onClick={closeHandler}>{INTERFACE_LANGUAGE.exit[lang]}</Button>
                             </Box> : null}
                         </Box>
                     </>}

@@ -1,7 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {Box, Button, Dialog} from '@material-ui/core';
+import React, {useState, useEffect, useContext} from 'react';
+import {Box, Dialog} from '@material-ui/core';
+import {LanguageContext} from '../../App';
 import useOneElement from '../../hooks/useOneElement';
 import {handbooks} from '../../structure/handbookStructure/handbook';
+import {INTERFACE_LANGUAGE} from '../../util/language';
 import HistoryElement from './HistoryElement/HistoryElement';
 import useStyle from './oneElementStyle';
 import {StyledTab, StyledTabs} from '../StyledComponents/StyledTabs';
@@ -13,8 +15,10 @@ import TitleOneElement from './Components/TitleOneElement';
 import TabPanelForm from './Components/TabPanelForm';
 import BindingHandbookInForm from './Components/BindingHandbookInForm';
 import * as contracts from '../../structure/formStructures/contractStructure'
+import ButtonPanel from './Components/ButtonPanel';
 
-export default function SubjectFormOneElement({index, id, open, submitHandler, cancelHandler, preparedValue = {}}, ) {
+export default function SubjectFormOneElement({index, id, open, submitHandler, cancelHandler, preparedValue = {}},) {
+    const {lang} = useContext(LanguageContext);
     const [tabValue, setTabValue] = useState(0);
     const [deletedElement, setDeletedElement] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -94,15 +98,10 @@ export default function SubjectFormOneElement({index, id, open, submitHandler, c
 
                                     </Box>
                                     {editing && (
-                                        <Box className={classes.actionPanel} style={{marginTop: 'auto'}}>
-                                            <Button disabled={!isValidElement} size='large' color='primary'
-                                                    onClick={actionButtonHandler}>
-                                                Сохранить
-                                            </Button>
-                                            <Button size='large' onClick={closeHandler}>
-                                                Выход
-                                            </Button>
-                                        </Box>
+                                        <ButtonPanel
+                                            disableActionButton={!isValidElement}
+                                            actionButtonHandler={actionButtonHandler}
+                                            closeButtonHandler={closeHandler}/>
                                     )}
                                 </TabPanelForm>
                                 <TabPanelForm value={tabValue} index={1}>
@@ -115,7 +114,6 @@ export default function SubjectFormOneElement({index, id, open, submitHandler, c
                                 </TabPanelForm>
 
                                 <TabPanelForm value={tabValue} index={2}>
-                                    {'пока не работает выборка'.toUpperCase()}
                                     <BindingHandbookInForm
                                         preparedFilter={{
                                             custid: data.id,

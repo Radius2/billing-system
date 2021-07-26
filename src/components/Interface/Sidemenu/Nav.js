@@ -14,15 +14,12 @@ const useStyles = makeStyles((theme) => ({
         minHeight: '48px',
         borderRadius: theme.shape.borderRadius + 'px',
         margin: theme.spacing(1) + 'px 0',
-        // '& + div': {
-        //     display: 'none'
-        // },
         '& svg': {
             color: theme.palette.primary.contrastText,
         }
     },
     itemNested: {
-        paddingLeft: theme.spacing(3),
+        paddingLeft: theme.spacing(6),
         '& svg': {
             color: theme.palette.primary.contrastText,
         },
@@ -33,9 +30,6 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: theme.palette.primary.main,
             color: theme.palette.primary.contrastText,
         },
-        // '& + div': {
-        //     display: 'block'
-        // },
     },
     activeNested: {
         '&, &:hover': {

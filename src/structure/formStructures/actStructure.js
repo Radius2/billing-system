@@ -2,7 +2,6 @@ import OneElementActsForm from '../../components/OneElement/ActsFormOneElement';
 import * as objects from './objectStructure';
 import {TYPE} from '../../util/constant';
 import {
-    setBreak,
     setAccessor,
     setType,
     setValidation,
@@ -32,14 +31,14 @@ export const str = {
         ...setValidation('0000{-}00{-}00', /\d{4}-\d{2}-\d{2}/),
     },
     [ACCESSORS.ACT_NUMBER]: {
-        ...setHeader('Номер'),
+        ...setHeader('Номер акта'),
         ...setAccessor(ACCESSORS.ACT_NUMBER, 150),
         ...setType(TYPE.STRING, true),
         ...setOrdering(true, true),
         ...setValidation(/.{0,20}/, /.+/),
     },
     [ACCESSORS.ACT_TYPE]: {
-        ...setHeader('Тип'),
+        ...setHeader('Тип акта'),
         ...setAccessor(ACCESSORS.ACT_TYPE, 200),
         ...setType(TYPE.SUB_VALUE, true),
         ...setOrdering(),
@@ -50,7 +49,7 @@ export const str = {
         ...setHeader('ID'),
         ...setAccessor(ACCESSORS.ID, 70),
         ...setType(TYPE.ID, true),
-        ...setOrdering(true, true),
+        ...setOrdering(false, false),
         ...setValidation(),
     },
     [ACCESSORS.OBJECT]: {
@@ -64,21 +63,21 @@ export const str = {
 };
 
 export const structureTable = {
-    name: setLanguages('Акты', '', ''),
+    name: setLanguages('Акты', 'Елшілердің істері', 'Acts'),
     maxWidth: '900px',
     formName: FORM_NAME,
     oneElementComponent:OneElementActsForm,
     columns: [
         {...str[ACCESSORS.ID]},
         {...str[ACCESSORS.ACT_DATE]},
-        {...str[ACCESSORS.OBJECT]},
         {...str[ACCESSORS.ACT_NUMBER]},
+        {...str[ACCESSORS.OBJECT]},
         {...str[ACCESSORS.ACT_TYPE]},
     ],
 };
 
 export const structureTableForObjects = {
-    name: setLanguages('', '', ''),
+    name: setLanguages('Акты', 'Елшілердің істері', 'Acts'),
     maxWidth: '900px',
     formName: FORM_NAME,
     noDeleteButton: true,

@@ -48,6 +48,7 @@ const useStyle = makeStyles(theme => ({
         alignItems: 'flex-start',
     },
     actionPanel: {
+        marginTop: 'auto',
         '& > *': {
             margin: theme.spacing(1),
         },
