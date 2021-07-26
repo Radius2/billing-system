@@ -1,9 +1,10 @@
+import React, {useState, useMemo} from 'react';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
-import React, {useState, useMemo} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import {Box, Drawer, IconButton, Divider, Toolbar} from '@material-ui/core';
+import {Avatar, Box, Drawer, IconButton, Divider, Toolbar} from '@material-ui/core';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import {MENU_LINKS} from '../../routes';
 import Content from '../Content/Content';
 import Header from './Header/Header';
@@ -70,6 +71,10 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: '8px',
         justifyContent: 'center',
     },
+    rounded: {
+        color: '#fff',
+        backgroundColor: theme.palette.primary.main,
+    },
 }))
 
 
@@ -86,7 +91,10 @@ export default function Interface({logout}) {
                     className={classes.drawerPaper}
                     classes={{paper: classes.drawer}}>
                 <Toolbar>
-                    <Typography style={{flexGrow: 1}} variant='h6' align='center'>Billing</Typography>
+                    <Avatar variant="rounded" className={classes.rounded}>
+                        <AssignmentIcon/>
+                    </Avatar>
+                    <Typography style={{flexGrow: 1}} variant='h6' align='center'>Billing-A-REK</Typography>
                 </Toolbar>
                 <Divider/>
                 <Sidemenu navArr={MENU_LINKS}/>

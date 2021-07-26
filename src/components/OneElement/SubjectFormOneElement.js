@@ -118,7 +118,7 @@ export default function SubjectFormOneElement({index, id, open, submitHandler, c
                                     {'пока не работает выборка'.toUpperCase()}
                                     <BindingHandbookInForm
                                         preparedFilter={{
-                                            // subid: data.id,
+                                            custid: data.id,
                                         }}
                                         preparedValue={{'consignee': data, 'customer': data}}
                                         structure={contracts.structureTableForSubjects}/>

@@ -1,6 +1,7 @@
 import React, {useContext, useState} from 'react';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import {Link} from 'react-router-dom';
@@ -18,6 +19,7 @@ const useStyle = makeStyles(theme => ({
         flexFlow: 'column',
         flexWrap: 'wrap',
         padding: theme.spacing(2),
+        marginTop: theme.spacing(2),
         maxHeight: '400px',
     },
     link: {
@@ -33,9 +35,9 @@ export default function ListHandbooks({title}) {
 
     return (
         <Box className={classes.root}>
-            <Typography variant='subtitle1'>{title[lang]}</Typography>
+            <Typography variant='h5'>{title[lang]}</Typography>
             <Divider/>
-            <Box className={classes.linkContainer}>
+            <Box component={Paper} className={classes.linkContainer}>
                 {links.map((handbook, index) => (
                     <Link
                         key={handbook.path}

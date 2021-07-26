@@ -25,6 +25,14 @@ const useStyles = makeStyles(theme => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    input: {
+        backgroundColor: theme.palette.background.paper,
+        border: 'none',
+        borderRadius: theme.shape.borderRadius,
+        '&  *': {
+            border: 'none'
+        }
+    }
 
 }));
 
@@ -84,24 +92,26 @@ export default function Login(props) {
                     <form className={classes.form} noValidate>
                         <TextField
                             {...loginInput}
+                            className={classes.input}
                             variant='outlined'
                             margin='normal'
                             required
                             fullWidth
                             id='login'
-                            label={INTERFACE_LANGUAGE.login[lang]}
+                            placeholder={INTERFACE_LANGUAGE.login[lang]}
                             name='login'
                             autoComplete='login'
                             autoFocus
                         />
                         <TextField
                             {...passwordInput}
+                            className={classes.input}
                             variant='outlined'
                             margin='normal'
                             required
                             fullWidth
                             name='password'
-                            label={INTERFACE_LANGUAGE.password[lang]}
+                            placeholder={INTERFACE_LANGUAGE.password[lang]}
                             type='password'
                             id='password'
                             autoComplete='current-password'

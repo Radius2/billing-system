@@ -1,3 +1,4 @@
+import {Box} from '@material-ui/core';
 import React, {useState, useRef} from 'react';
 import {Switch, Route, Redirect, useLocation} from 'react-router';
 import Interface from './components/Interface/Interface';
@@ -26,43 +27,53 @@ export default function App() {
     }
 
     return (
-        <ThemeProvider theme={isDark ? darkTheme : theme}>
-            <ThemeContext.Provider
-                value={{
-                    isDark: isDark,
-                    themeSwitch: () => {
-                        setIsDark(prev => {
-                            localStorage.setItem('isDark', !prev ? 'yes' : '')
-                            return !prev
-                        })
-                    },
-                }}>
-                <LanguageContext.Provider
+        <Box style={{
+            position: 'absolute',
+            top: 0,
+            height: '100vh',
+            width: '100vw',
+            backgroundImage: 'url("/power-towers.png")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'bottom center'
+        }}>
+            <ThemeProvider theme={isDark ? darkTheme : theme}>
+                <ThemeContext.Provider
                     value={{
-                        lang,
-                        setLang: lang => {
-                            if (AVAILABLE_LANGUAGE.includes(lang)) {
-                                setLang(lang);
-                                localStorage.setItem('language', lang);
-                            }
+                        isDark: isDark,
+                        themeSwitch: () => {
+                            setIsDark(prev => {
+                                localStorage.setItem('isDark', !prev ? 'yes' : '')
+                                return !prev
+                            })
                         },
                     }}>
-                    <CssBaseline/>
-                    <Switch>
-                        <Route path='/test' component={TEST}/>
-                        <Route
-                            path='/login'
-                            render={routeProps => (
-                                <Login from={from.current} {...routeProps} isAuth={isAuth} setAuth={e => setAuth(e)}
-                                       setAccessForms={e => setAccessForms(e)}/>
-                            )}
-                            exact
-                        />
-                        {isAuth ? <Interface logout={logout} accessForms={accessForms}/> :
-                            <Redirect to='/login'/>}
-                    </Switch>
-                </LanguageContext.Provider>
-            </ThemeContext.Provider>
-        </ThemeProvider>
+                    <LanguageContext.Provider
+                        value={{
+                            lang,
+                            setLang: lang => {
+                                if (AVAILABLE_LANGUAGE.includes(lang)) {
+                                    setLang(lang);
+                                    localStorage.setItem('language', lang);
+                                }
+                            },
+                        }}>
+                        <CssBaseline/>
+                        <Switch>
+                            <Route path='/test' component={TEST}/>
+                            <Route
+                                path='/login'
+                                render={routeProps => (
+                                    <Login from={from.current} {...routeProps} isAuth={isAuth} setAuth={e => setAuth(e)}
+                                           setAccessForms={e => setAccessForms(e)}/>
+                                )}
+                                exact
+                            />
+                            {isAuth ? <Interface logout={logout} accessForms={accessForms}/> :
+                                <Redirect to='/login'/>}
+                        </Switch>
+                    </LanguageContext.Provider>
+                </ThemeContext.Provider>
+            </ThemeProvider>
+        </Box>
     );
 }

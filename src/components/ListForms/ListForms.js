@@ -17,12 +17,7 @@ const useStyle = makeStyles(theme => ({
         width: '100%',
     },
     linkContainer: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexWrap: 'wrap',
-        padding: theme.spacing(2),
-        maxHeight: '400px',
+        marginTop: theme.spacing(1),
     },
     link: {
         marginBottom: theme.spacing(1),
@@ -30,8 +25,12 @@ const useStyle = makeStyles(theme => ({
         textDecoration: 'none',
     },
     linkButton: {
+        backgroundColor: theme.palette.background.paper,
+        justifyContent: 'flex-start',
+        color: theme.palette.text.primary,
         minHeight: '100px',
-        minWidth: '300px',
+        minWidth: '270px',
+        textDecoration: 'none',
     }
 }))
 
@@ -42,9 +41,10 @@ export default function ListForms({title}) {
 
     return (
         <Box className={classes.root}>
-            <Typography variant='subtitle1'>{title[lang]}</Typography>
+            <Typography variant='h5'>{title[lang]}</Typography>
             <Divider/>
             <Grid
+                className={classes.linkContainer}
                 container
                 spacing={3}
                 justify='center'>
@@ -61,7 +61,7 @@ export default function ListForms({title}) {
                             <Button
                                 className={classes.linkButton}
                                 variant='contained'
-                                endIcon={<DescriptionIcon style={{fontSize:'32px'}}/>}>
+                                startIcon={<DescriptionIcon style={{fontSize: '56px'}}/>}>
                                 {link.title[lang]}
                             </Button>
                         </Link>
