@@ -14,13 +14,14 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle'
 
 const useStyle = makeStyles((theme) => ({
     toolbar: {
+        paddingLeft: theme.spacing(1),
         '& > *': {
             marginLeft: theme.spacing(1),
             marginRight: theme.spacing(1),
         },
-        '& :first-child':{
-            marginLeft:0,
-            marginRight:'auto'
+        '& :first-child': {
+            marginLeft: 0,
+            marginRight: 'auto'
         }
     }
 }))
@@ -32,11 +33,12 @@ export default function Header({logout, children}) {
     const [openAccountMenu, setOpenAccountMenu] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
 
-    function openMenuHandler (e){
+    function openMenuHandler(e) {
         setOpenAccountMenu(true);
         setAnchorEl(e.currentTarget)
     }
-    function closeMenuHandler(){
+
+    function closeMenuHandler() {
         setOpenAccountMenu(false)
         setAnchorEl(false)
     }

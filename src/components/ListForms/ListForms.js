@@ -31,6 +31,9 @@ const useStyle = makeStyles(theme => ({
         minHeight: '100px',
         minWidth: '270px',
         textDecoration: 'none',
+        '& svg' : {
+            fontSize: theme.spacing(7) + 'px !important'
+        }
     }
 }))
 
@@ -61,7 +64,7 @@ export default function ListForms({title}) {
                             <Button
                                 className={classes.linkButton}
                                 variant='contained'
-                                startIcon={<DescriptionIcon style={{fontSize: '56px'}}/>}>
+                                startIcon={link.icon || <DescriptionIcon />}>
                                 {link.title[lang]}
                             </Button>
                         </Link>

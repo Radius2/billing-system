@@ -16,8 +16,10 @@ export const theme = createMuiTheme({
         ...shared,
         //sideMenu:'#abcddf',
         background: {
+            // default: '#eeeeee',
             default: '#87CEEB',
             // default: '#d0e3ed',
+            // paper: '#ffffff',
             paper: '#e0eff0',
         },
     },
