@@ -3,7 +3,6 @@ import {Box, Dialog} from '@material-ui/core';
 import {LanguageContext} from '../../App';
 import useOneElement from '../../hooks/useOneElement';
 import {handbooks} from '../../structure/handbookStructure/handbook';
-import {INTERFACE_LANGUAGE} from '../../util/language';
 import HistoryElement from './HistoryElement/HistoryElement';
 import useStyle from './oneElementStyle';
 import {StyledTab, StyledTabs} from '../StyledComponents/StyledTabs';
